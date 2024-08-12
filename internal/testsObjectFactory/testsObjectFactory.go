@@ -3,6 +3,7 @@ package testsObjectFactory
 import (
 	"github.com/KerbsOD/TusLibros/internal/creditCard"
 	"github.com/KerbsOD/TusLibros/internal/merchantProcessor"
+	"github.com/KerbsOD/TusLibros/internal/userAuthentication"
 	"time"
 )
 
@@ -38,7 +39,7 @@ func (t *TestsObjectFactory) ValidCreditCard() *creditCard.CreditCard {
 	return validCreditCard
 }
 
-func (t *TestsObjectFactory) MockMerchantProcessor() *merchantProcessor.MockMerchantProcessor {
+func (t *TestsObjectFactory) NewMockMerchantProcessor() *merchantProcessor.MockMerchantProcessor {
 	mockService := new(merchantProcessor.MockMerchantProcessor)
 	return mockService
 }
@@ -56,4 +57,34 @@ func (t *TestsObjectFactory) Today() time.Time {
 func (t *TestsObjectFactory) Tomorrow() time.Time {
 	staticDateForTesting := time.Date(2000, 1, 3, 0, 0, 0, 0, time.UTC)
 	return staticDateForTesting
+}
+
+func (t *TestsObjectFactory) ValidUsername() string {
+	return "ValidUsername"
+}
+
+func (t *TestsObjectFactory) ValidPassword() string {
+	return "ValidPassword"
+}
+
+func (t *TestsObjectFactory) InvalidUsername() string {
+	return "InvalidUsername"
+}
+
+func (t *TestsObjectFactory) InvalidPassword() string {
+	return "InvalidPassword"
+}
+
+func (t *TestsObjectFactory) NewMockUserAuthenticationWithValidUser() *userAuthentication.MockUserAuthentication {
+	databaseWithValidUser := map[string]string{t.ValidUsername(): t.ValidPassword()}
+	userAuthService := userAuthentication.NewMockUserAuthentication(databaseWithValidUser)
+	return userAuthService
+}
+
+func (t *TestsObjectFactory) ValidCreditCardNumber() string {
+	return "0000 1111 2222 3333"
+}
+
+func (t *TestsObjectFactory) ValidCreditCardOwner() string {
+	return "Marty Mcfly"
 }
