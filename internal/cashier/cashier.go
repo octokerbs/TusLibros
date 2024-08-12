@@ -17,48 +17,59 @@ type Cashier struct {
 	total             int
 }
 
-func NewCashier(aCart *cart.Cart, aCreditCard *creditCard.CreditCard, aMerchantProcessor merchantProcessor.MerchantProcessor, aTodaysDate time.Time, aSalesBook *salesBook.SalesBook) *Cashier {
-	assertValidCart(aCart)
-	assertValidCreditCard(aCreditCard, aTodaysDate)
+func NewCashier(aCart *cart.Cart, aCreditCard *creditCard.CreditCard, aMerchantProcessor merchantProcessor.MerchantProcessor, aTodayDate time.Time, aSalesBook *salesBook.SalesBook) (*Cashier, error) {
+	if err := assertValidCart(aCart); err != nil {
+		return nil, err
+	}
+
+	if err := assertValidCreditCard(aCreditCard, aTodayDate); err != nil {
+		return nil, err
+	}
+
 	c := new(Cashier)
 	c.cart = aCart
 	c.card = aCreditCard
 	c.merchantProcessor = aMerchantProcessor
 	c.salesBook = aSalesBook
 	c.total = 0
-	return c
+	return c, nil
 }
 
-func (c *Cashier) Checkout() int {
+func (c *Cashier) Checkout() (int, error) {
 	c.calculateTotal()
-	c.debitTotal()
+	if err := c.debitTotal(); err != nil {
+		return -1, err
+	}
 	c.registerSale()
-	return c.total
+	return c.total, nil
 }
 
 func (c *Cashier) registerSale() {
 	c.salesBook.RegisterSaleOf(c.total)
 }
 
-func (c *Cashier) debitTotal() {
+func (c *Cashier) debitTotal() error {
 	err := c.merchantProcessor.DebitOn(c.total, c.card)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 func (c *Cashier) calculateTotal() {
 	c.total = c.cart.Total()
 }
 
-func assertValidCreditCard(aCreditCard *creditCard.CreditCard, aTodaysDate time.Time) {
+func assertValidCreditCard(aCreditCard *creditCard.CreditCard, aTodaysDate time.Time) error {
 	if aCreditCard.IsExpiredOn(aTodaysDate) {
-		panic(errors.New(merchantProcessor.InvalidCreditCard))
+		return errors.New(merchantProcessor.InvalidCreditCard)
 	}
+	return nil
 }
 
-func assertValidCart(aCart *cart.Cart) {
+func assertValidCart(aCart *cart.Cart) error {
 	if aCart.IsEmpty() {
-		panic(errors.New(InvalidCart))
+		return errors.New(InvalidCart)
 	}
+	return nil
 }

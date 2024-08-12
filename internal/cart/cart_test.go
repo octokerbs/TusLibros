@@ -23,37 +23,35 @@ func (s *CartTestSuite) Test01NewCartsAreEmpty() {
 
 func (s *CartTestSuite) Test02CanNotAddItemsThatDontBelongToTheStore() {
 	cart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
-	assert.PanicsWithError(s.T(), InvalidItemErrorMessage, func() {
-		cart.AddToCart(s.factory.ItemNotInCatalog(), 1)
-	})
+	err := cart.AddToCart(s.factory.ItemNotInCatalog(), 1)
+	assert.EqualError(s.T(), err, InvalidItemErrorMessage)
 	assert.True(s.T(), cart.IsEmpty())
 }
 
 func (s *CartTestSuite) Test03CartIsNotEmptyAfterAddingAnItem() {
 	cart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
-	cart.AddToCart(s.factory.ItemInCatalog(), 1)
+	_ = cart.AddToCart(s.factory.ItemInCatalog(), 1)
 	assert.False(s.T(), cart.IsEmpty())
 }
 
 func (s *CartTestSuite) Test04CanNotAddNegativeNumberOfItems() {
 	cart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
-	assert.PanicsWithError(s.T(), InvalidQuantityErrorMessage, func() {
-		cart.AddToCart(s.factory.ItemInCatalog(), -1)
-	})
+	err := cart.AddToCart(s.factory.ItemInCatalog(), -1)
+	assert.EqualError(s.T(), err, InvalidQuantityErrorMessage)
 	assert.True(s.T(), cart.IsEmpty())
 }
 
 func (s *CartTestSuite) Test05CartRemembersAddedItems() {
 	cart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
-	cart.AddToCart(s.factory.ItemInCatalog(), 1)
+	_ = cart.AddToCart(s.factory.ItemInCatalog(), 1)
 	assert.Equal(s.T(), cart.ListCart(), map[string]int{s.factory.ItemInCatalog(): 1})
 	assert.False(s.T(), cart.IsEmpty())
 }
 
 func (s *CartTestSuite) Test06CartRemembersTheNumberOfAddedItems() {
 	cart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
-	cart.AddToCart(s.factory.ItemInCatalog(), 1)
-	cart.AddToCart(s.factory.ItemInCatalog(), 1)
+	_ = cart.AddToCart(s.factory.ItemInCatalog(), 1)
+	_ = cart.AddToCart(s.factory.ItemInCatalog(), 1)
 	assert.Equal(s.T(), cart.ListCart(), map[string]int{s.factory.ItemInCatalog(): 2})
 	assert.False(s.T(), cart.IsEmpty())
 }

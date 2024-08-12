@@ -16,11 +16,18 @@ func NewCart(aCatalog map[string]int) *Cart {
 	return c
 }
 
-func (c *Cart) AddToCart(anItem string, aQuantity int) {
-	c.assertValidItem(anItem)
-	c.assertValidQuantity(aQuantity)
+func (c *Cart) AddToCart(anItem string, aQuantity int) error {
+	if err := c.assertValidItem(anItem); err != nil {
+		return err
+	}
+
+	if err := c.assertValidQuantity(aQuantity); err != nil {
+		return err
+	}
+
 	c.defineItemIfNotInContents(anItem)
 	c.contents[anItem] += aQuantity
+	return nil
 }
 
 func (c *Cart) ListCart() map[string]int {
@@ -40,20 +47,22 @@ func (c *Cart) Total() int {
 	return total
 }
 
-func (c *Cart) assertValidQuantity(aQuantity int) {
+func (c *Cart) assertValidQuantity(aQuantity int) error {
 	if aQuantity < 1 {
-		panic(errors.New(InvalidQuantityErrorMessage))
+		return errors.New(InvalidQuantityErrorMessage)
 	}
+	return nil
+}
+
+func (c *Cart) assertValidItem(anItem string) error {
+	if _, ok := c.catalog[anItem]; !ok {
+		return errors.New(InvalidItemErrorMessage)
+	}
+	return nil
 }
 
 func (c *Cart) defineItemIfNotInContents(anItem string) {
 	if _, ok := c.contents[anItem]; !ok {
 		c.contents[anItem] = 0
-	}
-}
-
-func (c *Cart) assertValidItem(anItem string) {
-	if _, ok := c.catalog[anItem]; !ok {
-		panic(errors.New(InvalidItemErrorMessage))
 	}
 }
