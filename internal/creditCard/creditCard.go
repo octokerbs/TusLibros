@@ -3,15 +3,13 @@ package creditCard
 import "time"
 
 type CreditCard struct {
-	expiringDate time.Time
+	expirationDate time.Time
 }
 
-func NewCreditCardExpiringOn(anExpiringDate time.Time) *CreditCard {
-	cc := new(CreditCard)
-	cc.expiringDate = anExpiringDate
-	return cc
+func NewCreditCardExpiringOn(anExpirationDate time.Time) *CreditCard {
+	return &CreditCard{expirationDate: anExpirationDate}
 }
 
 func (cc *CreditCard) IsExpiredOn(aDate time.Time) bool {
-	return cc.expiringDate.Before(aDate)
+	return cc.expirationDate.Before(aDate)
 }

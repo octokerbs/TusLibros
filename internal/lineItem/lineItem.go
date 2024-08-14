@@ -1,4 +1,4 @@
-package salesBook
+package lineItem
 
 type LineItem struct {
 	item  string
@@ -6,10 +6,7 @@ type LineItem struct {
 }
 
 func NewLineItem(anItem string, aTotal int) LineItem {
-	li := new(LineItem)
-	li.item = anItem
-	li.total = aTotal
-	return *li
+	return LineItem{item: anItem, total: aTotal}
 }
 
 func (li *LineItem) Total() int {

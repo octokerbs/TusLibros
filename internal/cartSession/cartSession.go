@@ -7,23 +7,19 @@ import (
 	"github.com/KerbsOD/TusLibros/internal/salesBook"
 	"github.com/KerbsOD/TusLibros/internal/testsObjects/mocks/clock"
 	"github.com/KerbsOD/TusLibros/internal/testsObjects/mocks/merchantProcessor"
+	"github.com/KerbsOD/TusLibros/internal/userCredentials"
 	"time"
 )
 
 type CartSession struct {
+	owner        *userCredentials.UserCredentials
 	cart         *cart.Cart
-	owner        string
 	clock        clock.Clock
 	lastUsedTime time.Time
 }
 
-func NewCartSession(aUsername string, aCart *cart.Cart, aClock clock.Clock) *CartSession {
-	cs := new(CartSession)
-	cs.cart = aCart
-	cs.owner = aUsername
-	cs.clock = aClock
-	cs.lastUsedTime = aClock.Now()
-	return cs
+func NewCartSession(aUser *userCredentials.UserCredentials, aCart *cart.Cart, aClock clock.Clock) *CartSession {
+	return &CartSession{owner: aUser, cart: aCart, clock: aClock, lastUsedTime: aClock.Now()}
 }
 
 func (cs *CartSession) AddToCart(anItem string, aQuantity int) error {

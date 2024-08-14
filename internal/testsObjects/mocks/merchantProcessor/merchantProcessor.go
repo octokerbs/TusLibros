@@ -16,10 +16,7 @@ type MockMerchantProcessor struct {
 }
 
 func NewMockMerchantProcessor() *MockMerchantProcessor {
-	mmp := new(MockMerchantProcessor)
-	mmp.creditCardUsed = nil
-	mmp.debitedAmount = -1
-	return mmp
+	return &MockMerchantProcessor{creditCardUsed: nil, debitedAmount: -1}
 }
 
 func (mmp *MockMerchantProcessor) DebitOn(anAmount int, aCreditCard *creditCard.CreditCard) error {

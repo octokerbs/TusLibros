@@ -2,7 +2,7 @@ package cart
 
 import (
 	"errors"
-	"github.com/KerbsOD/TusLibros/internal/salesBook"
+	"github.com/KerbsOD/TusLibros/internal/lineItem"
 )
 
 type Cart struct {
@@ -11,10 +11,7 @@ type Cart struct {
 }
 
 func NewCart(aCatalog map[string]int) *Cart {
-	c := new(Cart)
-	c.catalog = aCatalog
-	c.contents = make(map[string]int)
-	return c
+	return &Cart{catalog: aCatalog, contents: make(map[string]int)}
 }
 
 func (c *Cart) AddToCart(anItem string, aQuantity int) error {
@@ -39,10 +36,10 @@ func (c *Cart) IsEmpty() bool {
 	return len(c.contents) == 0
 }
 
-func (c *Cart) AddLineItemsTo(aListOfLineItems *[]salesBook.LineItem) {
+func (c *Cart) AddLineItemsTo(aListOfLineItems *[]lineItem.LineItem) {
 	for item, quantity := range c.contents {
 		lineCost := c.catalog[item] * quantity
-		*aListOfLineItems = append(*aListOfLineItems, salesBook.NewLineItem(item, lineCost))
+		*aListOfLineItems = append(*aListOfLineItems, lineItem.NewLineItem(item, lineCost))
 	}
 }
 

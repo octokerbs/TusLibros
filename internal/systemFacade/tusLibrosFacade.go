@@ -9,32 +9,32 @@ import (
 	"github.com/KerbsOD/TusLibros/internal/testsObjects/mocks/clock"
 	"github.com/KerbsOD/TusLibros/internal/testsObjects/mocks/merchantProcessor"
 	"github.com/KerbsOD/TusLibros/internal/testsObjects/mocks/userAuthentication"
+	"github.com/KerbsOD/TusLibros/internal/userCredentials"
 	"time"
 )
 
 type SystemFacade struct {
 	catalog           map[string]int
 	userAuthSystem    userAuthentication.UserAuthentication
-	cartSessions      map[int]*cartSession.CartSession
 	merchantProcessor merchantProcessor.MerchantProcessor
 	clock             clock.Clock
+	cartSessions      map[int]*cartSession.CartSession
 	salesBook         *salesBook.SalesBook
 }
 
 func NewFacade(
 	aCatalog map[string]int,
-	aUserAuthSystem userAuthentication.UserAuthentication,
+	anAuthenticationSystem userAuthentication.UserAuthentication,
 	aMerchantProcessor merchantProcessor.MerchantProcessor,
-	aClock clock.Clock,
-) *SystemFacade {
-	sf := new(SystemFacade)
-	sf.catalog = aCatalog
-	sf.userAuthSystem = aUserAuthSystem
-	sf.cartSessions = map[int]*cartSession.CartSession{}
-	sf.merchantProcessor = aMerchantProcessor
-	sf.clock = aClock
-	sf.salesBook = salesBook.NewSalesBook()
-	return sf
+	aClock clock.Clock) *SystemFacade {
+	return &SystemFacade{
+		catalog:           aCatalog,
+		userAuthSystem:    anAuthenticationSystem,
+		merchantProcessor: aMerchantProcessor,
+		clock:             aClock,
+		cartSessions:      map[int]*cartSession.CartSession{},
+		salesBook:         salesBook.NewSalesBook(),
+	}
 }
 
 // API //
@@ -47,13 +47,15 @@ func NewFacade(
 // Output:
 // En caso de éxito: 0|ID_DEL_CARRITO
 // En caso de error: 1|DESCRIPCIÓN_DE_ERROR/*
-func (sf *SystemFacade) CreateCart(aUsername, aPassword string) (int, error) {
-	if !sf.userAuthSystem.RegisteredUser(aUsername, aPassword) {
+func (sf *SystemFacade) CreateCart(aUser *userCredentials.UserCredentials) (int, error) {
+	if aUser.ValidCredentials(sf.userAuthSystem) == false {
 		return -1, errors.New(InvalidUserOrPasswordErrorMessage)
 	}
+
 	aCartID := sf.generateCartID()
-	aCartSession := cartSession.NewCartSession(aUsername, cart.NewCart(sf.catalog), sf.clock)
+	aCartSession := cartSession.NewCartSession(aUser, cart.NewCart(sf.catalog), sf.clock)
 	sf.cartSessions[aCartID] = aCartSession
+
 	return aCartID, nil
 }
 
@@ -75,6 +77,7 @@ func (sf *SystemFacade) AddToCart(aCartID int, anItem string, aQuantity int) err
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -90,7 +93,9 @@ func (sf *SystemFacade) ListCart(aCartID int) (map[string]int, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	aMapOfItemsAndQuantities := aCartSession.ListCart()
+
 	return aMapOfItemsAndQuantities, nil
 }
 
@@ -109,11 +114,13 @@ func (sf *SystemFacade) CheckOutCart(aCartID int, aCreditCartNumber string, anEx
 	if err != nil {
 		return err
 	}
+
 	aCreditCard := creditCard.NewCreditCardExpiringOn(anExpirationDate)
 	err = aCartSession.CheckOutCartWith(aCreditCard, sf.merchantProcessor, sf.salesBook)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -125,12 +132,13 @@ func (sf *SystemFacade) CheckOutCart(aCartID int, aCreditCartNumber string, anEx
 // Output:
 // En caso de éxito: 0|ISBN_1|QUANTITY_1|....|ISBN_N|QUANTITY_N|TOTAL_AMOUNT
 // En caso de error: 1|DESCRIPCION_DE_ERROR
-func (sf *SystemFacade) ListPurchasesOf(aUsername string, aPassword string) (map[string]int, error) {
-	if !sf.userAuthSystem.RegisteredUser(aUsername, aPassword) {
+func (sf *SystemFacade) ListPurchasesOf(aUser *userCredentials.UserCredentials) (map[string]int, error) {
+	if aUser.ValidCredentials(sf.userAuthSystem) == false {
 		return nil, errors.New(InvalidUserOrPasswordErrorMessage)
 	}
 
-	userPurchases := sf.salesBook.SalesWithUsername(aUsername)
+	userPurchases := sf.salesBook.SalesWhereOwnerIs(aUser)
+
 	return userPurchases, nil
 }
 

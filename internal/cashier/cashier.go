@@ -4,21 +4,32 @@ import (
 	"errors"
 	"github.com/KerbsOD/TusLibros/internal/cart"
 	"github.com/KerbsOD/TusLibros/internal/creditCard"
+	"github.com/KerbsOD/TusLibros/internal/lineItem"
+	"github.com/KerbsOD/TusLibros/internal/sale"
 	"github.com/KerbsOD/TusLibros/internal/salesBook"
-	merchantProcessor2 "github.com/KerbsOD/TusLibros/internal/testsObjects/mocks/merchantProcessor"
+	"github.com/KerbsOD/TusLibros/internal/testsObjects/mocks/merchantProcessor"
+	"github.com/KerbsOD/TusLibros/internal/ticket"
+	"github.com/KerbsOD/TusLibros/internal/userCredentials"
 	"time"
 )
 
 type Cashier struct {
 	cart              *cart.Cart
-	owner             string
+	owner             *userCredentials.UserCredentials
 	card              *creditCard.CreditCard
-	merchantProcessor merchantProcessor2.MerchantProcessor
+	merchantProcessor merchantProcessor.MerchantProcessor
 	salesBook         *salesBook.SalesBook
-	ticket            salesBook.Ticket
+	ticket            ticket.Ticket
 }
 
-func NewCashier(aCart *cart.Cart, aCartOwner string, aCreditCard *creditCard.CreditCard, aMerchantProcessor merchantProcessor2.MerchantProcessor, aDate time.Time, aSalesBook *salesBook.SalesBook) (*Cashier, error) {
+func NewCashier(
+	aCart *cart.Cart,
+	aUser *userCredentials.UserCredentials,
+	aCreditCard *creditCard.CreditCard,
+	aMerchantProcessor merchantProcessor.MerchantProcessor,
+	aDate time.Time,
+	aSalesBook *salesBook.SalesBook,
+) (*Cashier, error) {
 	if err := assertValidCart(aCart); err != nil {
 		return nil, err
 	}
@@ -27,13 +38,7 @@ func NewCashier(aCart *cart.Cart, aCartOwner string, aCreditCard *creditCard.Cre
 		return nil, err
 	}
 
-	c := new(Cashier)
-	c.cart = aCart
-	c.owner = aCartOwner
-	c.card = aCreditCard
-	c.merchantProcessor = aMerchantProcessor
-	c.salesBook = aSalesBook
-	return c, nil
+	return &Cashier{cart: aCart, owner: aUser, card: aCreditCard, merchantProcessor: aMerchantProcessor, salesBook: aSalesBook}, nil
 }
 
 func (c *Cashier) Checkout() (int, error) {
@@ -47,9 +52,9 @@ func (c *Cashier) Checkout() (int, error) {
 }
 
 func (c *Cashier) createTicket() {
-	lineItems := []salesBook.LineItem{}
+	lineItems := make([]lineItem.LineItem, 0)
 	c.cart.AddLineItemsTo(&lineItems)
-	c.ticket = salesBook.NewTicket(lineItems)
+	c.ticket = ticket.NewTicket(lineItems)
 }
 
 func (c *Cashier) debitTotal() error {
@@ -60,7 +65,7 @@ func (c *Cashier) debitTotal() error {
 }
 
 func (c *Cashier) registerSale() {
-	newSale := salesBook.NewSale(c.ticket, c.owner)
+	newSale := sale.NewSale(c.ticket, c.owner)
 	c.salesBook.AddSale(newSale)
 }
 
@@ -68,9 +73,9 @@ func (c *Cashier) total() int {
 	return c.ticket.Total()
 }
 
-func assertValidCreditCard(aCreditCard *creditCard.CreditCard, aTodaysDate time.Time) error {
-	if aCreditCard.IsExpiredOn(aTodaysDate) {
-		return errors.New(merchantProcessor2.InvalidCreditCard)
+func assertValidCreditCard(aCreditCard *creditCard.CreditCard, aDate time.Time) error {
+	if aCreditCard.IsExpiredOn(aDate) {
+		return errors.New(merchantProcessor.InvalidCreditCard)
 	}
 	return nil
 }

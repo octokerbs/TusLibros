@@ -15,9 +15,7 @@ type MockClock struct {
 }
 
 func NewMockClock() *MockClock {
-	mc := new(MockClock)
-	mc.now = time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)
-	return mc
+	return &MockClock{now: time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)}
 }
 
 func (mc *MockClock) Now() time.Time {
@@ -27,7 +25,5 @@ func (mc *MockClock) Now() time.Time {
 			return result
 		}
 	}
-
-	//return time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)
 	return mc.now
 }

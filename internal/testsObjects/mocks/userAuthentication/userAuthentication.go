@@ -13,8 +13,7 @@ type MockUserAuthentication struct {
 }
 
 func NewMockUserAuthentication() *MockUserAuthentication {
-	mua := new(MockUserAuthentication)
-	return mua
+	return &MockUserAuthentication{}
 }
 
 func (mua *MockUserAuthentication) RegisteredUser(aUsername string, aPassword string) bool {

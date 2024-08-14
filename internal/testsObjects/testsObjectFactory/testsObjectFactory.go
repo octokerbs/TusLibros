@@ -3,11 +3,11 @@ package testsObjectFactory
 import (
 	"github.com/KerbsOD/TusLibros/internal/creditCard"
 	"github.com/KerbsOD/TusLibros/internal/testsObjects/mocks/clock"
+	"github.com/KerbsOD/TusLibros/internal/userCredentials"
 	"time"
 )
 
-type TestsObjectFactory struct {
-}
+type TestsObjectFactory struct{}
 
 func (t *TestsObjectFactory) ItemNotInCatalog() string {
 	item := "Fahrenheit-451"
@@ -88,4 +88,12 @@ func (t *TestsObjectFactory) ValidCreditCardNumber() string {
 
 func (t *TestsObjectFactory) ValidCreditCardOwner() string {
 	return "Marty Mcfly"
+}
+
+func (t *TestsObjectFactory) ValidUserCredentials() *userCredentials.UserCredentials {
+	return userCredentials.NewUserCredentials(t.ValidUsername(), t.ValidPassword())
+}
+
+func (t *TestsObjectFactory) InvalidUserCredentials() *userCredentials.UserCredentials {
+	return userCredentials.NewUserCredentials(t.InvalidUsername(), t.InvalidPassword())
 }

@@ -1,13 +1,15 @@
-package salesBook
+package ticket
+
+import (
+	"github.com/KerbsOD/TusLibros/internal/lineItem"
+)
 
 type Ticket struct {
-	lineItems []LineItem
+	lineItems []lineItem.LineItem
 }
 
-func NewTicket(anArrayOfLineItems []LineItem) Ticket {
-	t := new(Ticket)
-	t.lineItems = anArrayOfLineItems
-	return *t
+func NewTicket(anArrayOfLineItems []lineItem.LineItem) Ticket {
+	return Ticket{lineItems: anArrayOfLineItems}
 }
 
 func (t *Ticket) Total() int {
