@@ -1,7 +1,6 @@
 package cartSession
 
 import (
-	"fmt"
 	"github.com/KerbsOD/TusLibros/internal/cart"
 	"github.com/KerbsOD/TusLibros/internal/cashier"
 	"github.com/KerbsOD/TusLibros/internal/creditCard"
@@ -59,11 +58,16 @@ func (cs *CartSession) IsEmpty() bool {
 
 func (cs *CartSession) IsExpired() bool {
 	now := cs.clock.Now()
-	fmt.Printf("Mocked Time Now: %v\n", now) // Debugging output
 	lastTimePlus30Minutes := cs.lastUsedTime.Add(30 * time.Minute)
-	return lastTimePlus30Minutes.Before(now)
+
+	if lastTimePlus30Minutes.After(now) {
+		cs.updateLastUsedTimeTo(now)
+		return false
+	}
+
+	return true
 }
 
-func (cs *CartSession) UpdateLastUsedTime() {
-	cs.lastUsedTime = cs.clock.Now()
+func (cs *CartSession) updateLastUsedTimeTo(now time.Time) {
+	cs.lastUsedTime = now
 }

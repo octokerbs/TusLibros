@@ -195,27 +195,50 @@ func (s *FacadeTestSuite) Test18CanNotListPurchasesOfUsernameWithInvalidPassword
 }
 
 func (s *FacadeTestSuite) Test19CanNotAddToCartWhenSessionHasExpired() {
+	currentTime := s.today
 	cartID, _ := s.facade.CreateCart(s.validUsername, s.validPassword)
-	nowPlus30Minutes := s.today.Add(31 * time.Minute)
-	s.mockClock.On("Now").Return(nowPlus30Minutes)
+	currentTime = currentTime.Add(31 * time.Minute)
+	s.mockClock.On("Now").Return(currentTime)
 	err := s.facade.AddToCart(cartID, s.book1, 10)
 	assert.EqualError(s.T(), err, InvalidCartIDErrorMessage)
 }
 
 func (s *FacadeTestSuite) Test20CanNotListCartWhenSessionHasExpired() {
+
 	cartID, _ := s.facade.CreateCart(s.validUsername, s.validPassword)
 	_ = s.facade.AddToCart(cartID, s.book1, 10)
 	nowPlus30Minutes := s.today.Add(31 * time.Minute)
 	s.mockClock.On("Now").Return(nowPlus30Minutes)
 	_, err := s.facade.ListCart(cartID)
 	assert.EqualError(s.T(), err, InvalidCartIDErrorMessage)
+
 }
 
 func (s *FacadeTestSuite) Test21CanNotCheckoutCartWhenSessionHasExpired() {
+	currentTime := s.today
 	cartID, _ := s.facade.CreateCart(s.validUsername, s.validPassword)
 	_ = s.facade.AddToCart(cartID, s.book1, 10)
-	nowPlus30Minutes := s.today.Add(31 * time.Minute)
-	s.mockClock.On("Now").Return(nowPlus30Minutes)
+	currentTime = currentTime.Add(31 * time.Minute)
+	s.mockClock.On("Now").Return(currentTime)
 	err := s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
 	assert.EqualError(s.T(), err, InvalidCartIDErrorMessage)
+}
+
+func (s *FacadeTestSuite) Test22UsingCartUpdatesLastUsedTimeSoItDoesntExpire() {
+	cartID, _ := s.facade.CreateCart(s.validUsername, s.validPassword)
+	currentTime := s.today
+
+	// Esperamos 20 minutos y agregamos un libro
+	currentTime = currentTime.Add(20 * time.Minute)
+	s.mockClock.On("Now").Return(currentTime).Once()
+	_ = s.facade.AddToCart(cartID, s.book1, 10)
+
+	// Esperamos otros 20 minutos y decidimos listar el carrito
+	currentTime = currentTime.Add(20 * time.Minute)
+	s.mockClock.On("Now").Return(currentTime).Once()
+	listedItems, _ := s.facade.ListCart(cartID)
+
+	expectedItems := map[string]int{}
+	expectedItems[s.book1] = 10
+	assert.Equal(s.T(), expectedItems, listedItems)
 }
