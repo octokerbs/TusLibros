@@ -1,7 +1,7 @@
 package cart
 
 import (
-	"github.com/KerbsOD/TusLibros/internal/testsObjectFactory"
+	"github.com/KerbsOD/TusLibros/internal/testsObjects/testsObjectFactory"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"testing"

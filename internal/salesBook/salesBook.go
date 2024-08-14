@@ -1,31 +1,29 @@
 package salesBook
 
-import (
-	"errors"
-	"github.com/KerbsOD/TusLibros/internal/sale"
-)
-
 type SalesBook struct {
-	sales []*sale.Sale
+	sales []Sale
 }
 
 func NewSalesBook() *SalesBook {
 	sb := new(SalesBook)
-	sb.sales = make([]*sale.Sale, 0)
+	sb.sales = make([]Sale, 0)
 	return sb
 }
 
-func (sb *SalesBook) RegisterSaleOf(aTotal int) {
-	sb.sales = append(sb.sales, sale.NewSale(aTotal))
+func (sb *SalesBook) AddSale(sale Sale) {
+	sb.sales = append(sb.sales, sale)
 }
 
 func (sb *SalesBook) IsEmpty() bool {
 	return len(sb.sales) == 0
 }
 
-func (sb *SalesBook) LastSale() *sale.Sale {
-	if len(sb.sales) == 0 {
-		panic(errors.New(EmptySalesErrorMessage))
+func (sb *SalesBook) SalesWithUsername(aUsername string) map[string]int {
+	userPurchases := map[string]int{}
+
+	for _, aSale := range sb.sales {
+		aSale.AddToPurchasesIfOwnerIs(aUsername, &userPurchases)
 	}
-	return sb.sales[len(sb.sales)-1]
+
+	return userPurchases
 }

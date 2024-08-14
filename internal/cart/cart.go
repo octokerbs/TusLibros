@@ -2,6 +2,7 @@ package cart
 
 import (
 	"errors"
+	"github.com/KerbsOD/TusLibros/internal/salesBook"
 )
 
 type Cart struct {
@@ -38,13 +39,11 @@ func (c *Cart) IsEmpty() bool {
 	return len(c.contents) == 0
 }
 
-func (c *Cart) Total() int {
-	total := 0
+func (c *Cart) AddLineItemsTo(aListOfLineItems *[]salesBook.LineItem) {
 	for item, quantity := range c.contents {
-		price := c.catalog[item]
-		total += quantity * price
+		lineCost := c.catalog[item] * quantity
+		*aListOfLineItems = append(*aListOfLineItems, salesBook.NewLineItem(item, lineCost))
 	}
-	return total
 }
 
 func (c *Cart) assertValidQuantity(aQuantity int) error {
