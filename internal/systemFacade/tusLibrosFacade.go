@@ -134,10 +134,6 @@ func (sf *SystemFacade) ListPurchasesOf(aUsername string, aPassword string) (map
 	return userPurchases, nil
 }
 
-func (sf *SystemFacade) Today() time.Time {
-	return sf.clock.Now()
-}
-
 // Private
 
 func (sf *SystemFacade) CartWithID(aCartID int) (*cartSession.CartSession, error) {
