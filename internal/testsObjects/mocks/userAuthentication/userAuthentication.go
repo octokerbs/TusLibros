@@ -10,18 +10,20 @@ type UserAuthentication interface {
 
 type MockUserAuthentication struct {
 	mock.Mock
-	database map[string]string
 }
 
-func NewMockUserAuthentication(aUserDatabase map[string]string) *MockUserAuthentication {
+func NewMockUserAuthentication() *MockUserAuthentication {
 	mua := new(MockUserAuthentication)
-	mua.database = aUserDatabase
 	return mua
 }
 
 func (mua *MockUserAuthentication) RegisteredUser(aUsername string, aPassword string) bool {
-	if password, ok := mua.database[aUsername]; ok {
-		return password == aPassword
+	if len(mua.ExpectedCalls) > 0 {
+		args := mua.Called()
+		if result, ok := args.Get(0).(bool); ok {
+			return result
+		}
 	}
-	return false
+
+	return true
 }

@@ -2,8 +2,7 @@ package testsObjectFactory
 
 import (
 	"github.com/KerbsOD/TusLibros/internal/creditCard"
-	"github.com/KerbsOD/TusLibros/internal/merchantProcessor"
-	"github.com/KerbsOD/TusLibros/internal/userAuthentication"
+	"github.com/KerbsOD/TusLibros/internal/testsObjects/mocks/clock"
 	"time"
 )
 
@@ -20,13 +19,24 @@ func (t *TestsObjectFactory) ItemInCatalog() string {
 	return item
 }
 
+func (t *TestsObjectFactory) AnotherItemInCatalog() string {
+	item := "El Principe"
+	return item
+}
+
 func (t *TestsObjectFactory) CatalogWithAnItemAndItsPrice() map[string]int {
 	catalog := map[string]int{t.ItemInCatalog(): t.ItemInCatalogPrice()}
+	catalog[t.ItemInCatalog()] = t.ItemInCatalogPrice()
+	catalog[t.AnotherItemInCatalog()] = t.AnotherItemInCatalogPrice()
 	return catalog
 }
 
 func (t *TestsObjectFactory) ItemInCatalogPrice() int {
 	return 15
+}
+
+func (t *TestsObjectFactory) AnotherItemInCatalogPrice() int {
+	return 5
 }
 
 func (t *TestsObjectFactory) ExpiredCreditCard() *creditCard.CreditCard {
@@ -39,24 +49,21 @@ func (t *TestsObjectFactory) ValidCreditCard() *creditCard.CreditCard {
 	return validCreditCard
 }
 
-func (t *TestsObjectFactory) NewMockMerchantProcessor() *merchantProcessor.MockMerchantProcessor {
-	mockService := new(merchantProcessor.MockMerchantProcessor)
-	return mockService
-}
-
 func (t *TestsObjectFactory) Yesterday() time.Time {
-	staticDateForTesting := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
-	return staticDateForTesting
+	staticDateForTesting := clock.NewMockClock().Now()
+	dayBeforeStaticDateForTesting := staticDateForTesting.AddDate(0, 0, -1)
+	return dayBeforeStaticDateForTesting
 }
 
 func (t *TestsObjectFactory) Today() time.Time {
-	staticDateForTesting := time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)
+	staticDateForTesting := clock.NewMockClock().Now()
 	return staticDateForTesting
 }
 
 func (t *TestsObjectFactory) Tomorrow() time.Time {
-	staticDateForTesting := time.Date(2000, 1, 3, 0, 0, 0, 0, time.UTC)
-	return staticDateForTesting
+	staticDateForTesting := clock.NewMockClock().Now()
+	dayAfterStaticDateForTesting := staticDateForTesting.AddDate(0, 0, 1)
+	return dayAfterStaticDateForTesting
 }
 
 func (t *TestsObjectFactory) ValidUsername() string {
@@ -73,12 +80,6 @@ func (t *TestsObjectFactory) InvalidUsername() string {
 
 func (t *TestsObjectFactory) InvalidPassword() string {
 	return "InvalidPassword"
-}
-
-func (t *TestsObjectFactory) NewMockUserAuthenticationWithValidUser() *userAuthentication.MockUserAuthentication {
-	databaseWithValidUser := map[string]string{t.ValidUsername(): t.ValidPassword()}
-	userAuthService := userAuthentication.NewMockUserAuthentication(databaseWithValidUser)
-	return userAuthService
 }
 
 func (t *TestsObjectFactory) ValidCreditCardNumber() string {
