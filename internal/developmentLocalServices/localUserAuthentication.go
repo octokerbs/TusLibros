@@ -1,4 +1,4 @@
-package localServices
+package developmentLocalServices
 
 type LocalUserAuthentication struct {
 	usersAndPasswords map[string]string

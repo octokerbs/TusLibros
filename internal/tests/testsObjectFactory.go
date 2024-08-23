@@ -1,6 +1,7 @@
-package tus_libros
+package tests
 
 import (
+	"github.com/KerbsOD/TusLibros/internal/app"
 	"time"
 )
 
@@ -36,13 +37,13 @@ func (t *TestsObjectFactory) AnotherItemInCatalogPrice() int {
 	return 5
 }
 
-func (t *TestsObjectFactory) ExpiredCreditCard() *CreditCard {
-	validCreditCard := NewCreditCardExpiringOn(t.Yesterday(), "1111222233334444")
+func (t *TestsObjectFactory) ExpiredCreditCard() *app.CreditCard {
+	validCreditCard := app.NewCreditCardExpiringOn(t.Yesterday(), "1111222233334444")
 	return validCreditCard
 }
 
-func (t *TestsObjectFactory) ValidCreditCard() *CreditCard {
-	validCreditCard := NewCreditCardExpiringOn(t.Tomorrow(), "1111222233334444")
+func (t *TestsObjectFactory) ValidCreditCard() *app.CreditCard {
+	validCreditCard := app.NewCreditCardExpiringOn(t.Tomorrow(), "1111222233334444")
 	return validCreditCard
 }
 
@@ -87,10 +88,10 @@ func (t *TestsObjectFactory) ValidCreditCardOwner() string {
 	return "Marty Mcfly"
 }
 
-func (t *TestsObjectFactory) ValidUserCredentials() *UserCredentials {
-	return NewUserCredentials(t.ValidUsername(), t.ValidPassword())
+func (t *TestsObjectFactory) ValidUserCredentials() *app.UserCredentials {
+	return app.NewUserCredentials(t.ValidUsername(), t.ValidPassword())
 }
 
-func (t *TestsObjectFactory) InvalidUserCredentials() *UserCredentials {
-	return NewUserCredentials(t.InvalidUsername(), t.InvalidPassword())
+func (t *TestsObjectFactory) InvalidUserCredentials() *app.UserCredentials {
+	return app.NewUserCredentials(t.InvalidUsername(), t.InvalidPassword())
 }

@@ -1,4 +1,4 @@
-package tus_libros
+package app
 
 import "time"
 

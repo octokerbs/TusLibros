@@ -1,7 +1,8 @@
-package tus_libros
+package app
 
 import (
 	"errors"
+	"github.com/KerbsOD/TusLibros/internal/errorMessages"
 )
 
 type Cart struct {
@@ -27,8 +28,11 @@ func (c *Cart) AddToCart(anItem string, aQuantity int) error {
 	return nil
 }
 
-func (c *Cart) ListCart() map[string]int {
-	return c.contents
+func (c *Cart) ListCart() (map[string]int, error) {
+	if len(c.contents) == 0 {
+		return nil, errors.New(errorMessages.InvalidCart)
+	}
+	return c.contents, nil
 }
 
 func (c *Cart) IsEmpty() bool {
@@ -44,14 +48,14 @@ func (c *Cart) AddLineItemsTo(aListOfLineItems *[]LineItem) {
 
 func (c *Cart) assertValidQuantity(aQuantity int) error {
 	if aQuantity < 1 {
-		return errors.New(InvalidQuantityErrorMessage)
+		return errors.New(errorMessages.InvalidQuantityErrorMessage)
 	}
 	return nil
 }
 
 func (c *Cart) assertValidItem(anItem string) error {
 	if _, ok := c.catalog[anItem]; !ok {
-		return errors.New(InvalidItemErrorMessage)
+		return errors.New(errorMessages.InvalidItemErrorMessage)
 	}
 	return nil
 }

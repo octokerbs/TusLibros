@@ -1,4 +1,4 @@
-package tus_libros
+package app
 
 type Sale struct {
 	ticket Ticket
@@ -10,7 +10,7 @@ func NewSale(aTicket Ticket, aUser *UserCredentials) Sale {
 }
 
 func (s *Sale) AddToPurchasesIfOwnerIs(aUser *UserCredentials, aListOfPurchases *map[string]int) {
-	if aUser == s.owner {
+	if aUser.SameCredentialsAs(s.owner) {
 		s.ticket.AddLineItemsAndItsCostToMapCollector(aListOfPurchases)
 	}
 }

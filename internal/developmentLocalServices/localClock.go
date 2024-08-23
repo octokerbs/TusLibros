@@ -1,4 +1,4 @@
-package localServices
+package developmentLocalServices
 
 import "time"
 
@@ -10,5 +10,5 @@ func NewLocalClock() *LocalClock {
 }
 
 func (lc *LocalClock) Now() time.Time {
-	return time.Now()
+	return time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)
 }

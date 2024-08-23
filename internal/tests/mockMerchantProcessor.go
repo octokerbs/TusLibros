@@ -1,16 +1,13 @@
-package tus_libros
+package tests
 
 import (
+	"github.com/KerbsOD/TusLibros/internal/app"
 	"github.com/stretchr/testify/mock"
 )
 
-type MerchantProcessor interface {
-	DebitOn(anAmount int, aCreditCard *CreditCard) error
-}
-
 type MockMerchantProcessor struct {
 	mock.Mock
-	creditCardUsed *CreditCard
+	creditCardUsed *app.CreditCard
 	debitedAmount  int
 }
 
@@ -18,7 +15,7 @@ func NewMockMerchantProcessor() *MockMerchantProcessor {
 	return &MockMerchantProcessor{creditCardUsed: nil, debitedAmount: -1}
 }
 
-func (mmp *MockMerchantProcessor) DebitOn(anAmount int, aCreditCard *CreditCard) error {
+func (mmp *MockMerchantProcessor) DebitOn(anAmount int, aCreditCard *app.CreditCard) error {
 	if len(mmp.ExpectedCalls) > 0 {
 		args := mmp.Called(anAmount, aCreditCard)
 		if result, ok := args.Get(0).(error); ok {
@@ -31,7 +28,7 @@ func (mmp *MockMerchantProcessor) DebitOn(anAmount int, aCreditCard *CreditCard)
 	return nil
 }
 
-func (mmp *MockMerchantProcessor) UsedCard() *CreditCard {
+func (mmp *MockMerchantProcessor) UsedCard() *app.CreditCard {
 	return mmp.creditCardUsed
 }
 

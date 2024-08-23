@@ -1,4 +1,4 @@
-package tus_libros
+package app
 
 import (
 	"time"
@@ -23,22 +23,22 @@ func (cs *CartSession) AddToCart(anItem string, aQuantity int) error {
 	return nil
 }
 
-func (cs *CartSession) ListCart() map[string]int {
+func (cs *CartSession) ListCart() (map[string]int, error) {
 	return cs.cart.ListCart()
 }
 
-func (cs *CartSession) CheckOutCartWith(aCreditCard *CreditCard, aMerchantProcessor MerchantProcessor, aSalesBook *SalesBook) error {
+func (cs *CartSession) CheckOutCartWith(aCreditCard *CreditCard, aMerchantProcessor MerchantProcessor, aSalesBook *SalesBook) (int, error) {
 	aCashier, err := NewCashier(cs.cart, cs.owner, aCreditCard, aMerchantProcessor, cs.clock.Now(), aSalesBook)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	_, err = aCashier.Checkout()
+	transactionID, err := aCashier.Checkout()
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	return nil
+	return transactionID, nil
 }
 
 func (cs *CartSession) IsEmpty() bool {

@@ -1,13 +1,9 @@
-package tus_libros
+package tests
 
 import (
 	"github.com/stretchr/testify/mock"
 	"time"
 )
-
-type Clock interface {
-	Now() time.Time
-}
 
 type MockClock struct {
 	mock.Mock

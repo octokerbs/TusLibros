@@ -1,7 +1,9 @@
-package tus_libros
+package tests
 
 import (
 	"errors"
+	"github.com/KerbsOD/TusLibros/internal/app"
+	"github.com/KerbsOD/TusLibros/internal/errorMessages"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -23,53 +25,53 @@ func (s *CashierTestSuite) SetupTest() {
 }
 
 func (s *CashierTestSuite) Test01CanNotCheckoutEmptyCart() {
-	emptyCart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
-	_, err := NewCashier(
+	emptyCart := app.NewCart(s.factory.CatalogWithAnItemAndItsPrice())
+	_, err := app.NewCashier(
 		emptyCart,
 		s.factory.ValidUserCredentials(),
 		s.factory.ValidCreditCard(),
 		s.mockMerchantProcessor,
 		s.factory.Today(),
-		NewSalesBook())
+		app.NewSalesBook())
 
-	assert.EqualError(s.T(), err, InvalidCart)
+	assert.EqualError(s.T(), err, errorMessages.InvalidCart)
 }
 
 func (s *CashierTestSuite) Test02CheckoutTotalIsCalculatedCorrectly() {
-	validCart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
+	validCart := app.NewCart(s.factory.CatalogWithAnItemAndItsPrice())
 	_ = validCart.AddToCart(s.factory.ItemInCatalog(), 3)
 
-	cashier, _ := NewCashier(
+	cashier, _ := app.NewCashier(
 		validCart,
 		s.factory.ValidUserCredentials(),
 		s.factory.ValidCreditCard(),
 		s.mockMerchantProcessor,
 		s.factory.Today(),
-		NewSalesBook())
+		app.NewSalesBook())
 
-	checkoutTotal, _ := cashier.Checkout()
-	assert.Equal(s.T(), s.factory.ItemInCatalogPrice()*3, checkoutTotal)
+	_, _ = cashier.Checkout()
+	assert.Equal(s.T(), s.factory.ItemInCatalogPrice()*3, cashier.Total())
 }
 
 func (s *CashierTestSuite) Test03CantCheckoutWithAnExpiredCreditCard() {
-	validCart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
+	validCart := app.NewCart(s.factory.CatalogWithAnItemAndItsPrice())
 	_ = validCart.AddToCart(s.factory.ItemInCatalog(), 3)
-	_, err := NewCashier(
+	_, err := app.NewCashier(
 		validCart,
 		s.factory.ValidUserCredentials(),
 		s.factory.ExpiredCreditCard(),
 		s.mockMerchantProcessor,
 		s.factory.Today(),
-		NewSalesBook())
+		app.NewSalesBook())
 
-	assert.EqualError(s.T(), err, InvalidCreditCard)
+	assert.EqualError(s.T(), err, errorMessages.InvalidCreditCard)
 }
 
 func (s *CashierTestSuite) Test04SalesAreRegisteredOnSalesBook() {
-	validCart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
+	validCart := app.NewCart(s.factory.CatalogWithAnItemAndItsPrice())
 	_ = validCart.AddToCart(s.factory.ItemInCatalog(), 3)
-	currentSalesBook := NewSalesBook()
-	cashier, _ := NewCashier(
+	currentSalesBook := app.NewSalesBook()
+	cashier, _ := app.NewCashier(
 		validCart,
 		s.factory.ValidUserCredentials(),
 		s.factory.ValidCreditCard(),
@@ -78,26 +80,26 @@ func (s *CashierTestSuite) Test04SalesAreRegisteredOnSalesBook() {
 		currentSalesBook)
 	_, _ = cashier.Checkout()
 
-	expectedSalesBook := NewSalesBook()
-	aLineItem := NewLineItem(s.factory.ItemInCatalog(), s.factory.ItemInCatalogPrice()*3)
-	aTicket := NewTicket([]LineItem{aLineItem})
-	aSale := NewSale(aTicket, s.factory.ValidUserCredentials())
+	expectedSalesBook := app.NewSalesBook()
+	aLineItem := app.NewLineItem(s.factory.ItemInCatalog(), s.factory.ItemInCatalogPrice()*3)
+	aTicket := app.NewTicket([]app.LineItem{aLineItem})
+	aSale := app.NewSale(aTicket, s.factory.ValidUserCredentials())
 	expectedSalesBook.AddSale(aSale)
 
 	assert.Equal(s.T(), expectedSalesBook, currentSalesBook)
 }
 
 func (s *CashierTestSuite) Test05CashierChargesCreditCardUsingMerchantProcessor() {
-	validCart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
+	validCart := app.NewCart(s.factory.CatalogWithAnItemAndItsPrice())
 	creditCard := s.factory.ValidCreditCard()
 	_ = validCart.AddToCart(s.factory.ItemInCatalog(), 3)
-	cashier, _ := NewCashier(
+	cashier, _ := app.NewCashier(
 		validCart,
 		s.factory.ValidUserCredentials(),
 		creditCard,
 		s.mockMerchantProcessor,
 		s.factory.Today(),
-		NewSalesBook())
+		app.NewSalesBook())
 
 	_, _ = cashier.Checkout()
 	assert.Equal(s.T(), creditCard, s.mockMerchantProcessor.UsedCard())
@@ -105,14 +107,14 @@ func (s *CashierTestSuite) Test05CashierChargesCreditCardUsingMerchantProcessor(
 }
 
 func (s *CashierTestSuite) Test06CanNotCheckOutIfCreditCardHasInsufficientFunds() {
-	validCart := NewCart(s.factory.CatalogWithAnItemAndItsPrice())
+	validCart := app.NewCart(s.factory.CatalogWithAnItemAndItsPrice())
 	creditCard := s.factory.ValidCreditCard()
-	sales := NewSalesBook()
+	sales := app.NewSalesBook()
 	_ = validCart.AddToCart(s.factory.ItemInCatalog(), 3)
 
-	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(InvalidCreditCard))
+	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(errorMessages.InvalidCreditCard))
 
-	cashier, _ := NewCashier(
+	cashier, _ := app.NewCashier(
 		validCart,
 		s.factory.ValidUserCredentials(),
 		creditCard,
@@ -121,6 +123,6 @@ func (s *CashierTestSuite) Test06CanNotCheckOutIfCreditCardHasInsufficientFunds(
 		sales)
 
 	_, err := cashier.Checkout()
-	assert.EqualError(s.T(), err, InvalidCreditCard)
+	assert.EqualError(s.T(), err, errorMessages.InvalidCreditCard)
 	assert.True(s.T(), sales.IsEmpty())
 }

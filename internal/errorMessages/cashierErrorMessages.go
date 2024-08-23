@@ -1,3 +1,3 @@
-package tus_libros
+package errorMessages
 
 const InvalidCart = "cart must have at least one item"

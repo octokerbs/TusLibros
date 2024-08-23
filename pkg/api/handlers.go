@@ -2,60 +2,179 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/KerbsOD/TusLibros/internal/localServices"
-	"github.com/KerbsOD/TusLibros/internal/tus_libros"
+	"github.com/KerbsOD/TusLibros/internal/app"
+	"github.com/KerbsOD/TusLibros/internal/errorMessages"
 	"net/http"
 )
 
-func NewDevelopmentFacade() *tus_libros.SystemFacade {
-	catalog := map[string]int{"A Clash Of Kings": 20, "The Prince": 10}
-	localUserAuthenticationSystem := localServices.NewLocalUserAuthentication(map[string]string{"Octo": "Kerbs", "Luca": "Zarecki"})
-	localMerchantProcessor := localServices.NewLocalMerchantProcessor()
-	localClock := localServices.NewLocalClock()
-	return tus_libros.NewSystemFacade(catalog, localUserAuthenticationSystem, localMerchantProcessor, localClock)
+type Handler struct {
+	Facade *app.SystemFacade
 }
 
-func CreateCart(w http.ResponseWriter, r *http.Request) {
-	tusLibros := NewDevelopmentFacade()
-
-	var req CartRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
+	var request CreateCartRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := CreateCartResponse{
+			Status:  1,
+			Message: "Invalid request payload",
+		}
+		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	if req.ClientID == "" || req.Password == "" {
-		http.Error(w, "1 | ClientID and Password are required", http.StatusBadRequest)
-		return
-	}
+	user := app.NewUserCredentials(request.ClientID, request.Password)
+	cartID, err := h.Facade.CreateCart(user)
 
-	user := tus_libros.NewUserCredentials(req.ClientID, req.Password)
-	_, err := tusLibros.CreateCart(user)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("1 | %s", tus_libros.InvalidUserOrPasswordErrorMessage), http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		response := CreateCartResponse{
+			Status:  1,
+			Message: errorMessages.InvalidUserOrPasswordErrorMessage,
+		}
+		json.NewEncoder(w).Encode(response)
 		return
 	}
 
+	response := CreateCartResponse{
+		Status: 0,
+		CartID: cartID,
+	}
 	w.WriteHeader(http.StatusOK)
-	response := map[string]string{"message": "0 | 1"}
 	if err = json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
 }
 
-func AddToCart(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
+	var request AddToCartRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := AddToCartResponse{
+			Status:  1,
+			Message: "Invalid request payload",
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 
+	err := h.Facade.AddToCart(request.CartID, request.BookISBN, request.BookQuantity)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := AddToCartResponse{
+			Status:  1,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	response := AddToCartResponse{
+		Status:  0,
+		Message: "OK",
+	}
+	w.WriteHeader(http.StatusOK)
+	if err = json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }
 
-func ListCart(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListCart(w http.ResponseWriter, r *http.Request) {
+	var request ListCartRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := ListCartResponse{
+			Status:  1,
+			Message: "Invalid request payload",
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 
+	items, err := h.Facade.ListCart(request.CartID)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := ListCartResponse{
+			Status:  1,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	response := ListCartResponse{
+		Status: 0,
+		Items:  items,
+	}
+	w.WriteHeader(http.StatusOK)
+	if err = json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }
 
-func CheckOutCart(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CheckOutCart(w http.ResponseWriter, r *http.Request) {
+	var request CheckOutCartRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := CheckOutCartResponse{
+			Status:  1,
+			Message: "Invalid request payload",
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 
+	transactionID, err := h.Facade.CheckOutCart(request.CartID, request.CreditCardNumber, request.CreditCardExpirationDate, request.CreditCardNumber)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := CheckOutCartResponse{
+			Status:  1,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	response := CheckOutCartResponse{
+		Status:        0,
+		TransactionID: transactionID,
+	}
+	w.WriteHeader(http.StatusOK)
+	if err = json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }
 
-func ListPurchases(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListPurchases(w http.ResponseWriter, r *http.Request) {
+	var request ListPurchasesRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := ListPurchasesResponse{
+			Status:  1,
+			Message: "Invalid request payload",
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 
+	user := app.NewUserCredentials(request.ClientID, request.Password)
+	items, err := h.Facade.ListPurchasesOf(user)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := ListPurchasesResponse{
+			Status:  1,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	response := ListPurchasesResponse{
+		Status: 0,
+		Items:  items,
+	}
+	w.WriteHeader(http.StatusOK)
+	if err = json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }

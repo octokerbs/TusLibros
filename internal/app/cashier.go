@@ -1,7 +1,8 @@
-package tus_libros
+package app
 
 import (
 	"errors"
+	"github.com/KerbsOD/TusLibros/internal/errorMessages"
 	"time"
 )
 
@@ -40,7 +41,7 @@ func (c *Cashier) Checkout() (int, error) {
 	}
 	c.registerSale()
 
-	return c.total(), nil
+	return c.salesBook.LastTransactionID(), nil
 }
 
 func (c *Cashier) createTicket() {
@@ -50,7 +51,7 @@ func (c *Cashier) createTicket() {
 }
 
 func (c *Cashier) debitTotal() error {
-	if err := c.merchantProcessor.DebitOn(c.total(), c.card); err != nil {
+	if err := c.merchantProcessor.DebitOn(c.Total(), c.card); err != nil {
 		return err
 	}
 	return nil
@@ -61,20 +62,20 @@ func (c *Cashier) registerSale() {
 	c.salesBook.AddSale(newSale)
 }
 
-func (c *Cashier) total() int {
+func (c *Cashier) Total() int {
 	return c.ticket.Total()
 }
 
 func assertValidCreditCard(aCreditCard *CreditCard, aDate time.Time) error {
 	if aCreditCard.IsExpiredOn(aDate) {
-		return errors.New(InvalidCreditCard)
+		return errors.New(errorMessages.InvalidCreditCard)
 	}
 	return nil
 }
 
 func assertValidCart(aCart *Cart) error {
 	if aCart.IsEmpty() {
-		return errors.New(InvalidCart)
+		return errors.New(errorMessages.InvalidCart)
 	}
 	return nil
 }

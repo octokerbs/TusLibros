@@ -1,4 +1,4 @@
-package tus_libros
+package app
 
 type SalesBook struct {
 	sales []Sale
@@ -24,4 +24,8 @@ func (sb *SalesBook) SalesWhereOwnerIs(aUser *UserCredentials) map[string]int {
 	}
 
 	return userPurchases
+}
+
+func (sb *SalesBook) LastTransactionID() int {
+	return len(sb.sales)
 }

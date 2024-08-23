@@ -1,7 +1,8 @@
-package tus_libros
+package app
 
 import (
 	"errors"
+	"github.com/KerbsOD/TusLibros/internal/errorMessages"
 	"time"
 )
 
@@ -41,7 +42,7 @@ func NewSystemFacade(
 // En caso de error: 1|DESCRIPCIÓN_DE_ERROR/*
 func (sf *SystemFacade) CreateCart(aUser *UserCredentials) (int, error) {
 	if aUser.ValidCredentials(sf.userAuthSystem) == false {
-		return -1, errors.New(InvalidUserOrPasswordErrorMessage)
+		return -1, errors.New(errorMessages.InvalidUserOrPasswordErrorMessage)
 	}
 
 	aCartID := sf.generateCartID()
@@ -86,7 +87,10 @@ func (sf *SystemFacade) ListCart(aCartID int) (map[string]int, error) {
 		return nil, err
 	}
 
-	aMapOfItemsAndQuantities := aCartSession.ListCart()
+	aMapOfItemsAndQuantities, err := aCartSession.ListCart()
+	if err != nil {
+		return nil, err
+	}
 
 	return aMapOfItemsAndQuantities, nil
 }
@@ -101,19 +105,19 @@ func (sf *SystemFacade) ListCart(aCartID int) (map[string]int, error) {
 // Output:
 // En caso de éxito: 0|TRANSACTION_ID
 // En caso de error: 1|DESCRIPCION_DE_ERROR
-func (sf *SystemFacade) CheckOutCart(aCartID int, aCreditCartNumber string, anExpirationDate time.Time, aCreditCardOwner string) error {
+func (sf *SystemFacade) CheckOutCart(aCartID int, aCreditCartNumber string, anExpirationDate time.Time, aCreditCardOwner string) (int, error) {
 	aCartSession, err := sf.CartWithID(aCartID)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	aCreditCard := NewCreditCardExpiringOn(anExpirationDate, "1111222233334444")
-	err = aCartSession.CheckOutCartWith(aCreditCard, sf.merchantProcessor, sf.salesBook)
+	aCreditCard := NewCreditCardExpiringOn(anExpirationDate, aCreditCartNumber)
+	transactionID, err := aCartSession.CheckOutCartWith(aCreditCard, sf.merchantProcessor, sf.salesBook)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	return nil
+	return transactionID, nil
 }
 
 // ListPurchasesOf
@@ -126,7 +130,7 @@ func (sf *SystemFacade) CheckOutCart(aCartID int, aCreditCartNumber string, anEx
 // En caso de error: 1|DESCRIPCION_DE_ERROR
 func (sf *SystemFacade) ListPurchasesOf(aUser *UserCredentials) (map[string]int, error) {
 	if aUser.ValidCredentials(sf.userAuthSystem) == false {
-		return nil, errors.New(InvalidUserOrPasswordErrorMessage)
+		return nil, errors.New(errorMessages.InvalidUserOrPasswordErrorMessage)
 	}
 
 	userPurchases := sf.salesBook.SalesWhereOwnerIs(aUser)
@@ -138,12 +142,12 @@ func (sf *SystemFacade) ListPurchasesOf(aUser *UserCredentials) (map[string]int,
 
 func (sf *SystemFacade) CartWithID(aCartID int) (*CartSession, error) {
 	if _, ok := sf.cartSessions[aCartID]; !ok {
-		return nil, errors.New(InvalidCartIDErrorMessage)
+		return nil, errors.New(errorMessages.InvalidCartIDErrorMessage)
 	}
 
 	aCartSession := sf.cartSessions[aCartID]
 	if aCartSession.IsExpired() {
-		return nil, errors.New(InvalidCartIDErrorMessage)
+		return nil, errors.New(errorMessages.InvalidCartIDErrorMessage)
 	}
 
 	return aCartSession, nil

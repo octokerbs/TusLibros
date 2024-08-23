@@ -1,12 +1,9 @@
-package tus_libros
+package tests
 
 import (
 	"github.com/stretchr/testify/mock"
 )
 
-type UserAuthentication interface {
-	RegisteredUser(username string, password string) bool
-}
 type MockUserAuthentication struct {
 	mock.Mock
 }
