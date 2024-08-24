@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/KerbsOD/TusLibros/internal/app"
-	"github.com/KerbsOD/TusLibros/internal/errorMessages"
-	"github.com/KerbsOD/TusLibros/internal/tests"
+	"github.com/KerbsOD/TusLibros/internal"
+	"github.com/KerbsOD/TusLibros/internal/cart"
+	"github.com/KerbsOD/TusLibros/internal/cashier"
+	"github.com/KerbsOD/TusLibros/internal/clock"
+	"github.com/KerbsOD/TusLibros/internal/merchantProcessor"
+	"github.com/KerbsOD/TusLibros/internal/userAuthentication"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -16,22 +19,13 @@ import (
 	"time"
 )
 
-/*func NewDevelopmentHandler() *Handler {
-	catalog := map[string]int{"978-0553579901": 20, "979-8712157877": 10}
-	localUserAuthenticationSystem := developmentLocalServices.NewLocalUserAuthentication(map[string]string{"Octo": "Kerbs", "Luca": "Zarecki"})
-	localMerchantProcessor := developmentLocalServices.NewLocalMerchantProcessor()
-	localClock := developmentLocalServices.NewLocalClock()
-	facade := app.NewSystemFacade(catalog, localUserAuthenticationSystem, localMerchantProcessor, localClock)
-	return &Handler{Facade: facade}
-}*/
-
 type HandlersTestSuite struct {
 	suite.Suite
-	catalog                map[string]int
-	mockMerchantProcessor  *tests.MockMerchantProcessor
-	mockClock              *tests.MockClock
-	mockUserAuthentication *tests.MockUserAuthentication
-	facade                 *app.SystemFacade
+	catalog                map[string]float64
+	mockMerchantProcessor  *merchantProcessor.MockMerchantProcessor
+	mockClock              *clock.MockClock
+	mockUserAuthentication *userAuthentication.MockUserAuthentication
+	facade                 *internal.SystemFacade
 	handler                *Handler
 }
 
@@ -40,11 +34,11 @@ func TestHandlersTestSuite(t *testing.T) {
 }
 
 func (s *HandlersTestSuite) SetupTest() {
-	s.catalog = map[string]int{"978-0553579901": 20, "979-8712157877": 10}
-	s.mockMerchantProcessor = tests.NewMockMerchantProcessor()
-	s.mockClock = tests.NewMockClock()
-	s.mockUserAuthentication = tests.NewMockUserAuthentication()
-	s.facade = app.NewSystemFacade(s.catalog, s.mockUserAuthentication, s.mockMerchantProcessor, s.mockClock)
+	s.catalog = map[string]float64{"978-0553579901": 19.99, "979-8712157877": 9.99}
+	s.mockMerchantProcessor = merchantProcessor.NewMockMerchantProcessor()
+	s.mockClock = clock.NewMockClock()
+	s.mockUserAuthentication = userAuthentication.NewMockUserAuthentication()
+	s.facade = internal.NewSystemFacade(s.catalog, s.mockUserAuthentication, s.mockMerchantProcessor, s.mockClock)
 	s.handler = &Handler{Facade: s.facade}
 }
 
@@ -54,7 +48,7 @@ func (s *HandlersTestSuite) Test01CanNotCreateCartWithEmptyName() {
 	assert.Equal(s.T(), http.StatusBadRequest, createCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, createCartResponse.Status)
 	assert.Empty(s.T(), createCartResponse.CartID)
-	assert.Equal(s.T(), errorMessages.InvalidUserOrPasswordErrorMessage, createCartResponse.Message)
+	assert.Equal(s.T(), internal.InvalidUserOrPasswordErrorMessage, createCartResponse.Message)
 
 }
 
@@ -64,7 +58,7 @@ func (s *HandlersTestSuite) Test02CanNotCreateCartWithEmptyPassword() {
 	assert.Equal(s.T(), http.StatusBadRequest, createCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, createCartResponse.Status)
 	assert.Empty(s.T(), createCartResponse.CartID)
-	assert.Equal(s.T(), errorMessages.InvalidUserOrPasswordErrorMessage, createCartResponse.Message)
+	assert.Equal(s.T(), internal.InvalidUserOrPasswordErrorMessage, createCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test03CanCreateCartWithValidUser() {
@@ -86,7 +80,7 @@ func (s *HandlersTestSuite) Test05CantAddToCartWithInvalidCardID() {
 	addToCartResponseRecorder, addToCartResponse := s.addToCartRequestSender(-1, "978-0553579901", 10)
 	assert.Equal(s.T(), http.StatusBadRequest, addToCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, addToCartResponse.Status)
-	assert.Equal(s.T(), errorMessages.InvalidCartIDErrorMessage, addToCartResponse.Message)
+	assert.Equal(s.T(), internal.InvalidCartIDErrorMessage, addToCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test06CantAddToCartWithInvalidItem() {
@@ -94,7 +88,7 @@ func (s *HandlersTestSuite) Test06CantAddToCartWithInvalidItem() {
 	addToCartResponseRecorder, addToCartResponse := s.addToCartRequestSender(createCartResponse.CartID, "0000", 10)
 	assert.Equal(s.T(), http.StatusBadRequest, addToCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, addToCartResponse.Status)
-	assert.Equal(s.T(), errorMessages.InvalidItemErrorMessage, addToCartResponse.Message)
+	assert.Equal(s.T(), cart.InvalidItemErrorMessage, addToCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test07CantAddToCartWithInvalidQuantity() {
@@ -102,7 +96,7 @@ func (s *HandlersTestSuite) Test07CantAddToCartWithInvalidQuantity() {
 	addToCartResponseRecorder, addToCartResponse := s.addToCartRequestSender(createCartResponse.CartID, "978-0553579901", -1)
 	assert.Equal(s.T(), http.StatusBadRequest, addToCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, addToCartResponse.Status)
-	assert.Equal(s.T(), errorMessages.InvalidQuantityErrorMessage, addToCartResponse.Message)
+	assert.Equal(s.T(), cart.InvalidQuantityErrorMessage, addToCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test08CanNotListInvalidCartID() {
@@ -110,7 +104,7 @@ func (s *HandlersTestSuite) Test08CanNotListInvalidCartID() {
 	assert.Equal(s.T(), http.StatusBadRequest, listCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, listCartResponse.Status)
 	assert.Empty(s.T(), listCartResponse.Items)
-	assert.Equal(s.T(), errorMessages.InvalidCartIDErrorMessage, listCartResponse.Message)
+	assert.Equal(s.T(), internal.InvalidCartIDErrorMessage, listCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test09CanNotListAnEmptyCart() {
@@ -119,7 +113,7 @@ func (s *HandlersTestSuite) Test09CanNotListAnEmptyCart() {
 	assert.Equal(s.T(), http.StatusBadRequest, listCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, listCartResponse.Status)
 	assert.Empty(s.T(), listCartResponse.Items)
-	assert.Equal(s.T(), errorMessages.InvalidCart, listCartResponse.Message)
+	assert.Equal(s.T(), cart.InvalidCartErrorMessage, listCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test10CartIsListedCorrectly() {
@@ -138,7 +132,7 @@ func (s *HandlersTestSuite) Test11CantCheckOutCartWithInvalidID() {
 	assert.Equal(s.T(), http.StatusBadRequest, checkOutCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, checkOutCartResponse.Status)
 	assert.Empty(s.T(), checkOutCartResponse.TransactionID)
-	assert.Equal(s.T(), errorMessages.InvalidCartIDErrorMessage, checkOutCartResponse.Message)
+	assert.Equal(s.T(), internal.InvalidCartIDErrorMessage, checkOutCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test12CantCheckOutAnEmptyCart() {
@@ -147,7 +141,7 @@ func (s *HandlersTestSuite) Test12CantCheckOutAnEmptyCart() {
 	assert.Equal(s.T(), http.StatusBadRequest, checkOutCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, checkOutCartResponse.Status)
 	assert.Empty(s.T(), checkOutCartResponse.TransactionID)
-	assert.Equal(s.T(), errorMessages.InvalidCart, checkOutCartResponse.Message)
+	assert.Equal(s.T(), cashier.InvalidCartErrorMessage, checkOutCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test13CantCheckOutWithExpiredCreditCard() {
@@ -157,18 +151,18 @@ func (s *HandlersTestSuite) Test13CantCheckOutWithExpiredCreditCard() {
 	assert.Equal(s.T(), http.StatusBadRequest, checkOutCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, checkOutCartResponse.Status)
 	assert.Empty(s.T(), checkOutCartResponse.TransactionID)
-	assert.Equal(s.T(), errorMessages.InvalidCreditCard, checkOutCartResponse.Message)
+	assert.Equal(s.T(), merchantProcessor.InvalidCreditCardErrorMessage, checkOutCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test14CantCheckOutWithInsufficientFundsCreditCard() {
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 	_, _ = s.addToCartRequestSender(createCartResponse.CartID, "978-0553579901", 5)
-	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(errorMessages.InvalidCreditCard))
+	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(merchantProcessor.InvalidCreditCardErrorMessage))
 	checkOutCartResponseRecorder, checkOutCartResponse := s.checkOutCartRequestSender(createCartResponse.CartID, "1111222233334444", s.tomorrow(), "Octo")
 	assert.Equal(s.T(), http.StatusBadRequest, checkOutCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, checkOutCartResponse.Status)
 	assert.Empty(s.T(), checkOutCartResponse.TransactionID)
-	assert.Equal(s.T(), errorMessages.InvalidCreditCard, checkOutCartResponse.Message)
+	assert.Equal(s.T(), merchantProcessor.InvalidCreditCardErrorMessage, checkOutCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test15CanCheckOutCorrectly() {
@@ -187,7 +181,7 @@ func (s *HandlersTestSuite) Test16CanNotListPurchasesOfInvalidClient() {
 	assert.Equal(s.T(), http.StatusBadRequest, listPurchasesResponseRecorder.Code)
 	assert.Equal(s.T(), 1, listPurchasesResponse.Status)
 	assert.Empty(s.T(), listPurchasesResponse.Items)
-	assert.Equal(s.T(), errorMessages.InvalidUserOrPasswordErrorMessage, listPurchasesResponse.Message)
+	assert.Equal(s.T(), internal.InvalidUserOrPasswordErrorMessage, listPurchasesResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test17PurchasesAreListedCorrectly() {
@@ -203,7 +197,7 @@ func (s *HandlersTestSuite) Test17PurchasesAreListedCorrectly() {
 
 	assert.Equal(s.T(), http.StatusOK, listPurchasesResponseRecorder.Code)
 	assert.Equal(s.T(), 0, listPurchasesResponse.Status)
-	assert.Equal(s.T(), map[string]int{"978-0553579901": 40, "979-8712157877": 50}, listPurchasesResponse.Items)
+	assert.Equal(s.T(), map[string]float64{"978-0553579901": 39.98, "979-8712157877": 49.95}, listPurchasesResponse.Items)
 	assert.Empty(s.T(), listPurchasesResponse.Message)
 }
 

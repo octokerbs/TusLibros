@@ -2,13 +2,13 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/KerbsOD/TusLibros/internal/app"
-	"github.com/KerbsOD/TusLibros/internal/errorMessages"
+	"github.com/KerbsOD/TusLibros/internal"
+	"github.com/KerbsOD/TusLibros/internal/userCredentials"
 	"net/http"
 )
 
 type Handler struct {
-	Facade *app.SystemFacade
+	Facade *internal.SystemFacade
 }
 
 func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
@@ -23,14 +23,14 @@ func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := app.NewUserCredentials(request.ClientID, request.Password)
+	user := userCredentials.NewUserCredentials(request.ClientID, request.Password)
 	cartID, err := h.Facade.CreateCart(user)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := CreateCartResponse{
 			Status:  1,
-			Message: errorMessages.InvalidUserOrPasswordErrorMessage,
+			Message: internal.InvalidUserOrPasswordErrorMessage,
 		}
 		json.NewEncoder(w).Encode(response)
 		return
@@ -157,7 +157,7 @@ func (h *Handler) ListPurchases(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := app.NewUserCredentials(request.ClientID, request.Password)
+	user := userCredentials.NewUserCredentials(request.ClientID, request.Password)
 	items, err := h.Facade.ListPurchasesOf(user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
