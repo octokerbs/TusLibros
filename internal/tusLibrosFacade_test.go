@@ -156,6 +156,7 @@ func (s *FacadeTestSuite) Test14CanNotCheckoutWithAnExpiredCreditCard() {
 func (s *FacadeTestSuite) Test15CanNotCheckoutWithInsufficientFunds() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
 	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Unset()
 	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(merchantProcessor.InvalidCreditCardErrorMessage))
 	_, err := s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
 	assert.EqualError(s.T(), err, merchantProcessor.InvalidCreditCardErrorMessage)

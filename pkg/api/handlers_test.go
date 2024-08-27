@@ -36,6 +36,7 @@ func TestHandlersTestSuite(t *testing.T) {
 func (s *HandlersTestSuite) SetupTest() {
 	s.catalog = map[string]float64{"978-0553579901": 19.99, "979-8712157877": 9.99}
 	s.mockMerchantProcessor = merchantProcessor.NewMockMerchantProcessor()
+	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(nil)
 	s.mockClock = clock.NewMockClock()
 	s.mockUserAuthentication = userAuthentication.NewMockUserAuthentication()
 	s.facade = internal.NewSystemFacade(s.catalog, s.mockUserAuthentication, s.mockMerchantProcessor, s.mockClock)
@@ -157,6 +158,7 @@ func (s *HandlersTestSuite) Test13CantCheckOutWithExpiredCreditCard() {
 func (s *HandlersTestSuite) Test14CantCheckOutWithInsufficientFundsCreditCard() {
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 	_, _ = s.addToCartRequestSender(createCartResponse.CartID, "978-0553579901", 5)
+	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Unset()
 	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(merchantProcessor.InvalidCreditCardErrorMessage))
 	checkOutCartResponseRecorder, checkOutCartResponse := s.checkOutCartRequestSender(createCartResponse.CartID, "1111222233334444", s.tomorrow(), "Octo")
 	assert.Equal(s.T(), http.StatusBadRequest, checkOutCartResponseRecorder.Code)

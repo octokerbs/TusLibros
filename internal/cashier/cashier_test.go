@@ -117,6 +117,7 @@ func (s *CashierTestSuite) Test06CanNotCheckOutIfCreditCardHasInsufficientFunds(
 	sales := salesBook.NewSalesBook()
 	_ = validCart.AddToCart(s.factory.ItemInCatalog(), 3)
 
+	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Unset()
 	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(merchantProcessor.InvalidCreditCardErrorMessage))
 
 	cashier, _ := NewCashier(
