@@ -50,7 +50,6 @@ func (s *HandlersTestSuite) Test01CanNotCreateCartWithEmptyName() {
 	assert.Equal(s.T(), 1, createCartResponse.Status)
 	assert.Empty(s.T(), createCartResponse.CartID)
 	assert.Equal(s.T(), internal.InvalidUserOrPasswordErrorMessage, createCartResponse.Message)
-
 }
 
 func (s *HandlersTestSuite) Test02CanNotCreateCartWithEmptyPassword() {
@@ -118,14 +117,19 @@ func (s *HandlersTestSuite) Test09CanNotListAnEmptyCart() {
 }
 
 func (s *HandlersTestSuite) Test10CartIsListedCorrectly() {
-	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
-	_, _ = s.addToCartRequestSender(createCartResponse.CartID, "978-0553579901", 5)
-	_, _ = s.addToCartRequestSender(createCartResponse.CartID, "979-8712157877", 10)
-	listCartResponseRecorder, listCartResponse := s.listCartRequestSender(createCartResponse.CartID)
-	assert.Equal(s.T(), http.StatusOK, listCartResponseRecorder.Code)
-	assert.Equal(s.T(), 0, listCartResponse.Status)
-	assert.Equal(s.T(), map[string]int{"978-0553579901": 5, "979-8712157877": 10}, listCartResponse.Items)
-	assert.Empty(s.T(), listCartResponse.Message)
+    // Given: A cart is created and items are added to it
+    _, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
+    _, _ = s.addToCartRequestSender(createCartResponse.CartID, "978-0553579901", 5)
+    _, _ = s.addToCartRequestSender(createCartResponse.CartID, "979-8712157877", 10)
+
+    // When: The cart is listed 
+    listCartResponseRecorder, listCartResponse := s.listCartRequestSender(createCartResponse.CartID)
+
+    // Then: The cart should be listed correctly with the correct status and items
+    assert.Equal(s.T(), http.StatusOK, listCartResponseRecorder.Code)
+    assert.Equal(s.T(), 0, listCartResponse.Status)
+    assert.Equal(s.T(), map[string]int{"978-0553579901": 5, "979-8712157877": 10}, listCartResponse.Items)
+    assert.Empty(s.T(), listCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) Test11CantCheckOutCartWithInvalidID() {
