@@ -2,6 +2,8 @@ package cashier
 
 import (
 	"errors"
+	"time"
+
 	"github.com/KerbsOD/TusLibros/internal/cart"
 	"github.com/KerbsOD/TusLibros/internal/creditCard"
 	"github.com/KerbsOD/TusLibros/internal/lineItem"
@@ -10,7 +12,6 @@ import (
 	"github.com/KerbsOD/TusLibros/internal/salesBook"
 	"github.com/KerbsOD/TusLibros/internal/ticket"
 	"github.com/KerbsOD/TusLibros/internal/userCredentials"
-	"time"
 )
 
 type Cashier struct {

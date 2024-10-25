@@ -2,6 +2,9 @@ package internal
 
 import (
 	"errors"
+	"testing"
+	"time"
+
 	"github.com/KerbsOD/TusLibros/internal/cart"
 	"github.com/KerbsOD/TusLibros/internal/cashier"
 	"github.com/KerbsOD/TusLibros/internal/clock"
@@ -12,8 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"testing"
-	"time"
 )
 
 type FacadeTestSuite struct {
@@ -202,14 +203,12 @@ func (s *FacadeTestSuite) Test19CanNotAddToCartWhenSessionHasExpired() {
 }
 
 func (s *FacadeTestSuite) Test20CanNotListCartWhenSessionHasExpired() {
-
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
 	_ = s.facade.AddToCart(cartID, s.book1, 10)
 	nowPlus30Minutes := s.today.Add(31 * time.Minute)
 	s.mockClock.On("Now").Return(nowPlus30Minutes)
 	_, err := s.facade.ListCart(cartID)
 	assert.EqualError(s.T(), err, InvalidCartIDErrorMessage)
-
 }
 
 func (s *FacadeTestSuite) Test21CanNotCheckoutCartWhenSessionHasExpired() {
