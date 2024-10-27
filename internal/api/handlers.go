@@ -2,9 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
+
 	"github.com/KerbsOD/TusLibros/internal"
 	"github.com/KerbsOD/TusLibros/internal/userCredentials"
-	"net/http"
+	"github.com/KerbsOD/TusLibros/pkg/models"
 )
 
 type Handler struct {
@@ -12,10 +15,10 @@ type Handler struct {
 }
 
 func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
-	var request CreateCartRequest
+	var request models.CreateCartRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := CreateCartResponse{
+		response := models.CreateCartResponse{
 			Status:  1,
 			Message: "Invalid request payload",
 		}
@@ -23,12 +26,13 @@ func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("/CreateCart {ClientID: %s, Password: %s}", request.ClientID, request.Password)
+
 	user := userCredentials.NewUserCredentials(request.ClientID, request.Password)
 	cartID, err := h.Facade.CreateCart(user)
-
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := CreateCartResponse{
+		response := models.CreateCartResponse{
 			Status:  1,
 			Message: internal.InvalidUserOrPasswordErrorMessage,
 		}
@@ -36,7 +40,7 @@ func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := CreateCartResponse{
+	response := models.CreateCartResponse{
 		Status: 0,
 		CartID: cartID,
 	}
@@ -47,10 +51,10 @@ func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
-	var request AddToCartRequest
+	var request models.AddToCartRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := AddToCartResponse{
+		response := models.AddToCartResponse{
 			Status:  1,
 			Message: "Invalid request payload",
 		}
@@ -58,10 +62,12 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("/AddToCart {CartID: %d, BookISBN: %s, BookQuantity: %d}", request.CartID, request.BookISBN, request.BookQuantity)
+
 	err := h.Facade.AddToCart(request.CartID, request.BookISBN, request.BookQuantity)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := AddToCartResponse{
+		response := models.AddToCartResponse{
 			Status:  1,
 			Message: err.Error(),
 		}
@@ -69,7 +75,7 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := AddToCartResponse{
+	response := models.AddToCartResponse{
 		Status:  0,
 		Message: "OK",
 	}
@@ -80,10 +86,10 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ListCart(w http.ResponseWriter, r *http.Request) {
-	var request ListCartRequest
+	var request models.ListCartRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := ListCartResponse{
+		response := models.ListCartResponse{
 			Status:  1,
 			Message: "Invalid request payload",
 		}
@@ -91,10 +97,12 @@ func (h *Handler) ListCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("/ListCart {CartID: %d}", request.CartID)
+
 	items, err := h.Facade.ListCart(request.CartID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := ListCartResponse{
+		response := models.ListCartResponse{
 			Status:  1,
 			Message: err.Error(),
 		}
@@ -102,7 +110,7 @@ func (h *Handler) ListCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := ListCartResponse{
+	response := models.ListCartResponse{
 		Status: 0,
 		Items:  items,
 	}
@@ -113,10 +121,10 @@ func (h *Handler) ListCart(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CheckOutCart(w http.ResponseWriter, r *http.Request) {
-	var request CheckOutCartRequest
+	var request models.CheckOutCartRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := CheckOutCartResponse{
+		response := models.CheckOutCartResponse{
 			Status:  1,
 			Message: "Invalid request payload",
 		}
@@ -127,7 +135,7 @@ func (h *Handler) CheckOutCart(w http.ResponseWriter, r *http.Request) {
 	transactionID, err := h.Facade.CheckOutCart(request.CartID, request.CreditCardNumber, request.CreditCardExpirationDate, request.CreditCardNumber)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := CheckOutCartResponse{
+		response := models.CheckOutCartResponse{
 			Status:  1,
 			Message: err.Error(),
 		}
@@ -135,7 +143,7 @@ func (h *Handler) CheckOutCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := CheckOutCartResponse{
+	response := models.CheckOutCartResponse{
 		Status:        0,
 		TransactionID: transactionID,
 	}
@@ -146,10 +154,10 @@ func (h *Handler) CheckOutCart(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ListPurchases(w http.ResponseWriter, r *http.Request) {
-	var request ListPurchasesRequest
+	var request models.ListPurchasesRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := ListPurchasesResponse{
+		response := models.ListPurchasesResponse{
 			Status:  1,
 			Message: "Invalid request payload",
 		}
@@ -161,7 +169,7 @@ func (h *Handler) ListPurchases(w http.ResponseWriter, r *http.Request) {
 	items, err := h.Facade.ListPurchasesOf(user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := ListPurchasesResponse{
+		response := models.ListPurchasesResponse{
 			Status:  1,
 			Message: err.Error(),
 		}
@@ -169,7 +177,7 @@ func (h *Handler) ListPurchases(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := ListPurchasesResponse{
+	response := models.ListPurchasesResponse{
 		Status: 0,
 		Items:  items,
 	}

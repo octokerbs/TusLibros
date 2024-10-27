@@ -1,4 +1,4 @@
-package api
+package models
 
 type CreateCartResponse struct {
 	Status  int    `json:"status"`

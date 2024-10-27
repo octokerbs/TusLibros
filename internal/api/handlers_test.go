@@ -15,6 +15,7 @@ import (
 	"github.com/KerbsOD/TusLibros/internal/clock"
 	"github.com/KerbsOD/TusLibros/internal/merchantProcessor"
 	"github.com/KerbsOD/TusLibros/internal/userAuthentication"
+	"github.com/KerbsOD/TusLibros/pkg/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -220,8 +221,8 @@ func (s *HandlersTestSuite) Test17PurchasesAreListedCorrectly() {
 
 // Private
 
-func (s *HandlersTestSuite) createCartRequestSender(clientID, password string) (*httptest.ResponseRecorder, CreateCartResponse) {
-	body, _ := json.Marshal(CreateCartRequest{
+func (s *HandlersTestSuite) createCartRequestSender(clientID, password string) (*httptest.ResponseRecorder, models.CreateCartResponse) {
+	body, _ := json.Marshal(models.CreateCartRequest{
 		ClientID: clientID,
 		Password: password,
 	})
@@ -230,14 +231,14 @@ func (s *HandlersTestSuite) createCartRequestSender(clientID, password string) (
 
 	s.handler.CreateCart(createCartResponseRecorder, createCartRequest)
 
-	var createCartResponse CreateCartResponse
+	var createCartResponse models.CreateCartResponse
 	_ = json.Unmarshal(createCartResponseRecorder.Body.Bytes(), &createCartResponse)
 
 	return createCartResponseRecorder, createCartResponse
 }
 
-func (s *HandlersTestSuite) addToCartRequestSender(cartID int, bookISBN string, bookQuantity int) (*httptest.ResponseRecorder, AddToCartResponse) {
-	addToCartRequestBody, _ := json.Marshal(AddToCartRequest{
+func (s *HandlersTestSuite) addToCartRequestSender(cartID int, bookISBN string, bookQuantity int) (*httptest.ResponseRecorder, models.AddToCartResponse) {
+	addToCartRequestBody, _ := json.Marshal(models.AddToCartRequest{
 		CartID:       cartID,
 		BookISBN:     bookISBN,
 		BookQuantity: bookQuantity,
@@ -248,14 +249,14 @@ func (s *HandlersTestSuite) addToCartRequestSender(cartID int, bookISBN string, 
 
 	s.handler.AddToCart(addToCartResponseRecorder, addToCartRequest)
 
-	var addToCartResponse AddToCartResponse
+	var addToCartResponse models.AddToCartResponse
 	_ = json.Unmarshal(addToCartResponseRecorder.Body.Bytes(), &addToCartResponse)
 
 	return addToCartResponseRecorder, addToCartResponse
 }
 
-func (s *HandlersTestSuite) listCartRequestSender(cartID int) (*httptest.ResponseRecorder, ListCartResponse) {
-	listCartRequestBody, _ := json.Marshal(ListCartRequest{
+func (s *HandlersTestSuite) listCartRequestSender(cartID int) (*httptest.ResponseRecorder, models.ListCartResponse) {
+	listCartRequestBody, _ := json.Marshal(models.ListCartRequest{
 		CartID: cartID,
 	})
 
@@ -264,14 +265,14 @@ func (s *HandlersTestSuite) listCartRequestSender(cartID int) (*httptest.Respons
 
 	s.handler.ListCart(listCartResponseRecorder, listCartRequest)
 
-	var listCartResponse ListCartResponse
+	var listCartResponse models.ListCartResponse
 	_ = json.Unmarshal(listCartResponseRecorder.Body.Bytes(), &listCartResponse)
 
 	return listCartResponseRecorder, listCartResponse
 }
 
-func (s *HandlersTestSuite) checkOutCartRequestSender(cartID int, ccNumber string, ccExpirationDate time.Time, ccOwner string) (*httptest.ResponseRecorder, CheckOutCartResponse) {
-	checkOutCartRequestBody, _ := json.Marshal(CheckOutCartRequest{
+func (s *HandlersTestSuite) checkOutCartRequestSender(cartID int, ccNumber string, ccExpirationDate time.Time, ccOwner string) (*httptest.ResponseRecorder, models.CheckOutCartResponse) {
+	checkOutCartRequestBody, _ := json.Marshal(models.CheckOutCartRequest{
 		CartID:                   cartID,
 		CreditCardNumber:         ccNumber,
 		CreditCardExpirationDate: ccExpirationDate,
@@ -283,14 +284,14 @@ func (s *HandlersTestSuite) checkOutCartRequestSender(cartID int, ccNumber strin
 
 	s.handler.CheckOutCart(checkOutCartResponseRecorder, checkOutCartRequest)
 
-	var checkOutCartResponse CheckOutCartResponse
+	var checkOutCartResponse models.CheckOutCartResponse
 	_ = json.Unmarshal(checkOutCartResponseRecorder.Body.Bytes(), &checkOutCartResponse)
 
 	return checkOutCartResponseRecorder, checkOutCartResponse
 }
 
-func (s *HandlersTestSuite) listPurchasesRequestSender(clientID, password string) (*httptest.ResponseRecorder, ListPurchasesResponse) {
-	body, _ := json.Marshal(ListPurchasesRequest{
+func (s *HandlersTestSuite) listPurchasesRequestSender(clientID, password string) (*httptest.ResponseRecorder, models.ListPurchasesResponse) {
+	body, _ := json.Marshal(models.ListPurchasesRequest{
 		ClientID: clientID,
 		Password: password,
 	})
@@ -299,7 +300,7 @@ func (s *HandlersTestSuite) listPurchasesRequestSender(clientID, password string
 
 	s.handler.ListPurchases(listPurchasesResponseRecorder, listPurchasesRequest)
 
-	var listPurchasesResponse ListPurchasesResponse
+	var listPurchasesResponse models.ListPurchasesResponse
 	_ = json.Unmarshal(listPurchasesResponseRecorder.Body.Bytes(), &listPurchasesResponse)
 
 	return listPurchasesResponseRecorder, listPurchasesResponse

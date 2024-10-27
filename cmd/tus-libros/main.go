@@ -1,12 +1,14 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/KerbsOD/TusLibros/internal"
+	"github.com/KerbsOD/TusLibros/internal/api"
 	"github.com/KerbsOD/TusLibros/internal/clock"
 	"github.com/KerbsOD/TusLibros/internal/merchantProcessor"
 	"github.com/KerbsOD/TusLibros/internal/userAuthentication"
-	"github.com/KerbsOD/TusLibros/pkg/api"
-	"net/http"
 )
 
 func main() {
@@ -27,6 +29,7 @@ func main() {
 	http.HandleFunc("/ListPurchases", handler.ListPurchases)
 
 	port := ":8080"
+	log.Println("Listening to port 8080")
 	if err := http.ListenAndServe(port, nil); err != nil {
 		panic(err)
 	}
