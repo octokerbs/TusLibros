@@ -2,6 +2,8 @@ package internal
 
 import (
 	"errors"
+	"time"
+
 	"github.com/KerbsOD/TusLibros/internal/cart"
 	"github.com/KerbsOD/TusLibros/internal/cartSession"
 	"github.com/KerbsOD/TusLibros/internal/clock"
@@ -10,7 +12,6 @@ import (
 	"github.com/KerbsOD/TusLibros/internal/salesBook"
 	"github.com/KerbsOD/TusLibros/internal/userAuthentication"
 	"github.com/KerbsOD/TusLibros/internal/userCredentials"
-	"time"
 )
 
 type SystemFacade struct {
@@ -26,7 +27,8 @@ func NewSystemFacade(
 	aCatalog map[string]float64,
 	anAuthenticationSystem userAuthentication.UserAuthentication,
 	aMerchantProcessor merchantProcessor.MerchantProcessor,
-	aClock clock.Clock) *SystemFacade {
+	aClock clock.Clock,
+) *SystemFacade {
 	return &SystemFacade{
 		catalog:           aCatalog,
 		userAuthSystem:    anAuthenticationSystem,
@@ -48,7 +50,7 @@ func NewSystemFacade(
 // En caso de éxito: 0|ID_DEL_CARRITO
 // En caso de error: 1|DESCRIPCIÓN_DE_ERROR/*
 func (sf *SystemFacade) CreateCart(aUser *userCredentials.UserCredentials) (int, error) {
-	if aUser.ValidCredentials(sf.userAuthSystem) == false {
+	if !aUser.ValidCredentials(sf.userAuthSystem) {
 		return -1, errors.New(InvalidUserOrPasswordErrorMessage)
 	}
 
@@ -136,7 +138,7 @@ func (sf *SystemFacade) CheckOutCart(aCartID int, aCreditCartNumber string, anEx
 // En caso de éxito: 0|ISBN_1|QUANTITY_1|....|ISBN_N|QUANTITY_N|TOTAL_AMOUNT
 // En caso de error: 1|DESCRIPCION_DE_ERROR
 func (sf *SystemFacade) ListPurchasesOf(aUser *userCredentials.UserCredentials) (map[string]float64, error) {
-	if aUser.ValidCredentials(sf.userAuthSystem) == false {
+	if !aUser.ValidCredentials(sf.userAuthSystem) {
 		return nil, errors.New(InvalidUserOrPasswordErrorMessage)
 	}
 
