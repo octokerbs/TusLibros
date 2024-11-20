@@ -45,7 +45,7 @@ func (s *HandlersTestSuite) SetupTest() {
 	s.handler = &Handler{Facade: s.facade}
 }
 
-func (s *HandlersTestSuite) Test01CanNotCreateCartWithEmptyName() {
+func (s *HandlersTestSuite) CanNotCreateCartWithEmptyName() {
 	// Given: an invalid user
 	s.mockUserAuthentication.On("RegisteredUser", mock.Anything, mock.Anything).Return(false)
 
@@ -59,7 +59,7 @@ func (s *HandlersTestSuite) Test01CanNotCreateCartWithEmptyName() {
 	assert.Equal(s.T(), internal.InvalidUserOrPasswordErrorMessage, createCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test02CanNotCreateCartWithEmptyPassword() {
+func (s *HandlersTestSuite) CanNotCreateCartWithEmptyPassword() {
 	// Given: an invalid user
 	s.mockUserAuthentication.On("RegisteredUser", mock.Anything, mock.Anything).Return(false)
 
@@ -73,7 +73,7 @@ func (s *HandlersTestSuite) Test02CanNotCreateCartWithEmptyPassword() {
 	assert.Equal(s.T(), internal.InvalidUserOrPasswordErrorMessage, createCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test03CanCreateCartWithValidUser() {
+func (s *HandlersTestSuite) CanCreateCartWithValidUser() {
 	// Given: A valid user and password
 
 	// When: Creating a cart
@@ -86,7 +86,7 @@ func (s *HandlersTestSuite) Test03CanCreateCartWithValidUser() {
 	assert.Empty(s.T(), createCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test04DifferentIDSWhenTwoClientsRequestANewCart() {
+func (s *HandlersTestSuite) DifferentIDSWhenTwoClientsRequestANewCart() {
 	// Given: Two valid users
 
 	// When: Creating a cart
@@ -98,7 +98,7 @@ func (s *HandlersTestSuite) Test04DifferentIDSWhenTwoClientsRequestANewCart() {
 	assert.Equal(s.T(), 2, createCartResponse2.CartID)
 }
 
-func (s *HandlersTestSuite) Test05CantAddToCartWithInvalidCardID() {
+func (s *HandlersTestSuite) CantAddToCartWithInvalidCardID() {
 	// Given: An invalid cart id
 
 	// When: Adding to a cartid
@@ -110,7 +110,7 @@ func (s *HandlersTestSuite) Test05CantAddToCartWithInvalidCardID() {
 	assert.Equal(s.T(), internal.InvalidCartIDErrorMessage, addToCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test06CantAddToCartWithInvalidItem() {
+func (s *HandlersTestSuite) CantAddToCartWithInvalidItem() {
 	// Given: Cart with valid id
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 
@@ -123,7 +123,7 @@ func (s *HandlersTestSuite) Test06CantAddToCartWithInvalidItem() {
 	assert.Equal(s.T(), cart.InvalidItemErrorMessage, addToCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test07CantAddToCartWithInvalidQuantity() {
+func (s *HandlersTestSuite) CantAddToCartWithInvalidQuantity() {
 	// Given: Cart with valid id
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 
@@ -136,7 +136,7 @@ func (s *HandlersTestSuite) Test07CantAddToCartWithInvalidQuantity() {
 	assert.Equal(s.T(), cart.InvalidQuantityErrorMessage, addToCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test08CanNotListInvalidCartID() {
+func (s *HandlersTestSuite) CanNotListInvalidCartID() {
 	// Given: Invalid cart id
 
 	// When: Listing an invalid cart
@@ -149,7 +149,7 @@ func (s *HandlersTestSuite) Test08CanNotListInvalidCartID() {
 	assert.Equal(s.T(), internal.InvalidCartIDErrorMessage, listCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test09CanNotListAnEmptyCart() {
+func (s *HandlersTestSuite) CanNotListAnEmptyCart() {
 	// Given: valid and empty cart
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 
@@ -163,7 +163,7 @@ func (s *HandlersTestSuite) Test09CanNotListAnEmptyCart() {
 	assert.Equal(s.T(), cart.InvalidCartErrorMessage, listCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test10CartIsListedCorrectly() {
+func (s *HandlersTestSuite) CartIsListedCorrectly() {
 	// Given: A cart is created and items are added to it
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 	_, _ = s.addToCartRequestSender(createCartResponse.CartID, "978-0553579901", 5)
@@ -179,7 +179,7 @@ func (s *HandlersTestSuite) Test10CartIsListedCorrectly() {
 	assert.Empty(s.T(), listCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test11CantCheckOutCartWithInvalidID() {
+func (s *HandlersTestSuite) CantCheckOutCartWithInvalidID() {
 	// Given: Invalid cart
 
 	// When: Checking out an invalid cart
@@ -192,7 +192,7 @@ func (s *HandlersTestSuite) Test11CantCheckOutCartWithInvalidID() {
 	assert.Equal(s.T(), internal.InvalidCartIDErrorMessage, checkOutCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test12CantCheckOutAnEmptyCart() {
+func (s *HandlersTestSuite) CantCheckOutAnEmptyCart() {
 	// Given: Valid cart but empty
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 
@@ -206,7 +206,7 @@ func (s *HandlersTestSuite) Test12CantCheckOutAnEmptyCart() {
 	assert.Equal(s.T(), cashier.InvalidCartErrorMessage, checkOutCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test13CantCheckOutWithExpiredCreditCard() {
+func (s *HandlersTestSuite) CantCheckOutWithExpiredCreditCard() {
 	// Given: valid cart and item but invalid credit card
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 	_, _ = s.addToCartRequestSender(createCartResponse.CartID, "978-0553579901", 5)
@@ -221,7 +221,7 @@ func (s *HandlersTestSuite) Test13CantCheckOutWithExpiredCreditCard() {
 	assert.Equal(s.T(), merchantProcessor.InvalidCreditCardErrorMessage, checkOutCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test14CantCheckOutWithInsufficientFundsCreditCard() {
+func (s *HandlersTestSuite) CantCheckOutWithInsufficientFundsCreditCard() {
 	// Given: valid cart, valid item and not expired credit card
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 	_, _ = s.addToCartRequestSender(createCartResponse.CartID, "978-0553579901", 5)
@@ -238,7 +238,7 @@ func (s *HandlersTestSuite) Test14CantCheckOutWithInsufficientFundsCreditCard() 
 	assert.Equal(s.T(), merchantProcessor.InvalidCreditCardErrorMessage, checkOutCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test15CanCheckOutCorrectly() {
+func (s *HandlersTestSuite) CanCheckOutCorrectly() {
 	// Given: valid cart and valid items
 	_, createCartResponse := s.createCartRequestSender("Octo", "Kerbs")
 	_, _ = s.addToCartRequestSender(createCartResponse.CartID, "978-0553579901", 5)
@@ -253,7 +253,7 @@ func (s *HandlersTestSuite) Test15CanCheckOutCorrectly() {
 	assert.Empty(s.T(), checkOutCartResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test16CanNotListPurchasesOfInvalidClient() {
+func (s *HandlersTestSuite) CanNotListPurchasesOfInvalidClient() {
 	// Given: an invalid client
 	s.mockUserAuthentication.On("RegisteredUser", mock.Anything, mock.Anything).Return(false)
 
@@ -267,7 +267,7 @@ func (s *HandlersTestSuite) Test16CanNotListPurchasesOfInvalidClient() {
 	assert.Equal(s.T(), internal.InvalidUserOrPasswordErrorMessage, listPurchasesResponse.Message)
 }
 
-func (s *HandlersTestSuite) Test17PurchasesAreListedCorrectly() {
+func (s *HandlersTestSuite) PurchasesAreListedCorrectly() {
 	// Given: Two valid carts who were checked out
 	_, createCartResponse1 := s.createCartRequestSender("Octo", "Kerbs")
 	_, _ = s.addToCartRequestSender(createCartResponse1.CartID, "978-0553579901", 2)
