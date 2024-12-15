@@ -7,7 +7,7 @@ export default function BookGrid() {
     <Box sx={{ width: "100vw" }}>
       <Box
         sx={{
-          marginTop: "2vw",
+          marginTop: "4vw",
           marginBottom: "2vw",
           marginLeft: "20vw",
           marginRight: "20vw",
