@@ -8,8 +8,21 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
+import { useState } from "react";
 
 export default function BookCard() {
+    const [counter, setCounter] = useState(0);
+
+    const handleIncrement = () => {
+        setCounter(counter + 1);
+    };
+
+    const handleDecrement = () => {
+        if (counter > 0) {
+            setCounter(counter - 1);
+        }
+    };
+
     return (
         <Card sx={{ width: "14vw" }}>
             <CardMedia
@@ -32,7 +45,7 @@ export default function BookCard() {
                     <IconButton>
                         <RemoveCircleOutline></RemoveCircleOutline>
                     </IconButton>
-                    <Typography>0</Typography>
+                    <Typography>{counter}</Typography>
                     <IconButton>
                         <AddCircleOutline></AddCircleOutline>
                     </IconButton>
