@@ -7,8 +7,15 @@ import React from "react";
 import Title from "./Title";
 import CartMenu from "./CartMenu";
 import UserMenu from "./UserMenu";
+import { Book, CartBookEntry } from "../content";
 
-export default function Header() {
+export default function Header({
+    cartBooks,
+    total,
+}: {
+    cartBooks: CartBookEntry[];
+    total: string;
+}) {
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
         null
     );
@@ -79,6 +86,8 @@ export default function Header() {
                 anchorEl={anchorElCart}
                 open={openCart}
                 handleClose={handleCloseCart}
+                cartBooks={cartBooks}
+                total={total}
             />
 
             <UserMenu

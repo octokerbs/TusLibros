@@ -2,19 +2,22 @@ import { ShoppingCartCheckout } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import { CartBookEntry } from "../content";
 
 export default function CartMenu({
     anchorEl,
     open,
     handleClose,
+    cartBooks,
+    total,
 }: {
     anchorEl: HTMLElement | null;
     open: boolean;
     handleClose: () => void;
+    cartBooks: CartBookEntry[];
+    total: string;
 }) {
     return (
         <Menu
@@ -53,60 +56,83 @@ export default function CartMenu({
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography
-                    gutterBottom
-                    variant="inherit"
-                    component="div"
-                    sx={{ marginLeft: "1vw", width: "20vw" }}
-                    noWrap
-                >
-                    donde esta el productooooooooooo mamaguehooooooooo
-                </Typography>
+            <Box>
+                {cartBooks.map((cartEntry) => (
+                    <Box key={cartEntry.book.isbn}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                marginLeft: "1vw",
+                                marginRight: "1vw",
+                                width: "20vw",
+                            }}
+                        >
+                            <Typography
+                                gutterBottom
+                                variant="inherit"
+                                component="div"
+                                noWrap
+                            >
+                                {cartEntry.book.name}{" "}
+                                <Box
+                                    component="span"
+                                    fontWeight="fontWeightBold"
+                                >
+                                    x{cartEntry.quantity}
+                                </Box>
+                            </Typography>
+                            <Typography
+                                gutterBottom
+                                variant="inherit"
+                                component="div"
+                                noWrap
+                            >
+                                {cartEntry.total.toLocaleString("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                })}
+                            </Typography>
+                        </Box>
+                        <Divider />
+                    </Box>
+                ))}
             </Box>
 
-            <Divider />
-
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography
-                    gutterBottom
-                    variant="inherit"
-                    component="div"
-                    sx={{ marginLeft: "1vw", width: "20vw" }}
-                    noWrap
-                >
-                    productooooooooooooooooooooooooooooooooooooooooooo
-                </Typography>
-            </Box>
-
-            <Divider />
-
-            <Divider />
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography
-                    gutterBottom
-                    variant="h6"
-                    component="div"
-                    sx={{ marginLeft: "1vw" }}
-                >
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginLeft: "1vw",
+                    marginRight: "1vw",
+                    width: "20vw",
+                }}
+            >
+                <Typography gutterBottom variant="h6" component="div">
                     Total
                 </Typography>
-                <Typography
-                    gutterBottom
-                    variant="h6"
-                    component="div"
-                    sx={{ marginLeft: "auto", marginRight: "1vw" }}
-                >
-                    $112.000
+                <Typography gutterBottom variant="h6" component="div">
+                    {total}
                 </Typography>
             </Box>
-            <Box display="flex" justifyContent={"center"}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginLeft: "1vw",
+                    marginRight: "1vw",
+                    width: "20vw",
+                }}
+            >
                 <Button
                     sx={{
                         alignItems: "center",
                         bgcolor: "#567568",
                         color: "white",
-                        width: "19vw",
+                        width: "20vw",
                     }}
                 >
                     <ShoppingCartCheckout></ShoppingCartCheckout>

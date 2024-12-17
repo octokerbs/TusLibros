@@ -1,7 +1,7 @@
 import { RemoveCircleOutline } from "@mui/icons-material";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import AddShoppingCart from "@mui/icons-material/AddShoppingCart";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, Divider, IconButton, Tooltip } from "@mui/material";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -9,8 +9,15 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
+import { Book, CartBookEntry } from "../content";
 
-export default function BookCard() {
+export default function BookCard({
+    updateCart,
+    book,
+}: {
+    updateCart: (book: Book, quantity: number) => void;
+    book: Book;
+}) {
     const [counter, setCounter] = useState(0);
 
     const handleIncrement = () => {
@@ -24,19 +31,33 @@ export default function BookCard() {
     };
 
     return (
-        <Card sx={{ width: "14vw" }}>
+        <Card sx={{ width: "11vw" }}>
             <CardMedia
-                sx={{ height: 140 }}
-                image="/images/CardJitsu.jpeg"
+                sx={{ height: "30vh" }}
+                image={book.imagePath}
                 title="Book Cover"
             />
             <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                    Lizards
+                <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{
+                        overflow: "hidden",
+                        lineHeight: "1.5em",
+                        height: "3em",
+                    }}
+                >
+                    {book.name}
                 </Typography>
 
+                <Typography gutterBottom fontSize={14} component="div">
+                    ISBN: {book.isbn}
+                </Typography>
+
+                <Divider></Divider>
+
                 <Typography gutterBottom variant="h5" component="div">
-                    $56.000
+                    {book.price}
                 </Typography>
             </CardContent>
 
@@ -56,6 +77,10 @@ export default function BookCard() {
                         bgcolor: "#567568",
                         alignItems: "center",
                         marginLeft: "auto",
+                    }}
+                    onClick={() => {
+                        updateCart(book, counter);
+                        setCounter(0);
                     }}
                 >
                     <Tooltip title="Add to cart">
