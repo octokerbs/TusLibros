@@ -42,11 +42,11 @@ export default function BookCard() {
 
             <CardActions sx={{ justifyContent: "space-between" }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <IconButton>
+                    <IconButton onClick={handleDecrement}>
                         <RemoveCircleOutline></RemoveCircleOutline>
                     </IconButton>
                     <Typography>{counter}</Typography>
-                    <IconButton>
+                    <IconButton onClick={handleIncrement}>
                         <AddCircleOutline></AddCircleOutline>
                     </IconButton>
                 </Box>

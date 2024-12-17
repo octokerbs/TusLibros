@@ -1,3 +1,5 @@
+"use client";
+
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Grid2";
 import BookCard from "./BookCard";
