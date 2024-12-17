@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "TusLibros - Login",
+    title: "TusLibros - Mis Compras",
 };
 
 export default function Home() {

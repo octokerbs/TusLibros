@@ -1,9 +1,15 @@
-import Logout from "@mui/icons-material/Logout";
 import History from "@mui/icons-material/History";
 import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { useRouter } from "next/navigation";
+import {
+    AccountCircle,
+    CreditCardOff,
+    EventBusy,
+    NoAccounts,
+} from "@mui/icons-material";
 
 export default function UserMenu({
     anchorEl,
@@ -14,6 +20,8 @@ export default function UserMenu({
     open: boolean;
     handleClose: () => void;
 }) {
+    const router = useRouter();
+
     return (
         <Menu
             anchorEl={anchorEl}
@@ -52,18 +60,37 @@ export default function UserMenu({
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={() => router.push("/miscompras")}>
                 <ListItemIcon>
                     <History fontSize="small" />
                 </ListItemIcon>
                 Mis compras
             </MenuItem>
             <Divider />
-            <MenuItem onClick={handleClose}>
+
+            <MenuItem>
                 <ListItemIcon>
-                    <Logout fontSize="small" />
+                    <AccountCircle fontSize="small" />
                 </ListItemIcon>
-                Logout
+                Usuario Valido
+            </MenuItem>
+            <MenuItem>
+                <ListItemIcon>
+                    <NoAccounts fontSize="small" />
+                </ListItemIcon>
+                Usuario Invalido
+            </MenuItem>
+            <MenuItem>
+                <ListItemIcon>
+                    <EventBusy fontSize="small" />
+                </ListItemIcon>
+                Usuario con tarjeta expirada
+            </MenuItem>
+            <MenuItem>
+                <ListItemIcon>
+                    <CreditCardOff fontSize="small" />
+                </ListItemIcon>
+                Usuario sin fondos
             </MenuItem>
         </Menu>
     );

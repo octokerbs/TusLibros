@@ -5,6 +5,7 @@ import Divider from "@mui/material/Divider";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
 import { CartBookEntry } from "../content";
+import { useRouter } from "next/navigation";
 
 export default function CartMenu({
     anchorEl,
@@ -19,6 +20,7 @@ export default function CartMenu({
     cartBooks: CartBookEntry[];
     total: string;
 }) {
+    const router = useRouter();
     return (
         <Menu
             anchorEl={anchorEl}
@@ -134,6 +136,7 @@ export default function CartMenu({
                         color: "white",
                         width: "20vw",
                     }}
+                    onClick={() => router.push("/checkout")}
                 >
                     <ShoppingCartCheckout></ShoppingCartCheckout>
                     <Typography sx={{ color: "white" }}>Checkout</Typography>
