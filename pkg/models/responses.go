@@ -22,6 +22,7 @@ type CheckOutCartResponse struct {
 	TransactionID int    `json:"transactionId,omitempty"`
 	Message       string `json:"message,omitempty"`
 }
+
 type ListPurchasesResponse struct {
 	Status  int                `json:"status"`
 	Items   map[string]float64 `json:"items,omitempty"`
