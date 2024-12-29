@@ -75,6 +75,7 @@ export default function Content() {
                         return;
                 }
                 setState({ ...newState, open: true });
+                setCartBooks([]);
         };
 
         const handleClose = () => {
@@ -101,7 +102,7 @@ export default function Content() {
 
                 for (let index = 0; index < cartBooks.length; index++) {
                         if (cartBooks[index].book.isbn == book.isbn) {
-                                let items = [...cartBooks];
+                                const items = [...cartBooks];
                                 items[index] = {
                                         book: book,
                                         quantity:
@@ -139,7 +140,7 @@ export default function Content() {
 
         useEffect(() => {
                 updateTotal();
-        }, [cartBooks]);
+        }, [cartBooks, updateTotal]);
 
         const [openCompras, setOpenCompras] = React.useState(false);
         const handleOpenCompras = () => setOpenCompras(true);

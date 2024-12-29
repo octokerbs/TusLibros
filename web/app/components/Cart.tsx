@@ -5,7 +5,6 @@ import Divider from "@mui/material/Divider";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
 import { CartBookEntry } from "./Content";
-import { useRouter } from "next/navigation";
 import { SnackbarOrigin } from "@mui/material";
 
 export default function CartMenu({

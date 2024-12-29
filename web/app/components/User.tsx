@@ -3,7 +3,6 @@ import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useRouter } from "next/navigation";
 import {
         AccountCircle,
         CreditCardOff,
