@@ -9,20 +9,20 @@ import {
         EventBusy,
         NoAccounts,
 } from "@mui/icons-material";
-import { UserState } from "./Content";
+import { UserState } from "../../types";
 
 export default function UserMenu({
         anchorEl,
         open,
         handleClose,
-        handleUserState,
-        handleOpenCompras,
+        onUserStateChange,
+        onOpenCompras,
 }: {
         anchorEl: HTMLElement | null;
         open: boolean;
         handleClose: () => void;
-        handleUserState: (newState: number) => void;
-        handleOpenCompras: () => void;
+        onUserStateChange: (newState: number) => void;
+        onOpenCompras: () => void;
 }) {
         return (
                 <Menu
@@ -68,7 +68,7 @@ export default function UserMenu({
                                 vertical: "bottom",
                         }}
                 >
-                        <MenuItem onClick={handleOpenCompras}>
+                        <MenuItem onClick={onOpenCompras}>
                                 <ListItemIcon>
                                         <History fontSize="small" />
                                 </ListItemIcon>
@@ -78,7 +78,7 @@ export default function UserMenu({
 
                         <MenuItem
                                 onClick={() =>
-                                        handleUserState(UserState.ValidUser)
+                                        onUserStateChange(UserState.ValidUser)
                                 }
                         >
                                 <ListItemIcon>
@@ -88,7 +88,7 @@ export default function UserMenu({
                         </MenuItem>
                         <MenuItem
                                 onClick={() =>
-                                        handleUserState(UserState.InvalidUser)
+                                        onUserStateChange(UserState.InvalidUser)
                                 }
                         >
                                 <ListItemIcon>
@@ -98,7 +98,7 @@ export default function UserMenu({
                         </MenuItem>
                         <MenuItem
                                 onClick={() =>
-                                        handleUserState(
+                                        onUserStateChange(
                                                 UserState.ExpiredCreditCardUser
                                         )
                                 }
@@ -110,7 +110,7 @@ export default function UserMenu({
                         </MenuItem>
                         <MenuItem
                                 onClick={() =>
-                                        handleUserState(
+                                        onUserStateChange(
                                                 UserState.NoFundsCreditCardUser
                                         )
                                 }

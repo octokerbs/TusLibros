@@ -4,8 +4,7 @@ import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
-import { CartBookEntry } from "./Content";
-import { SnackbarOrigin } from "@mui/material";
+import { CartBookEntry, SnackbarState } from "../../types";
 
 export default function CartMenu({
         anchorEl,
@@ -13,14 +12,16 @@ export default function CartMenu({
         handleClose,
         cartBooks,
         total,
-        handleClick,
+        onCheckout,
 }: {
         anchorEl: HTMLElement | null;
         open: boolean;
         handleClose: () => void;
         cartBooks: CartBookEntry[];
         total: string;
-        handleClick: (newState: SnackbarOrigin) => () => void;
+        onCheckout: (
+                position: Pick<SnackbarState, "vertical" | "horizontal">
+        ) => void;
 }) {
         return (
                 <Menu
@@ -163,10 +164,12 @@ export default function CartMenu({
                                                 color: "white",
                                                 width: "20vw",
                                         }}
-                                        onClick={handleClick({
-                                                vertical: "top",
-                                                horizontal: "right",
-                                        })}
+                                        onClick={() =>
+                                                onCheckout({
+                                                        vertical: "top",
+                                                        horizontal: "right",
+                                                })
+                                        }
                                 >
                                         <ShoppingCartCheckout></ShoppingCartCheckout>
                                         <Typography sx={{ color: "white" }}>

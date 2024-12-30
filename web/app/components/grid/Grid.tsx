@@ -3,12 +3,12 @@
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Grid2";
 import BookCard from "./Card";
-import { Book } from "./Content";
+import { Book } from "../../types";
 
 export default function BookGrid({
-        updateCart,
+        onUpdateCart,
 }: {
-        updateCart: (book: Book, quantity: number) => void;
+        onUpdateCart: (book: Book, quantity: number) => void;
 }) {
         const book1: Book = {
                 name: "Mistborn: Secret History",
@@ -43,99 +43,99 @@ export default function BookGrid({
                         >
                                 <Grid2 container spacing={"1.2vw"}>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book1}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book2}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book3}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book1}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book2}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book3}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book1}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book2}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book3}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book1}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book2}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book3}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book1}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book2}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book3}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book1}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book2}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book3}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book1}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book2}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book3}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book1}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book2}
                                         ></BookCard>
                                         <BookCard
-                                                updateCart={updateCart}
+                                                onUpdateCart={onUpdateCart}
                                                 book={book3}
                                         ></BookCard>
                                 </Grid2>

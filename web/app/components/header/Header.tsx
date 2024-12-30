@@ -1,39 +1,38 @@
 "use client";
 
-import { AppBar, IconButton, SnackbarOrigin, Tooltip } from "@mui/material";
+import { AppBar, IconButton, Tooltip } from "@mui/material";
 import Box from "@mui/material/Box";
-import { AccountCircle, ShoppingCart } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { ShoppingCart } from "@mui/icons-material";
+import React from "react";
 import Title from "./Title";
-import CartMenu from "./Cart";
-import UserMenu from "./User";
-import { CartBookEntry, UserState } from "./Content";
+import CartMenu from "./CartMenu";
+import UserMenu from "./UserMenu";
+import { CartBookEntry, SnackbarState, UserState } from "../../types";
 import Badge from "@mui/material/Badge";
-import NoAccounts from "@mui/icons-material/NoAccounts";
-import EventBusy from "@mui/icons-material/EventBusy";
-import CreditCardOff from "@mui/icons-material/CreditCardOff";
+
+import useUserIcon from "./hooks/useUserIcon";
 
 export default function Header({
         cartBooks,
         total,
-        handleOpenCompras,
+        onOpenCompras,
         userState,
-        handleUserState,
-        handleClick,
+        onUserStateChange,
+        onCheckout,
 }: {
         cartBooks: CartBookEntry[];
         total: string;
-        handleOpenCompras: () => void;
+        onOpenCompras: () => void;
         userState: UserState;
-        handleUserState: (newState: UserState) => void;
-        handleClick: (newState: SnackbarOrigin) => () => void;
+        onUserStateChange: (newState: UserState) => void;
+        onCheckout: (
+                position: Pick<SnackbarState, "vertical" | "horizontal">
+        ) => void;
 }) {
         const [anchorElUser, setAnchorElUser] =
                 React.useState<null | HTMLElement>(null);
         const [anchorElCart, setAnchorElCart] =
                 React.useState<null | HTMLElement>(null);
-
-        const [userIcon, setUserIcon] = useState(<AccountCircle />);
 
         const openUser = Boolean(anchorElUser);
         const openCart = Boolean(anchorElCart);
@@ -52,26 +51,7 @@ export default function Header({
                 setAnchorElCart(null);
         };
 
-        useEffect(() => {
-                switch (userState) {
-                        case UserState.ValidUser: {
-                                setUserIcon(<AccountCircle />);
-                                break;
-                        }
-                        case UserState.InvalidUser: {
-                                setUserIcon(<NoAccounts />);
-                                break;
-                        }
-                        case UserState.ExpiredCreditCardUser: {
-                                setUserIcon(<EventBusy />);
-                                break;
-                        }
-                        case UserState.NoFundsCreditCardUser: {
-                                setUserIcon(<CreditCardOff />);
-                                break;
-                        }
-                }
-        }, [userState]);
+        const userIcon = useUserIcon(userState);
 
         return (
                 <AppBar position="fixed" sx={{ bgcolor: "#567568" }}>
@@ -143,15 +123,15 @@ export default function Header({
                                 handleClose={handleCloseCart}
                                 cartBooks={cartBooks}
                                 total={total}
-                                handleClick={handleClick}
+                                onCheckout={onCheckout}
                         />
 
                         <UserMenu
                                 anchorEl={anchorElUser}
                                 open={openUser}
                                 handleClose={handleCloseUser}
-                                handleUserState={handleUserState}
-                                handleOpenCompras={handleOpenCompras}
+                                onUserStateChange={onUserStateChange}
+                                onOpenCompras={onOpenCompras}
                         />
                 </AppBar>
         );

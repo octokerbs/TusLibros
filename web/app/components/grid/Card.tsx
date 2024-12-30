@@ -9,13 +9,13 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { Book } from "./Content";
+import { Book } from "../../types";
 
 export default function BookCard({
-        updateCart,
+        onUpdateCart,
         book,
 }: {
-        updateCart: (book: Book, quantity: number) => void;
+        onUpdateCart: (book: Book, quantity: number) => void;
         book: Book;
 }) {
         const [counter, setCounter] = useState(1);
@@ -102,7 +102,7 @@ export default function BookCard({
                                                         marginLeft: "auto",
                                                 }}
                                                 onClick={() => {
-                                                        updateCart(
+                                                        onUpdateCart(
                                                                 book,
                                                                 counter
                                                         );

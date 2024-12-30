@@ -1,23 +1,23 @@
 import { Alert, Button, Snackbar, SnackbarOrigin } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { UserState } from "./Content";
+import { UserState } from "../types";
 
 export default function CheckoutPopup({
         userState,
-        handleClose,
+        onClose,
         open,
         vertical,
         horizontal,
 }: {
         userState: UserState;
-        handleClose: () => void;
+        onClose: () => void;
         open: boolean;
         vertical: "bottom" | "top";
         horizontal: "center" | "left" | "right";
 }) {
         const [alertState, setAlertState] = useState(
                 <Alert
-                        onClose={handleClose}
+                        onClose={onClose}
                         severity="success"
                         variant="filled"
                         sx={{
@@ -35,7 +35,7 @@ export default function CheckoutPopup({
                         case UserState.InvalidUser:
                                 setAlertState(
                                         <Alert
-                                                onClose={handleClose}
+                                                onClose={onClose}
                                                 severity="error"
                                                 variant="filled"
                                                 sx={{
@@ -51,7 +51,7 @@ export default function CheckoutPopup({
                         case UserState.ExpiredCreditCardUser:
                                 setAlertState(
                                         <Alert
-                                                onClose={handleClose}
+                                                onClose={onClose}
                                                 severity="error"
                                                 variant="filled"
                                                 sx={{
@@ -68,7 +68,7 @@ export default function CheckoutPopup({
                         case UserState.NoFundsCreditCardUser:
                                 setAlertState(
                                         <Alert
-                                                onClose={handleClose}
+                                                onClose={onClose}
                                                 severity="error"
                                                 variant="filled"
                                                 sx={{
@@ -85,7 +85,7 @@ export default function CheckoutPopup({
                         default:
                                 setAlertState(
                                         <Alert
-                                                onClose={handleClose}
+                                                onClose={onClose}
                                                 severity="success"
                                                 variant="filled"
                                                 sx={{
@@ -108,7 +108,7 @@ export default function CheckoutPopup({
                                 anchorOrigin={{ vertical, horizontal }}
                                 open={open}
                                 autoHideDuration={6000}
-                                onClose={handleClose}
+                                onClose={onClose}
                                 key={vertical + horizontal}
                         >
                                 {alertState}

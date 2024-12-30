@@ -1,5 +1,5 @@
 import { Box, Divider, Modal, Typography } from "@mui/material";
-import { Book } from "./Content";
+import { Book } from "../types";
 
 const style = {
         position: "absolute",
@@ -16,12 +16,12 @@ const style = {
 
 export default function Compras({
         open,
-        handleCloseCompras,
+        onClose,
         books,
 }: {
         open: boolean;
-        handleCloseCompras: () => void;
-        books: Map<string, Book>;
+        onClose: () => void;
+        books: Record<string, Book>;
 }) {
         let purchases = new Map<string, number>();
         purchases.set("978-1473225046", 10);
@@ -36,7 +36,7 @@ export default function Compras({
                 <Box>
                         <Modal
                                 open={open}
-                                onClose={handleCloseCompras}
+                                onClose={onClose}
                                 aria-labelledby="modal-modal-title"
                                 aria-describedby="modal-modal-description"
                         >
@@ -69,9 +69,10 @@ export default function Compras({
                                                                                         color="black"
                                                                                 >
                                                                                         {
-                                                                                                books.get(
-                                                                                                        purchase.isbn
-                                                                                                )
+                                                                                                books[
+                                                                                                        purchase
+                                                                                                                .isbn
+                                                                                                ]
                                                                                                         ?.name
                                                                                         }{" "}
                                                                                 </Typography>
