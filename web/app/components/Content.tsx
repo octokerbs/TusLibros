@@ -5,7 +5,7 @@ import BookGrid from "./grid/Grid";
 import Header from "./header/Header";
 import Compras from "./Compras";
 import CheckoutPopup from "./CheckoutPopup";
-import { INITIAL_BOOKS } from "../data/books";
+import { INITIAL_BOOKS } from "./data/books";
 import { UserState } from "./types";
 import { ContentContainer } from "./styles";
 import useCart from "./hooks/useCart";

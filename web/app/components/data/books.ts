@@ -1,4 +1,4 @@
-import { Book } from "../components/types";
+import { Book } from "../types";
 
 export const INITIAL_BOOKS: Record<string, Book> = {
     "978-1473225046": {
