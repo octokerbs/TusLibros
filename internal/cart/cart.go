@@ -3,15 +3,16 @@ package cart
 import (
 	"errors"
 
+	"github.com/KerbsOD/TusLibros/internal/book"
 	"github.com/KerbsOD/TusLibros/internal/lineItem"
 )
 
 type Cart struct {
-	catalog  map[string]float64
+	catalog  map[string]book.Book
 	contents map[string]int
 }
 
-func NewCart(aCatalog map[string]float64) *Cart {
+func NewCart(aCatalog map[string]book.Book) *Cart {
 	return &Cart{catalog: aCatalog, contents: make(map[string]int)}
 }
 
@@ -42,7 +43,7 @@ func (c *Cart) IsEmpty() bool {
 
 func (c *Cart) AddLineItemsTo(aListOfLineItems *[]lineItem.LineItem) {
 	for item, quantity := range c.contents {
-		lineCost := c.catalog[item] * float64(quantity)
+		lineCost := c.catalog[item].CalculatePrice(quantity)
 		*aListOfLineItems = append(*aListOfLineItems, lineItem.NewLineItem(item, lineCost))
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/KerbsOD/TusLibros/internal/book"
 	"github.com/KerbsOD/TusLibros/internal/cart"
 	"github.com/KerbsOD/TusLibros/internal/cartSession"
 	"github.com/KerbsOD/TusLibros/internal/clock"
@@ -15,7 +16,7 @@ import (
 )
 
 type SystemFacade struct {
-	catalog           map[string]float64
+	catalog           map[string]book.Book
 	userAuthSystem    userAuthentication.UserAuthentication
 	merchantProcessor merchantProcessor.MerchantProcessor
 	clock             clock.Clock
@@ -24,7 +25,7 @@ type SystemFacade struct {
 }
 
 func NewSystemFacade(
-	aCatalog map[string]float64,
+	aCatalog map[string]book.Book,
 	anAuthenticationSystem userAuthentication.UserAuthentication,
 	aMerchantProcessor merchantProcessor.MerchantProcessor,
 	aClock clock.Clock,
@@ -137,7 +138,7 @@ func (sf *SystemFacade) CheckOutCart(aCartID int, aCreditCartNumber string, anEx
 // Output:
 // En caso de éxito: 0|ISBN_1|QUANTITY_1|....|ISBN_N|QUANTITY_N|TOTAL_AMOUNT
 // En caso de error: 1|DESCRIPCION_DE_ERROR
-func (sf *SystemFacade) ListPurchasesOf(aUser *userCredentials.UserCredentials) (map[string]float64, error) {
+func (sf *SystemFacade) ListPurchasesOf(aUser *userCredentials.UserCredentials) (map[string]int, error) {
 	if !aUser.ValidCredentials(sf.userAuthSystem) {
 		return nil, errors.New(InvalidUserOrPasswordErrorMessage)
 	}

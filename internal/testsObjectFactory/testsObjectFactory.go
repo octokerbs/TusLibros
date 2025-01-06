@@ -1,42 +1,36 @@
 package testsObjectFactory
 
 import (
+	"time"
+
+	"github.com/KerbsOD/TusLibros/internal/book"
 	"github.com/KerbsOD/TusLibros/internal/clock"
 	"github.com/KerbsOD/TusLibros/internal/creditCard"
 	"github.com/KerbsOD/TusLibros/internal/userCredentials"
-	"time"
 )
 
 type TestsObjectFactory struct{}
 
-func (t *TestsObjectFactory) ItemNotInCatalog() string {
-	item := "Fahrenheit-451"
-	return item
+func (t *TestsObjectFactory) ItemInCatalog() book.Book {
+	return book.NewBook("Mistborn: Secret History", "978-1473225046", 20820, "/images/SecretHistory.jpg")
 }
 
-func (t *TestsObjectFactory) ItemInCatalog() string {
-	item := "A Clash of Kings"
-	return item
+func (t *TestsObjectFactory) AnotherItemInCatalog() book.Book {
+	return book.NewBook("The Well Of Ascension", "978-0765316882", 21189, "/images/TheWellOfAscension.jpg")
 }
 
-func (t *TestsObjectFactory) AnotherItemInCatalog() string {
-	item := "El Principe"
-	return item
+func (t *TestsObjectFactory) ItemNotInCatalog() book.Book {
+	return book.NewBook("The Hobbit", "978-0544445789", -1, "")
 }
 
-func (t *TestsObjectFactory) CatalogWithAnItemAndItsPrice() map[string]float64 {
-	catalog := map[string]float64{t.ItemInCatalog(): t.ItemInCatalogPrice()}
-	catalog[t.ItemInCatalog()] = t.ItemInCatalogPrice()
-	catalog[t.AnotherItemInCatalog()] = t.AnotherItemInCatalogPrice()
-	return catalog
-}
+func (t *TestsObjectFactory) NewCatalog() *map[string]book.Book {
+	Book3 := book.NewBook("Shadows", "978-0765378569", 17584, "/images/ShadowsOfSelf.jpg")
 
-func (t *TestsObjectFactory) ItemInCatalogPrice() float64 {
-	return 14.99
-}
-
-func (t *TestsObjectFactory) AnotherItemInCatalogPrice() float64 {
-	return 4.99
+	return &map[string]book.Book{
+		t.ItemInCatalog().ISBN():        t.ItemInCatalog(),
+		t.AnotherItemInCatalog().ISBN(): t.AnotherItemInCatalog(),
+		Book3.ISBN():                    Book3,
+	}
 }
 
 func (t *TestsObjectFactory) ExpiredCreditCard() *creditCard.CreditCard {

@@ -21,8 +21,8 @@ func (sb *SalesBook) IsEmpty() bool {
 	return len(sb.sales) == 0
 }
 
-func (sb *SalesBook) SalesWhereOwnerIs(aUser *userCredentials.UserCredentials) map[string]float64 {
-	userPurchases := map[string]float64{}
+func (sb *SalesBook) SalesWhereOwnerIs(aUser *userCredentials.UserCredentials) map[string]int {
+	userPurchases := map[string]int{}
 
 	for _, aSale := range sb.sales {
 		aSale.AddToPurchasesIfOwnerIs(aUser, &userPurchases)

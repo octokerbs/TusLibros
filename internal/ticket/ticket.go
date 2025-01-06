@@ -10,15 +10,15 @@ func NewTicket(anArrayOfLineItems []lineItem.LineItem) Ticket {
 	return Ticket{lineItems: anArrayOfLineItems}
 }
 
-func (t *Ticket) Total() float64 {
-	sum := 0.0
+func (t *Ticket) Total() int {
+	sum := 0
 	for _, line := range t.lineItems {
 		sum += line.Total()
 	}
 	return sum
 }
 
-func (t *Ticket) AddLineItemsAndItsCostToMapCollector(aListOfPurchases *map[string]float64) {
+func (t *Ticket) AddLineItemsAndItsCostToMapCollector(aListOfPurchases *map[string]int) {
 	for _, aLineItem := range t.lineItems {
 		aLineItem.AddToPurchaseMap(aListOfPurchases)
 	}

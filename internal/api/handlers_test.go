@@ -10,10 +10,12 @@ import (
 	"time"
 
 	"github.com/KerbsOD/TusLibros/internal"
+	"github.com/KerbsOD/TusLibros/internal/book"
 	"github.com/KerbsOD/TusLibros/internal/cart"
 	"github.com/KerbsOD/TusLibros/internal/cashier"
 	"github.com/KerbsOD/TusLibros/internal/clock"
 	"github.com/KerbsOD/TusLibros/internal/merchantProcessor"
+	"github.com/KerbsOD/TusLibros/internal/testsObjectFactory"
 	"github.com/KerbsOD/TusLibros/internal/userAuthentication"
 	"github.com/KerbsOD/TusLibros/pkg/models"
 	"github.com/stretchr/testify/assert"
@@ -23,12 +25,13 @@ import (
 
 type HandlersTestSuite struct {
 	suite.Suite
-	catalog                map[string]float64
+	catalog                *map[string]book.Book
 	mockMerchantProcessor  *merchantProcessor.MockMerchantProcessor
 	mockClock              *clock.MockClock
 	mockUserAuthentication *userAuthentication.MockUserAuthentication
 	facade                 *internal.SystemFacade
 	handler                *Handler
+	factory                testsObjectFactory.TestsObjectFactory
 }
 
 func TestHandlersTestSuite(t *testing.T) {
@@ -36,12 +39,12 @@ func TestHandlersTestSuite(t *testing.T) {
 }
 
 func (s *HandlersTestSuite) SetupTest() {
-	s.catalog = map[string]float64{"978-0553579901": 19.99, "979-8712157877": 9.99}
+	s.catalog = s.factory.NewCatalog()
 	s.mockMerchantProcessor = merchantProcessor.NewMockMerchantProcessor()
 	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(nil)
 	s.mockClock = clock.NewMockClock()
 	s.mockUserAuthentication = userAuthentication.NewMockUserAuthentication()
-	s.facade = internal.NewSystemFacade(s.catalog, s.mockUserAuthentication, s.mockMerchantProcessor, s.mockClock)
+	s.facade = internal.NewSystemFacade(*s.catalog, s.mockUserAuthentication, s.mockMerchantProcessor, s.mockClock)
 	s.handler = &Handler{Facade: s.facade}
 }
 

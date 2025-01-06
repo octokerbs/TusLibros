@@ -8,7 +8,7 @@ import (
 type MockMerchantProcessor struct {
 	mock.Mock
 	creditCardUsed *creditCard.CreditCard
-	debitedAmount  float64
+	debitedAmount  int
 }
 
 func NewMockMerchantProcessor() *MockMerchantProcessor {
@@ -17,7 +17,7 @@ func NewMockMerchantProcessor() *MockMerchantProcessor {
 	return mmp
 }
 
-func (mmp *MockMerchantProcessor) DebitOn(anAmount float64, aCreditCard *creditCard.CreditCard) error {
+func (mmp *MockMerchantProcessor) DebitOn(anAmount int, aCreditCard *creditCard.CreditCard) error {
 	args := mmp.Called(anAmount, aCreditCard)
 	if args.Error(0) != nil {
 		return args.Error(0)
@@ -32,6 +32,6 @@ func (mmp *MockMerchantProcessor) UsedCard() *creditCard.CreditCard {
 	return mmp.creditCardUsed
 }
 
-func (mmp *MockMerchantProcessor) DebitedAmount() float64 {
+func (mmp *MockMerchantProcessor) DebitedAmount() int {
 	return mmp.debitedAmount
 }

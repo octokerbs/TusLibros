@@ -70,7 +70,7 @@ func (c *Cashier) registerSale() {
 	c.salesBook.AddSale(newSale)
 }
 
-func (c *Cashier) Total() float64 {
+func (c *Cashier) Total() int {
 	return c.ticket.Total()
 }
 

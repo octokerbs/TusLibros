@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/KerbsOD/TusLibros/internal/book"
 	"github.com/KerbsOD/TusLibros/internal/cart"
 	"github.com/KerbsOD/TusLibros/internal/cashier"
 	"github.com/KerbsOD/TusLibros/internal/clock"
@@ -20,12 +21,10 @@ import (
 type FacadeTestSuite struct {
 	suite.Suite
 	factory                testsObjectFactory.TestsObjectFactory
-	catalog                map[string]float64
-	book1                  string
-	book1Price             float64
-	book2                  string
-	book2Price             float64
-	invalidBook            string
+	catalog                map[string]book.Book
+	book1                  book.Book
+	book2                  book.Book
+	invalidBook            book.Book
 	validUserCredentials   *userCredentials.UserCredentials
 	invalidUserCredentials *userCredentials.UserCredentials
 	yesterday              time.Time
@@ -45,11 +44,9 @@ func TestFacadeTestSuite(t *testing.T) {
 
 func (s *FacadeTestSuite) SetupTest() {
 	s.factory = testsObjectFactory.TestsObjectFactory{}
-	s.catalog = s.factory.CatalogWithAnItemAndItsPrice()
+	s.catalog = *s.factory.NewCatalog()
 	s.book1 = s.factory.ItemInCatalog()
-	s.book1Price = s.factory.ItemInCatalogPrice()
 	s.book2 = s.factory.AnotherItemInCatalog()
-	s.book2Price = s.factory.AnotherItemInCatalogPrice()
 	s.invalidBook = s.factory.ItemNotInCatalog()
 	s.validUserCredentials = s.factory.ValidUserCredentials()
 	s.invalidUserCredentials = s.factory.InvalidUserCredentials()
@@ -84,25 +81,25 @@ func (s *FacadeTestSuite) Test03CanNotCreateCartWithInvalidUsernamePassword() {
 
 func (s *FacadeTestSuite) Test04CanAddItemsToACreatedCart() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	myCart, _ := s.facade.CartWithID(cartID)
 	assert.False(s.T(), myCart.IsEmpty())
 }
 
 func (s *FacadeTestSuite) Test05CanNotAddItemToNotCreatedCart() {
-	err := s.facade.AddToCart(-1, s.book1, 10)
+	err := s.facade.AddToCart(-1, s.book1.ISBN(), 10)
 	assert.EqualError(s.T(), err, InvalidCartIDErrorMessage)
 }
 
 func (s *FacadeTestSuite) Test06CanNotAddItemNotSellByTheStore() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	err := s.facade.AddToCart(cartID, s.invalidBook, 10)
+	err := s.facade.AddToCart(cartID, s.invalidBook.ISBN(), 10)
 	assert.EqualError(s.T(), err, cart.InvalidItemErrorMessage)
 }
 
 func (s *FacadeTestSuite) Test07CanNotAddNegativeQuantityOfAnItem() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	err := s.facade.AddToCart(cartID, s.book1, -1)
+	err := s.facade.AddToCart(cartID, s.book1.ISBN(), -1)
 	assert.EqualError(s.T(), err, cart.InvalidQuantityErrorMessage)
 }
 
@@ -119,20 +116,20 @@ func (s *FacadeTestSuite) Test09CanNotListCartWithInvalidCartID() {
 
 func (s *FacadeTestSuite) Test10ListCartListsAddedItemsCorrectly() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	addedItems, _ := s.facade.ListCart(cartID)
 	expectedItems := map[string]int{}
-	expectedItems[s.book1] = 10
+	expectedItems[s.book1.ISBN()] = 10
 	assert.Equal(s.T(), expectedItems, addedItems)
 }
 
 func (s *FacadeTestSuite) Test11CanCheckOutACart() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	_, _ = s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
 	clientPurchases, _ := s.facade.ListPurchasesOf(s.validUserCredentials)
-	expectedPurchases := map[string]float64{}
-	expectedPurchases[s.book1] = s.book1Price * 10
+	expectedPurchases := map[string]int{}
+	expectedPurchases[s.book1.ISBN()] = s.book1.CalculatePrice(10)
 	assert.Equal(s.T(), expectedPurchases, clientPurchases)
 }
 
@@ -149,14 +146,14 @@ func (s *FacadeTestSuite) Test13CanNotCheckoutEmptyCart() {
 
 func (s *FacadeTestSuite) Test14CanNotCheckoutWithAnExpiredCreditCard() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	_, err := s.facade.CheckOutCart(cartID, s.validCardNumber, s.yesterday, s.validCardOwner)
 	assert.EqualError(s.T(), err, merchantProcessor.InvalidCreditCardErrorMessage)
 }
 
 func (s *FacadeTestSuite) Test15CanNotCheckoutWithInsufficientFunds() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Unset()
 	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(merchantProcessor.InvalidCreditCardErrorMessage))
 	_, err := s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
@@ -165,19 +162,19 @@ func (s *FacadeTestSuite) Test15CanNotCheckoutWithInsufficientFunds() {
 
 func (s *FacadeTestSuite) Test16PurchaseIsRegisteredInSalesBook() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
-	_ = s.facade.AddToCart(cartID, s.book2, 5)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
+	_ = s.facade.AddToCart(cartID, s.book2.ISBN(), 5)
 	_, _ = s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
-	expectedPurchases := map[string]float64{}
-	expectedPurchases[s.book1] = s.book1Price * 10
-	expectedPurchases[s.book2] = s.book2Price * 5
+	expectedPurchases := map[string]int{}
+	expectedPurchases[s.book1.ISBN()] = s.book1.CalculatePrice(10)
+	expectedPurchases[s.book2.ISBN()] = s.book2.CalculatePrice(5)
 	clientPurchases, _ := s.facade.ListPurchasesOf(s.validUserCredentials)
 	assert.Equal(s.T(), expectedPurchases, clientPurchases)
 }
 
 func (s *FacadeTestSuite) Test17CanNotListPurchasesOfInvalidUsername() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	_, _ = s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
 	s.mockUserAuthentication.On("RegisteredUser", mock.Anything, mock.Anything).Return(false)
 	_, err := s.facade.ListPurchasesOf(s.invalidUserCredentials)
@@ -186,7 +183,7 @@ func (s *FacadeTestSuite) Test17CanNotListPurchasesOfInvalidUsername() {
 
 func (s *FacadeTestSuite) Test18CanNotListPurchasesOfUsernameWithInvalidPassword() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	_, _ = s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
 	s.mockUserAuthentication.On("RegisteredUser", mock.Anything, mock.Anything).Return(false)
 	_, err := s.facade.ListPurchasesOf(s.invalidUserCredentials)
@@ -198,13 +195,13 @@ func (s *FacadeTestSuite) Test19CanNotAddToCartWhenSessionHasExpired() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
 	currentTime = currentTime.Add(31 * time.Minute)
 	s.mockClock.On("Now").Return(currentTime)
-	err := s.facade.AddToCart(cartID, s.book1, 10)
+	err := s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	assert.EqualError(s.T(), err, InvalidCartIDErrorMessage)
 }
 
 func (s *FacadeTestSuite) Test20CanNotListCartWhenSessionHasExpired() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	nowPlus30Minutes := s.today.Add(31 * time.Minute)
 	s.mockClock.On("Now").Return(nowPlus30Minutes)
 	_, err := s.facade.ListCart(cartID)
@@ -214,7 +211,7 @@ func (s *FacadeTestSuite) Test20CanNotListCartWhenSessionHasExpired() {
 func (s *FacadeTestSuite) Test21CanNotCheckoutCartWhenSessionHasExpired() {
 	currentTime := s.today
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 	currentTime = currentTime.Add(31 * time.Minute)
 	s.mockClock.On("Now").Return(currentTime)
 	_, err := s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
@@ -228,7 +225,7 @@ func (s *FacadeTestSuite) Test22UsingCartUpdatesLastUsedTimeSoItDoesntExpire() {
 	// Esperamos 20 minutos y agregamos un libro
 	currentTime = currentTime.Add(20 * time.Minute)
 	s.mockClock.On("Now").Return(currentTime).Once()
-	_ = s.facade.AddToCart(cartID, s.book1, 10)
+	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
 
 	// Esperamos otros 20 minutos y decidimos listar el carrito
 	currentTime = currentTime.Add(20 * time.Minute)
@@ -236,6 +233,6 @@ func (s *FacadeTestSuite) Test22UsingCartUpdatesLastUsedTimeSoItDoesntExpire() {
 	listedItems, _ := s.facade.ListCart(cartID)
 
 	expectedItems := map[string]int{}
-	expectedItems[s.book1] = 10
+	expectedItems[s.book1.ISBN()] = 10
 	assert.Equal(s.T(), expectedItems, listedItems)
 }
