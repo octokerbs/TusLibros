@@ -14,6 +14,21 @@ type Handler struct {
 	Facade *internal.SystemFacade
 }
 
+func (h *Handler) RequestCatalog(w http.ResponseWriter) {
+	log.Printf("/RequestCatalog")
+	catalog, _ := h.Facade.Catalog()
+
+	response := models.CreateCatalogResponse{
+		Status: 0,
+		Items:  catalog,
+	}
+
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
 func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
 	var request models.CreateCartRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {

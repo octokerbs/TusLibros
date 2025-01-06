@@ -148,6 +148,18 @@ func (sf *SystemFacade) ListPurchasesOf(aUser *userCredentials.UserCredentials) 
 	return userPurchases, nil
 }
 
+// ListPurchasesOf
+// Recurso: /listPurchases
+// Parámetros:
+// clientId: ID del cliente que quiere ver que compras hizo
+// password: Password del cliente que valida que puede operar con TusLibros.com
+// Output:
+// En caso de éxito: 0|ISBN_1|QUANTITY_1|....|ISBN_N|QUANTITY_N|TOTAL_AMOUNT
+// En caso de error: 1|DESCRIPCION_DE_ERROR
+func (sf *SystemFacade) Catalog() (map[string]book.Book, error) {
+	return sf.catalog, nil
+}
+
 // Private
 
 func (sf *SystemFacade) CartWithID(aCartID int) (*cartSession.CartSession, error) {

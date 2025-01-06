@@ -1,5 +1,13 @@
 package models
 
+import "github.com/KerbsOD/TusLibros/internal/book"
+
+type CreateCatalogResponse struct {
+	Status  int                  `json:"status"`
+	Items   map[string]book.Book `json:"items,omitempty"`
+	Message string               `json:"message,omitempty"`
+}
+
 type CreateCartResponse struct {
 	Status  int    `json:"status"`
 	CartID  int    `json:"cartId,omitempty"`
