@@ -12,11 +12,12 @@ import (
 )
 
 func main() {
-	catalog := map[string]float64{"978-0553579901": 19.99, "979-8712157877": 9.99}
+	catalog := NewCatalog()
 	mockMerchantProcessor := merchantProcessor.NewLocalMerchantProcessor()
 	mockClock := clock.NewLocalClock()
 	mockUserAuthentication := userAuthentication.NewLocalUserAuthentication()
-	systemFacade := internal.NewSystemFacade(catalog, mockUserAuthentication, mockMerchantProcessor, mockClock)
+
+	systemFacade := internal.NewSystemFacade(*catalog, mockUserAuthentication, mockMerchantProcessor, mockClock)
 
 	handler := &api.Handler{
 		Facade: systemFacade,
