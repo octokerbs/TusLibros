@@ -147,7 +147,7 @@ func (h *Handler) CheckOutCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("/checkoutCart {CartID: %d, CCNumber: %s, CCExpirationDate: %s, CCOwner: %s}", request.CartID, request.CreditCardNumber, request.CreditCardExpirationDate, request.CreditCardOwner)
+	log.Printf("/checkoutCart {CartID: %d, CCNumber: %s, CCExpirationDate: %s}", request.CartID, request.CreditCardNumber, request.CreditCardExpirationDate)
 
 	transactionID, err := h.Facade.CheckOutCart(request.CartID, request.CreditCardNumber, request.CreditCardExpirationDate, request.CreditCardNumber)
 	if err != nil {

@@ -369,7 +369,6 @@ func (s *HandlersTestSuite) checkOutCartRequestSender(cartID int, ccNumber strin
 		CartID:                   cartID,
 		CreditCardNumber:         ccNumber,
 		CreditCardExpirationDate: ccExpirationDate,
-		CreditCardOwner:          ccOwner,
 	})
 
 	checkOutCartRequest := httptest.NewRequest(http.MethodPost, "/CheckOutCart", bytes.NewReader(checkOutCartRequestBody))

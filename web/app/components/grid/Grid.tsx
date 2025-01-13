@@ -7,12 +7,13 @@ import { Book } from "../types";
 import { GridBox } from "./styles";
 
 export default function BookGrid({
-        onUpdateCart,
         catalog,
+        cartID,
 }: {
-        onUpdateCart: (book: Book, quantity: number) => void;
         catalog: Record<string, Book>;
+        cartID: number;
 }) {
+        console.log(cartID);
         return (
                 <Box sx={{ width: "100vw" }}>
                         <GridBox>
@@ -20,10 +21,8 @@ export default function BookGrid({
                                         {Object.values(catalog).map((book) => (
                                                 <BookCard
                                                         key={book.isbn}
-                                                        onUpdateCart={
-                                                                onUpdateCart
-                                                        }
                                                         book={book}
+                                                        cartID={cartID}
                                                 ></BookCard>
                                         ))}
                                 </Grid2>

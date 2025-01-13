@@ -9,7 +9,7 @@ export default function useCart() {
                 cartBooks.reduce((acc, item) => acc + item.total, 0)
         );
 
-        const addToCart = useCallback((book: Book, quantity: number) => {
+        const addToCart1 = useCallback((book: Book, quantity: number) => {
                 if (quantity <= 0) return;
 
                 setCartBooks((prevBooks) => {
@@ -40,5 +40,5 @@ export default function useCart() {
 
         const clearCart = useCallback(() => setCartBooks([]), []);
 
-        return { cartBooks, addToCart, clearCart, total };
+        return { cartBooks, addToCart1, clearCart, total };
 }

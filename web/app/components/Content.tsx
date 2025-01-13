@@ -5,21 +5,24 @@ import BookGrid from "./grid/Grid";
 import Header from "./header/Header";
 import Compras from "./Compras";
 import CheckoutPopup from "./CheckoutPopup";
-import { fetchBooks } from "./data/books";
+import { fetchCatalog } from "./api/catalog";
 import { Book, UserState } from "./types";
 import { ContentContainer } from "./styles";
 import useCart from "./hooks/useCart";
 import useSnackbar from "./hooks/useSnackbar";
+import { createCart } from "./api/cart";
 
 export default function Content() {
-        const { cartBooks, addToCart, clearCart, total } = useCart();
+        const { cartBooks, clearCart, total } = useCart();
+
+        const [userState, setUserState] = useState(UserState.ValidUser);
+        const [cartID, setCartID] = useState<number>(1);
+        const [catalog, setCatalog] = useState<Record<string, Book>>({});
         const { snackbarState, openSnackbar, closeSnackbar } = useSnackbar(
                 "top",
                 "right"
         );
-        const [userState, setUserState] = useState(UserState.ValidUser);
         const [isComprasOpen, setIsComprasOpen] = useState(false);
-        const [catalog, setCatalog] = useState<Record<string, Book>>({});
 
         const handleCheckout = useCallback(() => {
                 if (cartBooks.length === 0) return;
@@ -29,15 +32,20 @@ export default function Content() {
         }, [cartBooks, openSnackbar, clearCart]);
 
         useEffect(() => {
-                async function loadBooks() {
+                async function initCatalogAndCatalog() {
                         try {
-                                const fetchedBooks = await fetchBooks();
+                                const fetchedBooks = await fetchCatalog();
                                 setCatalog(fetchedBooks);
+                                const requestCartId = await createCart();
+                                setCartID(requestCartId);
                         } catch (error) {
-                                console.error("Failed to load books:", error);
+                                console.error(
+                                        "Catalog or Cart initialization error:",
+                                        error
+                                );
                         }
                 }
-                loadBooks();
+                initCatalogAndCatalog();
         }, []);
 
         return (
@@ -49,13 +57,14 @@ export default function Content() {
                                 userState={userState}
                                 onUserStateChange={setUserState}
                                 onCheckout={handleCheckout}
+                                cartID={cartID}
                         />
                         <Compras
                                 open={isComprasOpen}
                                 onClose={() => setIsComprasOpen(false)}
                                 catalog={catalog}
                         />
-                        <BookGrid onUpdateCart={addToCart} catalog={catalog} />
+                        <BookGrid catalog={catalog} cartID={cartID} />
                         <CheckoutPopup
                                 userState={userState}
                                 onClose={closeSnackbar}

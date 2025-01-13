@@ -18,10 +18,12 @@ export default function Header({
         userState,
         onUserStateChange,
         onCheckout,
+        cartID,
 }: HeaderProps) {
         const { anchorElCart, anchorElUser, handleClick, handleClose } =
                 useHeaderLogic();
         const userIcon = useUserIcon(userState);
+        console.log(cartID);
 
         return (
                 <AppBar position="fixed" sx={{ bgcolor: "#567568" }}>
@@ -75,8 +77,8 @@ export default function Header({
                                 anchorEl={anchorElCart}
                                 open={Boolean(anchorElCart)}
                                 handleClose={handleClose("cart")}
-                                cartBooks={cartBooks}
                                 total={total}
+                                cartBooks={cartBooks}
                                 onCheckout={onCheckout}
                         />
 

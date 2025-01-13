@@ -11,10 +11,23 @@ import { BookCardProps } from "./types";
 import { AddToCartButton } from "./styles";
 import { useCounter } from "./hooks/useCounter";
 import { formatCurrency } from "../utils/price";
+import { addToCart } from "../api/cart";
 
-export default function BookCard({ onUpdateCart, book }: BookCardProps) {
+export default function BookCard({ book, cartID }: BookCardProps) {
         const { counter, handleIncrement, handleDecrement, restartCounter } =
                 useCounter();
+
+        async function handleAddToCart() {
+                try {
+                        console.log(
+                                cartID + " --- " + book.isbn + " --- " + counter
+                        );
+                        await addToCart(1, "978-1473225046", 5);
+                        restartCounter();
+                } catch (error) {
+                        console.error("Failed to add item to cart:", error);
+                }
+        }
 
         return (
                 <Card sx={{ width: "11vw" }}>
@@ -79,13 +92,7 @@ export default function BookCard({ onUpdateCart, book }: BookCardProps) {
                                 </Box>
                                 <Tooltip title="Add to cart">
                                         <AddToCartButton
-                                                onClick={() => {
-                                                        onUpdateCart(
-                                                                book,
-                                                                counter
-                                                        );
-                                                        restartCounter();
-                                                }}
+                                                onClick={handleAddToCart}
                                         >
                                                 <AddShoppingCart></AddShoppingCart>
                                         </AddToCartButton>

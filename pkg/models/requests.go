@@ -24,7 +24,6 @@ type CheckOutCartRequest struct {
 	CartID                   int       `json:"cartId"`
 	CreditCardNumber         string    `json:"creditCardNumber"`
 	CreditCardExpirationDate time.Time `json:"creditCardExpirationDate"`
-	CreditCardOwner          string    `json:"creditCardOwner"`
 }
 
 type ListPurchasesRequest struct {
