@@ -1,5 +1,7 @@
 package book
 
+import "encoding/json"
+
 type Book struct {
 	name      string
 	isbn      string
@@ -17,4 +19,18 @@ func (b Book) CalculatePrice(quantity int) int {
 
 func (b Book) ISBN() string {
 	return b.isbn
+}
+
+func (b Book) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&struct {
+		Name      string `json:"name"`
+		ISBN      string `json:"isbn"`
+		Price     int    `json:"price"`
+		ImagePath string `json:"imagePath"`
+	}{
+		Name:      b.name,
+		ISBN:      b.isbn,
+		Price:     b.price,
+		ImagePath: b.imagePath,
+	})
 }

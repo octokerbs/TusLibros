@@ -301,12 +301,14 @@ func (s *HandlersTestSuite) TestPurchasesAreListedCorrectly() {
 
 // Private
 
-func (s *HandlersTestSuite) catalogRequestSender() (*httptest.ResponseRecorder, models.CreateCatalogResponse) {
+func (s *HandlersTestSuite) catalogRequestSender() (*httptest.ResponseRecorder, models.CatalogResponse) {
+	body, _ := json.Marshal(models.CatalogRequest{})
+	createCatalogRequest := httptest.NewRequest(http.MethodPost, "/RequestCatalog", bytes.NewReader(body))
 	createCatalogResponseRecorder := httptest.NewRecorder()
 
-	s.handler.RequestCatalog(createCatalogResponseRecorder)
+	s.handler.RequestCatalog(createCatalogResponseRecorder, createCatalogRequest)
 
-	var createCatalogResponse models.CreateCatalogResponse
+	var createCatalogResponse models.CatalogResponse
 	_ = json.Unmarshal(createCatalogResponseRecorder.Body.Bytes(), &createCatalogResponse)
 
 	return createCatalogResponseRecorder, createCatalogResponse

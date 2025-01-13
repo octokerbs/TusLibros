@@ -7,126 +7,27 @@ import { Book } from "../types";
 import { GridBox } from "./styles";
 
 export default function BookGrid({
-    onUpdateCart,
-    books,
+        onUpdateCart,
+        catalog,
 }: {
-    onUpdateCart: (book: Book, quantity: number) => void;
-    books: Record<string, Book>;
+        onUpdateCart: (book: Book, quantity: number) => void;
+        catalog: Record<string, Book>;
 }) {
-    return (
-        <Box sx={{ width: "100vw" }}>
-            <GridBox>
-                <Grid2 container spacing={"1.2vw"}>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-1473225046"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765316882"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765378569"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-1473225046"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765316882"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765378569"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-1473225046"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765316882"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765378569"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-1473225046"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765316882"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765378569"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-1473225046"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765316882"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765378569"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-1473225046"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765316882"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765378569"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-1473225046"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765316882"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765378569"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-1473225046"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765316882"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765378569"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-1473225046"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765316882"]}
-                    ></BookCard>
-                    <BookCard
-                        onUpdateCart={onUpdateCart}
-                        book={books["978-0765378569"]}
-                    ></BookCard>
-                </Grid2>
-            </GridBox>
-        </Box>
-    );
+        return (
+                <Box sx={{ width: "100vw" }}>
+                        <GridBox>
+                                <Grid2 container spacing={"1.2vw"}>
+                                        {Object.values(catalog).map((book) => (
+                                                <BookCard
+                                                        key={book.isbn}
+                                                        onUpdateCart={
+                                                                onUpdateCart
+                                                        }
+                                                        book={book}
+                                                ></BookCard>
+                                        ))}
+                                </Grid2>
+                        </GridBox>
+                </Box>
+        );
 }

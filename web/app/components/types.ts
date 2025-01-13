@@ -1,7 +1,7 @@
 export type Book = {
         name: string;
         isbn: string;
-        price: string;
+        price: number;
         imagePath: string;
 };
 

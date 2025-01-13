@@ -2,7 +2,7 @@ package models
 
 import "github.com/KerbsOD/TusLibros/internal/book"
 
-type CreateCatalogResponse struct {
+type CatalogResponse struct {
 	Status  int                  `json:"status"`
 	Items   map[string]book.Book `json:"items,omitempty"`
 	Message string               `json:"message,omitempty"`

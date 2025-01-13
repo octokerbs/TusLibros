@@ -24,11 +24,12 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/CreateCart", handler.CreateCart)
-	mux.HandleFunc("/AddToCart", handler.AddToCart)
-	mux.HandleFunc("/ListCart", handler.ListCart)
-	mux.HandleFunc("/CheckOutCart", handler.CheckOutCart)
-	mux.HandleFunc("/ListPurchases", handler.ListPurchases)
+	mux.HandleFunc("/catalog", handler.RequestCatalog)
+	mux.HandleFunc("/createCart", handler.CreateCart)
+	mux.HandleFunc("/addToCart", handler.AddToCart)
+	mux.HandleFunc("/listCart", handler.ListCart)
+	mux.HandleFunc("/checkOutCart", handler.CheckOutCart)
+	mux.HandleFunc("/listPurchases", handler.ListPurchases)
 
 	port := ":8080"
 	log.Println("Listening to port 8080")

@@ -14,11 +14,11 @@ type Handler struct {
 	Facade *internal.SystemFacade
 }
 
-func (h *Handler) RequestCatalog(w http.ResponseWriter) {
-	log.Printf("/RequestCatalog")
+func (h *Handler) RequestCatalog(w http.ResponseWriter, r *http.Request) {
+	log.Printf("/catalog")
 	catalog, _ := h.Facade.Catalog()
 
-	response := models.CreateCatalogResponse{
+	response := models.CatalogResponse{
 		Status: 0,
 		Items:  catalog,
 	}
@@ -41,7 +41,7 @@ func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("/CreateCart {ClientID: %s, Password: %s}", request.ClientID, request.Password)
+	log.Printf("/createCart {ClientID: %s, Password: %s}", request.ClientID, request.Password)
 
 	user := userCredentials.NewUserCredentials(request.ClientID, request.Password)
 	cartID, err := h.Facade.CreateCart(user)
@@ -77,7 +77,7 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("/AddToCart {CartID: %d, BookISBN: %s, BookQuantity: %d}", request.CartID, request.BookISBN, request.BookQuantity)
+	log.Printf("/addToCart {CartID: %d, BookISBN: %s, BookQuantity: %d}", request.CartID, request.BookISBN, request.BookQuantity)
 
 	err := h.Facade.AddToCart(request.CartID, request.BookISBN, request.BookQuantity)
 	if err != nil {
@@ -112,7 +112,7 @@ func (h *Handler) ListCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("/ListCart {CartID: %d}", request.CartID)
+	log.Printf("/listCart {CartID: %d}", request.CartID)
 
 	items, err := h.Facade.ListCart(request.CartID)
 	if err != nil {
@@ -147,6 +147,8 @@ func (h *Handler) CheckOutCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("/checkoutCart {CartID: %d, CCNumber: %s, CCExpirationDate: %s, CCOwner: %s}", request.CartID, request.CreditCardNumber, request.CreditCardExpirationDate, request.CreditCardOwner)
+
 	transactionID, err := h.Facade.CheckOutCart(request.CartID, request.CreditCardNumber, request.CreditCardExpirationDate, request.CreditCardNumber)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -179,6 +181,8 @@ func (h *Handler) ListPurchases(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
+
+	log.Printf("/listPurchases {ClientID: %s, Password: %s}", request.ClientID, request.Password)
 
 	user := userCredentials.NewUserCredentials(request.ClientID, request.Password)
 	items, err := h.Facade.ListPurchasesOf(user)

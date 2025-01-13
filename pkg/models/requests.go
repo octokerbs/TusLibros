@@ -2,6 +2,9 @@ package models
 
 import "time"
 
+type CatalogRequest struct {
+}
+
 type CreateCartRequest struct {
 	ClientID string `json:"clientId"`
 	Password string `json:"password"`
