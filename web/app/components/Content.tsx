@@ -5,7 +5,7 @@ import BookGrid from "./grid/Grid";
 import Header from "./header/Header";
 import Compras from "./Compras";
 import CheckoutPopup from "./CheckoutPopup";
-import { fetchCatalog } from "./api/catalog";
+import { getCatalog } from "./api/catalog";
 import { Book, UserState } from "./types";
 import { ContentContainer } from "./styles";
 import useCart from "./hooks/useCart";
@@ -34,7 +34,7 @@ export default function Content() {
         useEffect(() => {
                 async function initCatalogAndCatalog() {
                         try {
-                                const fetchedBooks = await fetchCatalog();
+                                const fetchedBooks = await getCatalog();
                                 setCatalog(fetchedBooks);
                                 const requestCartId = await createCart();
                                 setCartID(requestCartId);

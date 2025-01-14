@@ -31,7 +31,11 @@ export async function addToCart(
                 headers: {
                         "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ cartID, isbn, quantity }),
+                body: JSON.stringify({
+                        cartId: cartID,
+                        bookISBN: isbn,
+                        bookQuantity: quantity,
+                }),
         });
 
         if (!response.ok) {
@@ -49,7 +53,7 @@ export async function listCart(
                 headers: {
                         "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ cartID }),
+                body: JSON.stringify({ cartId: cartID }),
         });
 
         if (!response.ok) {
@@ -69,7 +73,11 @@ export async function checkOutCart(
                 headers: {
                         "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ cartID, ccNumber, ccExpirationDate }),
+                body: JSON.stringify({
+                        cartId: cartID,
+                        creditCardNumber: ccNumber,
+                        creditCardExpirationDate: ccExpirationDate,
+                }),
         });
         if (!response.ok) {
                 throw new Error("Failed to checkout cart");
