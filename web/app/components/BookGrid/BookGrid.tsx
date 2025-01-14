@@ -2,9 +2,9 @@
 
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Grid2";
-import BookCard from "./Card";
-import { Book } from "../types";
+import BookCard from "./BookCard";
 import { GridBox } from "./styles";
+import { Book } from "../Types/cart";
 
 export default function BookGrid({
         catalog,

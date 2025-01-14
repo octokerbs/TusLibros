@@ -1,20 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import BookGrid from "./grid/Grid";
-import Header from "./header/Header";
-import Compras from "./Compras";
-import CheckoutPopup from "./CheckoutPopup";
-import {
-        checkOutCart,
-        getCatalog,
-        getPurchases,
-        listCart,
-} from "./api/apiFunctions";
-import { Book, UserState } from "./types";
+import CheckoutPopup from "../CheckoutPopup";
+import { checkOutCart, getCatalog, getPurchases, listCart } from "../utils/api";
 import { ContentContainer } from "./styles";
-import useSnackbar from "./hooks/useSnackbar";
-import { createCart } from "./api/apiFunctions";
+import useSnackbar from "./useSnackbar";
+import { createCart } from "../utils/api";
+import Header from "../Header/Header";
+import Compras from "../Compras";
+import BookGrid from "../BookGrid/BookGrid";
+import { UserState } from "../Types/user";
+import { Book } from "../Types/cart";
 
 export default function Content() {
         const [userState, setUserState] = useState(UserState.ValidUser);

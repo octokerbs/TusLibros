@@ -1,6 +1,6 @@
 import { Alert, Snackbar } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { UserState } from "./types";
+import { UserState } from "../Types/user";
 
 export default function CheckoutPopup({
         userState,

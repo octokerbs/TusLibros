@@ -8,10 +8,10 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { AddToCartButton } from "./styles";
-import { useCounter } from "./hooks/useCounter";
 import { formatCurrency } from "../utils/price";
-import { addToCart } from "../api/apiFunctions";
-import { Book } from "../types";
+import { addToCart } from "../utils/api";
+import { useCounter } from "./useCounter";
+import { Book } from "../Types/cart";
 
 export default function BookCard({
         book,

@@ -1,4 +1,4 @@
-import { Book } from "../types";
+import { Book } from "../Types/cart";
 
 export async function getCatalog(): Promise<Record<string, Book>> {
         const response = await fetch("http://localhost:8080/catalog");

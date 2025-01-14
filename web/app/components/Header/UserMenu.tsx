@@ -9,8 +9,8 @@ import {
         EventBusy,
         NoAccounts,
 } from "@mui/icons-material";
-import { UserState } from "../types";
 import { SlotPropsUser } from "./styles";
+import { UserState } from "../Types/user";
 
 export default function UserMenu({
         anchorEl,

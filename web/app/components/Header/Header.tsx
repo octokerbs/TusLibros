@@ -3,13 +3,14 @@
 import { AppBar, IconButton, Tooltip, Badge } from "@mui/material";
 import { ShoppingCart } from "@mui/icons-material";
 import React from "react";
-import Title from "./Title";
-import CartMenu from "./CartMenu";
-import UserMenu from "./UserMenu";
-import { useHeaderLogic } from "./hooks/useHeaderLogic";
-import { useUserIcon } from "./hooks/useUserIcon";
+import CartMenu from "../Header/CartMenu";
+import { Book } from "../Types/cart";
+import { SnackbarState, UserState } from "../Types/user";
+import { useHeaderLogic } from "./useHeaderLogic";
+import { useUserIcon } from "./useUserIcon";
 import { CartButton, HeaderBox } from "./styles";
-import { Book, SnackbarState, UserState } from "../types";
+import Title from "./Title";
+import UserMenu from "./UserMenu";
 
 export default function Header({
         cart,

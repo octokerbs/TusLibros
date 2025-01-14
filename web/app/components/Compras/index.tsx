@@ -1,5 +1,5 @@
 import { Box, Divider, Modal, Typography } from "@mui/material";
-import { Book } from "./types";
+import { Book } from "../Types/cart";
 
 const style = {
         position: "absolute",
