@@ -9,13 +9,12 @@ import { GridBox } from "./styles";
 export default function BookGrid({
         catalog,
         cartID,
-        updateCart,
+        onAddToCart,
 }: {
         catalog: Record<string, Book>;
         cartID: number;
-        updateCart: () => void;
+        onAddToCart: () => Promise<void>;
 }) {
-        console.log(cartID);
         return (
                 <Box sx={{ width: "100vw" }}>
                         <GridBox>
@@ -25,7 +24,9 @@ export default function BookGrid({
                                                         key={book.isbn}
                                                         book={book}
                                                         cartID={cartID}
-                                                        updateCart={updateCart}
+                                                        onAddToCart={
+                                                                onAddToCart
+                                                        }
                                                 ></BookCard>
                                         ))}
                                 </Grid2>

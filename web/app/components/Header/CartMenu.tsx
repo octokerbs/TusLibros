@@ -10,9 +10,9 @@ import {
         CheckoutButton,
         SlotPropsCart,
 } from "./styles";
-import { formatCurrency } from "../utils/price";
 import { Book } from "../Types/cart";
 import { SnackbarState } from "../Types/user";
+import { formatCurrency } from "../utils/formatters";
 
 export default function CartMenu({
         anchorEl,

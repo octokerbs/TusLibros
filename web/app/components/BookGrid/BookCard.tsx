@@ -7,20 +7,20 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { formatCurrency } from "../utils/price";
 import { useCounter } from "./useCounter";
 import { Book } from "../Types/cart";
 import { AddToCartButton } from "./styles";
 import { api } from "../utils/api";
+import { formatCurrency } from "../utils/formatters";
 
 export default function BookCard({
         book,
         cartID,
-        updateCart,
+        onAddToCart,
 }: {
         book: Book;
         cartID: number;
-        updateCart: () => void;
+        onAddToCart: () => Promise<void>;
 }) {
         const { counter, handleIncrement, handleDecrement, restartCounter } =
                 useCounter();
@@ -28,7 +28,7 @@ export default function BookCard({
         async function handleAddToCart() {
                 try {
                         await api.addToCart(cartID, book.isbn, counter);
-                        await updateCart();
+                        await onAddToCart();
                         restartCounter();
                 } catch (error) {
                         console.error("Failed to add item to cart:", error);
