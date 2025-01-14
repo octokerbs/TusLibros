@@ -1,12 +1,13 @@
 package lineItem
 
 type LineItem struct {
-	item  string
-	total int
+	item     string
+	quantity int
+	total    int
 }
 
-func NewLineItem(anItem string, aTotal int) LineItem {
-	return LineItem{item: anItem, total: aTotal}
+func NewLineItem(anItem string, aQuantity int, aTotal int) LineItem {
+	return LineItem{item: anItem, quantity: aQuantity, total: aTotal}
 }
 
 func (li *LineItem) Total() int {
@@ -17,5 +18,5 @@ func (li *LineItem) AddToPurchaseMap(aListOfPurchases *map[string]int) {
 	if _, ok := (*aListOfPurchases)[li.item]; !ok {
 		(*aListOfPurchases)[li.item] = 0
 	}
-	(*aListOfPurchases)[li.item] += li.total
+	(*aListOfPurchases)[li.item] += li.quantity
 }

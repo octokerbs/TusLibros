@@ -71,7 +71,7 @@ func (sf *SystemFacade) CreateCart(aUser *userCredentials.UserCredentials) (int,
 // Output:En caso de éxito: 0|OK
 // En caso de error: 1|DESCRIPCION_DE_ERROR
 func (sf *SystemFacade) AddToCart(aCartID int, anItem string, aQuantity int) error {
-	aCartSession, err := sf.CartWithID(aCartID)
+	aCartSession, err := sf.GetSessionWithCartID(aCartID)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (sf *SystemFacade) AddToCart(aCartID int, anItem string, aQuantity int) err
 // En caso de éxito: 0|ISBN_1|QUANTITY_1|ISBN_2|QUANTITY_2|....|ISBN_N|QUANTITY_N
 // En caso de error: 1|DESCRIPCION_DE_ERROR
 func (sf *SystemFacade) ListCart(aCartID int) (map[string]int, error) {
-	aCartSession, err := sf.CartWithID(aCartID)
+	aCartSession, err := sf.GetSessionWithCartID(aCartID)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (sf *SystemFacade) ListCart(aCartID int) (map[string]int, error) {
 // En caso de éxito: 0|TRANSACTION_ID
 // En caso de error: 1|DESCRIPCION_DE_ERROR
 func (sf *SystemFacade) CheckOutCart(aCartID int, aCreditCartNumber string, anExpirationDate time.Time, aCreditCardOwner string) (int, error) {
-	aCartSession, err := sf.CartWithID(aCartID)
+	aCartSession, err := sf.GetSessionWithCartID(aCartID)
 	if err != nil {
 		return -1, err
 	}
@@ -126,6 +126,8 @@ func (sf *SystemFacade) CheckOutCart(aCartID int, aCreditCartNumber string, anEx
 	if err != nil {
 		return -1, err
 	}
+
+	sf.removeCart(aCartID)
 
 	return transactionID, nil
 }
@@ -159,17 +161,21 @@ func (sf *SystemFacade) Catalog() (map[string]book.Book, error) {
 
 // Private
 
-func (sf *SystemFacade) CartWithID(aCartID int) (*cartSession.CartSession, error) {
-	if _, ok := sf.cartSessions[aCartID]; !ok {
+func (sf *SystemFacade) GetSessionWithCartID(aCartID int) (*cartSession.CartSession, error) {
+	aCartSession, found := sf.cartSessions[aCartID]
+	if !found {
 		return nil, errors.New(InvalidCartIDErrorMessage)
 	}
 
-	aCartSession := sf.cartSessions[aCartID]
 	if aCartSession.IsExpired() {
 		return nil, errors.New(InvalidCartIDErrorMessage)
 	}
 
 	return aCartSession, nil
+}
+
+func (sf *SystemFacade) removeCart(aCartID int) {
+	delete(sf.cartSessions, aCartID)
 }
 
 func (sf *SystemFacade) generateCartID() int {

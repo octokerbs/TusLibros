@@ -16,6 +16,6 @@ func NewSale(aTicket ticket.Ticket, aUser *userCredentials.UserCredentials) Sale
 
 func (s *Sale) AddToPurchasesIfOwnerIs(aUser *userCredentials.UserCredentials, aListOfPurchases *map[string]int) {
 	if aUser.SameCredentialsAs(s.owner) {
-		s.ticket.AddLineItemsAndItsCostToMapCollector(aListOfPurchases)
+		s.ticket.AddLineItemsAndItsQuantityToMapCollector(aListOfPurchases)
 	}
 }

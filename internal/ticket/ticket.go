@@ -18,7 +18,7 @@ func (t *Ticket) Total() int {
 	return sum
 }
 
-func (t *Ticket) AddLineItemsAndItsCostToMapCollector(aListOfPurchases *map[string]int) {
+func (t *Ticket) AddLineItemsAndItsQuantityToMapCollector(aListOfPurchases *map[string]int) {
 	for _, aLineItem := range t.lineItems {
 		aLineItem.AddToPurchaseMap(aListOfPurchases)
 	}

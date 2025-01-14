@@ -44,7 +44,7 @@ func (c *Cart) IsEmpty() bool {
 func (c *Cart) AddLineItemsTo(aListOfLineItems *[]lineItem.LineItem) {
 	for item, quantity := range c.contents {
 		lineCost := c.catalog[item].CalculatePrice(quantity)
-		*aListOfLineItems = append(*aListOfLineItems, lineItem.NewLineItem(item, lineCost))
+		*aListOfLineItems = append(*aListOfLineItems, lineItem.NewLineItem(item, quantity, lineCost))
 	}
 }
 

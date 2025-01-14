@@ -1,6 +1,8 @@
 package cartSession
 
 import (
+	"time"
+
 	cart2 "github.com/KerbsOD/TusLibros/internal/cart"
 	"github.com/KerbsOD/TusLibros/internal/cashier"
 	"github.com/KerbsOD/TusLibros/internal/clock"
@@ -8,7 +10,6 @@ import (
 	"github.com/KerbsOD/TusLibros/internal/merchantProcessor"
 	"github.com/KerbsOD/TusLibros/internal/salesBook"
 	"github.com/KerbsOD/TusLibros/internal/userCredentials"
-	"time"
 )
 
 type CartSession struct {

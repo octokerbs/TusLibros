@@ -87,7 +87,7 @@ func (s *CashierTestSuite) Test04SalesAreRegisteredOnSalesBook() {
 	_, _ = cashier.Checkout()
 
 	expectedSalesBook := salesBook.NewSalesBook()
-	aLineItem := lineItem.NewLineItem(s.factory.ItemInCatalog().ISBN(), s.factory.ItemInCatalog().CalculatePrice(3))
+	aLineItem := lineItem.NewLineItem(s.factory.ItemInCatalog().ISBN(), 3, s.factory.ItemInCatalog().CalculatePrice(3))
 	aTicket := ticket.NewTicket([]lineItem.LineItem{aLineItem})
 	aSale := sale.NewSale(aTicket, s.factory.ValidUserCredentials())
 	expectedSalesBook.AddSale(aSale)

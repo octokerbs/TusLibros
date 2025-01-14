@@ -63,7 +63,7 @@ func (s *FacadeTestSuite) SetupTest() {
 
 func (s *FacadeTestSuite) Test01CanCreateCartWithValidUsernameAndValidUsernamePassword() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
-	myCart, _ := s.facade.CartWithID(cartID)
+	myCart, _ := s.facade.GetSessionWithCartID(cartID)
 	assert.True(s.T(), myCart.IsEmpty())
 }
 
@@ -82,7 +82,7 @@ func (s *FacadeTestSuite) Test03CanNotCreateCartWithInvalidUsernamePassword() {
 func (s *FacadeTestSuite) Test04CanAddItemsToACreatedCart() {
 	cartID, _ := s.facade.CreateCart(s.validUserCredentials)
 	_ = s.facade.AddToCart(cartID, s.book1.ISBN(), 10)
-	myCart, _ := s.facade.CartWithID(cartID)
+	myCart, _ := s.facade.GetSessionWithCartID(cartID)
 	assert.False(s.T(), myCart.IsEmpty())
 }
 
@@ -129,7 +129,7 @@ func (s *FacadeTestSuite) Test11CanCheckOutACart() {
 	_, _ = s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
 	clientPurchases, _ := s.facade.ListPurchasesOf(s.validUserCredentials)
 	expectedPurchases := map[string]int{}
-	expectedPurchases[s.book1.ISBN()] = s.book1.CalculatePrice(10)
+	expectedPurchases[s.book1.ISBN()] = 10
 	assert.Equal(s.T(), expectedPurchases, clientPurchases)
 }
 
@@ -166,8 +166,8 @@ func (s *FacadeTestSuite) Test16PurchaseIsRegisteredInSalesBook() {
 	_ = s.facade.AddToCart(cartID, s.book2.ISBN(), 5)
 	_, _ = s.facade.CheckOutCart(cartID, s.validCardNumber, s.tomorrow, s.validCardOwner)
 	expectedPurchases := map[string]int{}
-	expectedPurchases[s.book1.ISBN()] = s.book1.CalculatePrice(10)
-	expectedPurchases[s.book2.ISBN()] = s.book2.CalculatePrice(5)
+	expectedPurchases[s.book1.ISBN()] = 10
+	expectedPurchases[s.book2.ISBN()] = 5
 	clientPurchases, _ := s.facade.ListPurchasesOf(s.validUserCredentials)
 	assert.Equal(s.T(), expectedPurchases, clientPurchases)
 }

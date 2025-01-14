@@ -265,6 +265,53 @@ func (s *HandlersTestSuite) TestCanCheckOutCorrectly() {
 	assert.Empty(s.T(), checkOutCartResponse.Message)
 }
 
+func (s *HandlersTestSuite) TestCanNotAddItemsToCheckedOutCart() {
+	// Given: A valid cart that checked out
+	_, createCartResponse := s.createCartRequestSender(s.factory.ValidUsername(), s.factory.ValidPassword())
+	_, _ = s.addToCartRequestSender(createCartResponse.CartID, s.factory.ItemInCatalog().ISBN(), 5)
+	_, _ = s.checkOutCartRequestSender(createCartResponse.CartID, "1111222233334444", s.tomorrow(), s.factory.ValidUsername())
+
+	// When: Adding items to the cart
+	addToCartResponseRecorder, addToCartResponse := s.addToCartRequestSender(createCartResponse.CartID, s.factory.AnotherItemInCatalog().ISBN(), 10)
+
+	// Then: Cannot add items to checked out cart
+	assert.Equal(s.T(), http.StatusBadRequest, addToCartResponseRecorder.Code)
+	assert.Equal(s.T(), 1, addToCartResponse.Status)
+	assert.Equal(s.T(), internal.InvalidCartIDErrorMessage, addToCartResponse.Message)
+}
+
+func (s *HandlersTestSuite) TestCanNotListItemsOfCheckedOutCart() {
+	// Given: A valid cart that checked out
+	_, createCartResponse := s.createCartRequestSender(s.factory.ValidUsername(), s.factory.ValidPassword())
+	_, _ = s.addToCartRequestSender(createCartResponse.CartID, s.factory.ItemInCatalog().ISBN(), 5)
+	_, _ = s.checkOutCartRequestSender(createCartResponse.CartID, "1111222233334444", s.tomorrow(), s.factory.ValidUsername())
+
+	// When: Listing a checked out cart
+	listCartResponseRecorder, listCartResponse := s.listCartRequestSender(createCartResponse.CartID)
+
+	// Then: Cannot list checked out cart
+	assert.Equal(s.T(), http.StatusBadRequest, listCartResponseRecorder.Code)
+	assert.Equal(s.T(), 1, listCartResponse.Status)
+	assert.Empty(s.T(), listCartResponse.Items)
+	assert.Equal(s.T(), internal.InvalidCartIDErrorMessage, listCartResponse.Message)
+}
+
+func (s *HandlersTestSuite) TestCanNotCheckoutCheckedOutCart() {
+	// Given: valid cart, valid item and not expired credit card
+	_, createCartResponse := s.createCartRequestSender(s.factory.ValidUsername(), s.factory.ValidPassword())
+	_, _ = s.addToCartRequestSender(createCartResponse.CartID, s.factory.ItemInCatalog().ISBN(), 5)
+	_, _ = s.checkOutCartRequestSender(createCartResponse.CartID, "1111222233334444", s.tomorrow(), s.factory.ValidUsername())
+
+	// When: Checking a checked out cart
+	checkOutCartResponseRecorder, checkOutCartResponse := s.checkOutCartRequestSender(createCartResponse.CartID, "1111222233334444", s.tomorrow(), s.factory.ValidUsername())
+
+	// Then: Cannot checkout checked out cart
+	assert.Equal(s.T(), http.StatusBadRequest, checkOutCartResponseRecorder.Code)
+	assert.Equal(s.T(), 1, checkOutCartResponse.Status)
+	assert.Empty(s.T(), checkOutCartResponse.TransactionID)
+	assert.Equal(s.T(), internal.InvalidCartIDErrorMessage, checkOutCartResponse.Message)
+}
+
 func (s *HandlersTestSuite) TestCanNotListPurchasesOfInvalidClient() {
 	// Given: an invalid client
 	s.mockUserAuthentication.On("RegisteredUser", mock.Anything, mock.Anything).Return(false)
@@ -295,7 +342,7 @@ func (s *HandlersTestSuite) TestPurchasesAreListedCorrectly() {
 	// Then: The two purchases are present in the client account
 	assert.Equal(s.T(), http.StatusOK, listPurchasesResponseRecorder.Code)
 	assert.Equal(s.T(), 0, listPurchasesResponse.Status)
-	assert.Equal(s.T(), map[string]int{s.factory.ItemInCatalog().ISBN(): s.factory.ItemInCatalog().CalculatePrice(2), s.factory.AnotherItemInCatalog().ISBN(): s.factory.AnotherItemInCatalog().CalculatePrice(5)}, listPurchasesResponse.Items)
+	assert.Equal(s.T(), map[string]int{s.factory.ItemInCatalog().ISBN(): 2, s.factory.AnotherItemInCatalog().ISBN(): 5}, listPurchasesResponse.Items)
 	assert.Empty(s.T(), listPurchasesResponse.Message)
 }
 
