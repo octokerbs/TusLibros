@@ -1,6 +1,7 @@
-import { Alert, Snackbar } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Snackbar } from "@mui/material";
+import React, { useEffect } from "react";
 import { UserState } from "../Types/user";
+import { useAlert } from "./useAlert";
 
 export default function CheckoutPopup({
         userState,
@@ -17,92 +18,41 @@ export default function CheckoutPopup({
         vertical: "bottom" | "top";
         horizontal: "center" | "left" | "right";
 }) {
-        const [alertState, setAlertState] = useState(
-                <Alert
-                        onClose={onClose}
-                        severity="warning"
-                        variant="filled"
-                        sx={{
-                                width: "92%",
-                                marginTop: "5.5vh",
-                                bgcolor: "#567568",
-                        }}
-                >
-                        No transaction could be done!
-                </Alert>
-        );
+        const { alertState, handleState } = useAlert(onClose);
 
         useEffect(() => {
                 switch (userState) {
                         case UserState.InvalidUser:
-                                setAlertState(
-                                        <Alert
-                                                onClose={onClose}
-                                                severity="error"
-                                                variant="filled"
-                                                sx={{
-                                                        width: "17vw",
-                                                        marginTop: "5.5vh",
-                                                }}
-                                        >
-                                                Can not check out, invalid user!
-                                        </Alert>
+                                handleState(
+                                        "error",
+                                        "Can not check out, invalid user!"
                                 );
                                 break;
 
                         case UserState.ExpiredCreditCardUser:
-                                setAlertState(
-                                        <Alert
-                                                onClose={onClose}
-                                                severity="error"
-                                                variant="filled"
-                                                sx={{
-                                                        width: "17vw",
-                                                        marginTop: "5.5vh",
-                                                }}
-                                        >
-                                                Can not check out, the used
-                                                credit card is expired!
-                                        </Alert>
+                                handleState(
+                                        "error",
+                                        "Can not check out, the used credit card is expired!"
                                 );
                                 break;
 
                         case UserState.NoFundsCreditCardUser:
-                                setAlertState(
-                                        <Alert
-                                                onClose={onClose}
-                                                severity="error"
-                                                variant="filled"
-                                                sx={{
-                                                        width: "17vw",
-                                                        marginTop: "5.5vh",
-                                                }}
-                                        >
-                                                Can not check out, the credit
-                                                card has insufficient funds!
-                                        </Alert>
+                                handleState(
+                                        "error",
+                                        "Can not check out, the credit card has insufficient funds!"
                                 );
                                 break;
 
                         default:
-                                setAlertState(
-                                        <Alert
-                                                onClose={onClose}
-                                                severity="success"
-                                                variant="filled"
-                                                sx={{
-                                                        width: "17vw",
-                                                        marginTop: "5.5vh",
-                                                        bgcolor: "#567568",
-                                                }}
-                                        >
-                                                Transaction #{transactionID}{" "}
-                                                completed succesfully!
-                                        </Alert>
+                                handleState(
+                                        "success",
+                                        "Transaction Nº" +
+                                                transactionID +
+                                                "completed succesfully!"
                                 );
                                 break;
                 }
-        }, [onClose, userState, transactionID]);
+        }, [userState, transactionID, handleState]);
 
         return (
                 <div>

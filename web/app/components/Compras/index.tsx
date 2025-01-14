@@ -1,18 +1,6 @@
 import { Box, Divider, Modal, Typography } from "@mui/material";
 import { Book } from "../Types/cart";
-
-const style = {
-        position: "absolute",
-        height: "80vh",
-        width: "60vw",
-        marginLeft: "20vw",
-        marginRight: "20vw",
-        marginTop: "8vh",
-        bgcolor: "white",
-        borderRadius: "10px",
-        boxShadow: 24,
-        p: 4,
-};
+import { InsideComprasBox, ItemComprasBox, OutsideComprasBox } from "./style";
 
 export default function Compras({
         open,
@@ -33,8 +21,8 @@ export default function Compras({
                                 aria-labelledby="modal-modal-title"
                                 aria-describedby="modal-modal-description"
                         >
-                                <Box sx={style}>
-                                        <Box>
+                                <OutsideComprasBox>
+                                        <InsideComprasBox>
                                                 {purchases &&
                                                         Object.keys(
                                                                 purchases
@@ -54,21 +42,8 @@ export default function Compras({
                                                                                         book.isbn
                                                                                 }
                                                                         >
-                                                                                <Box
-                                                                                        sx={{
-                                                                                                display: "flex",
-                                                                                                alignItems: "center",
-                                                                                                justifyContent:
-                                                                                                        "space-between",
-                                                                                                marginLeft: "1vw",
-                                                                                                marginRight:
-                                                                                                        "1vw",
-                                                                                                width: "55vw",
-                                                                                        }}
-                                                                                >
+                                                                                <ItemComprasBox>
                                                                                         <Typography
-                                                                                                gutterBottom
-                                                                                                variant="inherit"
                                                                                                 component="div"
                                                                                                 noWrap
                                                                                                 color="black"
@@ -82,8 +57,6 @@ export default function Compras({
                                                                                                 }{" "}
                                                                                         </Typography>
                                                                                         <Typography
-                                                                                                gutterBottom
-                                                                                                variant="inherit"
                                                                                                 component="div"
                                                                                                 noWrap
                                                                                                 color="black"
@@ -94,13 +67,13 @@ export default function Compras({
                                                                                                         quantity
                                                                                                 }{" "}
                                                                                         </Typography>
-                                                                                </Box>
+                                                                                </ItemComprasBox>
                                                                                 <Divider />
                                                                         </Box>
                                                                 );
                                                         })}
-                                        </Box>
-                                </Box>
+                                        </InsideComprasBox>
+                                </OutsideComprasBox>
                         </Modal>
                 </Box>
         );
