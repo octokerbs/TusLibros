@@ -85,7 +85,9 @@ export default function BookCard({ book, cartID }: BookCardProps) {
                                         <IconButton onClick={handleDecrement}>
                                                 <RemoveCircleOutline></RemoveCircleOutline>
                                         </IconButton>
-                                        <Typography>{counter}</Typography>
+                                        <Typography component="div">
+                                                {counter}
+                                        </Typography>
                                         <IconButton onClick={handleIncrement}>
                                                 <AddCircleOutline></AddCircleOutline>
                                         </IconButton>

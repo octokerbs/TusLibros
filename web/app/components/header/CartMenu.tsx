@@ -107,7 +107,10 @@ export default function CartMenu({
                                         }
                                 >
                                         <ShoppingCartCheckout></ShoppingCartCheckout>
-                                        <Typography sx={{ color: "white" }}>
+                                        <Typography
+                                                sx={{ color: "white" }}
+                                                component="div"
+                                        >
                                                 Checkout
                                         </Typography>
                                 </CheckoutButton>
