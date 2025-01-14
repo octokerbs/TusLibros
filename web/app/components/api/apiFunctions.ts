@@ -1,3 +1,14 @@
+import { Book } from "../types";
+
+export async function getCatalog(): Promise<Record<string, Book>> {
+        const response = await fetch("http://localhost:8080/catalog");
+        if (!response.ok) {
+                throw new Error("Failed to fetch catalog items");
+        }
+        const data = await response.json();
+        return data.items;
+}
+
 export async function createCart(): Promise<number> {
         const clientId = "Octo";
         const password = "Kerbs";
@@ -18,7 +29,7 @@ export async function createCart(): Promise<number> {
         }
 
         const data = await response.json();
-        return data.items;
+        return data.cartId;
 }
 
 export async function addToCart(
@@ -31,6 +42,7 @@ export async function addToCart(
                 headers: {
                         "Content-Type": "application/json",
                 },
+
                 body: JSON.stringify({
                         cartId: cartID,
                         bookISBN: isbn,
@@ -41,15 +53,13 @@ export async function addToCart(
         if (!response.ok) {
                 throw new Error("Failed to add item to cart");
         }
-        const data = await response.json();
-        return data.items;
 }
 
 export async function listCart(
         cartID: number
 ): Promise<Record<string, number>> {
         const response = await fetch("http://localhost:8080/listCart", {
-                method: "GET",
+                method: "POST",
                 headers: {
                         "Content-Type": "application/json",
                 },
@@ -67,9 +77,9 @@ export async function checkOutCart(
         cartID: number,
         ccNumber: string,
         ccExpirationDate: Date
-): Promise<Record<string, number>> {
+): Promise<number> {
         const response = await fetch("http://localhost:8080/checkOutCart", {
-                method: "GET",
+                method: "POST",
                 headers: {
                         "Content-Type": "application/json",
                 },
@@ -81,6 +91,27 @@ export async function checkOutCart(
         });
         if (!response.ok) {
                 throw new Error("Failed to checkout cart");
+        }
+        const data = await response.json();
+        return data.transactionId;
+}
+
+export async function getPurchases(
+        clientId: string,
+        password: string
+): Promise<Record<string, number>> {
+        const response = await fetch("http://localhost:8080/listPurchases", {
+                method: "POST",
+                headers: {
+                        "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                        clientId: clientId,
+                        password: password,
+                }),
+        });
+        if (!response.ok) {
+                throw new Error("Failed to fetch user purchases");
         }
         const data = await response.json();
         return data.items;

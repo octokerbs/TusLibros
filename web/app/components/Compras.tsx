@@ -18,20 +18,13 @@ export default function Compras({
         open,
         onClose,
         catalog,
+        purchases,
 }: {
         open: boolean;
         onClose: () => void;
         catalog: Record<string, Book>;
+        purchases: Record<string, number>;
 }) {
-        const purchases = new Map<string, number>();
-        purchases.set("978-1473225046", 10);
-        purchases.set("978-0765316882", 2);
-
-        const purchasesArray = Array.from(purchases, ([isbn, quantity]) => ({
-                isbn,
-                quantity,
-        }));
-
         return (
                 <Box>
                         <Modal
@@ -42,58 +35,70 @@ export default function Compras({
                         >
                                 <Box sx={style}>
                                         <Box>
-                                                {purchasesArray.map(
-                                                        (purchase) => (
-                                                                <Box
-                                                                        key={
-                                                                                purchase.isbn
-                                                                        }
-                                                                >
+                                                {purchases &&
+                                                        Object.keys(
+                                                                purchases
+                                                        ).map((item) => {
+                                                                const book =
+                                                                        catalog[
+                                                                                item
+                                                                        ];
+                                                                const quantity =
+                                                                        purchases[
+                                                                                item
+                                                                        ];
+
+                                                                return (
                                                                         <Box
-                                                                                sx={{
-                                                                                        display: "flex",
-                                                                                        alignItems: "center",
-                                                                                        justifyContent:
-                                                                                                "space-between",
-                                                                                        marginLeft: "1vw",
-                                                                                        marginRight:
-                                                                                                "1vw",
-                                                                                        width: "55vw",
-                                                                                }}
+                                                                                key={
+                                                                                        book.isbn
+                                                                                }
                                                                         >
-                                                                                <Typography
-                                                                                        gutterBottom
-                                                                                        variant="inherit"
-                                                                                        component="div"
-                                                                                        noWrap
-                                                                                        color="black"
+                                                                                <Box
+                                                                                        sx={{
+                                                                                                display: "flex",
+                                                                                                alignItems: "center",
+                                                                                                justifyContent:
+                                                                                                        "space-between",
+                                                                                                marginLeft: "1vw",
+                                                                                                marginRight:
+                                                                                                        "1vw",
+                                                                                                width: "55vw",
+                                                                                        }}
                                                                                 >
-                                                                                        {
-                                                                                                catalog[
-                                                                                                        purchase
-                                                                                                                .isbn
-                                                                                                ]
-                                                                                                        ?.name
-                                                                                        }{" "}
-                                                                                </Typography>
-                                                                                <Typography
-                                                                                        gutterBottom
-                                                                                        variant="inherit"
-                                                                                        component="div"
-                                                                                        noWrap
-                                                                                        color="black"
-                                                                                >
-                                                                                        {" "}
-                                                                                        x
-                                                                                        {
-                                                                                                purchase.quantity
-                                                                                        }{" "}
-                                                                                </Typography>
+                                                                                        <Typography
+                                                                                                gutterBottom
+                                                                                                variant="inherit"
+                                                                                                component="div"
+                                                                                                noWrap
+                                                                                                color="black"
+                                                                                        >
+                                                                                                {
+                                                                                                        catalog[
+                                                                                                                book
+                                                                                                                        .isbn
+                                                                                                        ]
+                                                                                                                ?.name
+                                                                                                }{" "}
+                                                                                        </Typography>
+                                                                                        <Typography
+                                                                                                gutterBottom
+                                                                                                variant="inherit"
+                                                                                                component="div"
+                                                                                                noWrap
+                                                                                                color="black"
+                                                                                        >
+                                                                                                {" "}
+                                                                                                x
+                                                                                                {
+                                                                                                        quantity
+                                                                                                }{" "}
+                                                                                        </Typography>
+                                                                                </Box>
+                                                                                <Divider />
                                                                         </Box>
-                                                                        <Divider />
-                                                                </Box>
-                                                        )
-                                                )}
+                                                                );
+                                                        })}
                                         </Box>
                                 </Box>
                         </Modal>

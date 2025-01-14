@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
-import { CartProps } from "./types";
 import {
         CartMenuItem,
         CartMenuTotal,
@@ -11,15 +10,37 @@ import {
         CheckoutButton,
         SlotPropsCart,
 } from "./styles";
+import { Book, SnackbarState } from "../types";
+import { formatCurrency } from "../utils/price";
 
 export default function CartMenu({
         anchorEl,
+        catalog,
         open,
         handleClose,
-        cartBooks,
-        total,
+        cart,
         onCheckout,
-}: CartProps) {
+}: {
+        anchorEl: HTMLElement | null;
+        catalog: Record<string, Book>;
+        open: boolean;
+        handleClose: () => void;
+        cart: Record<string, number>;
+        onCheckout: (
+                position: Pick<SnackbarState, "vertical" | "horizontal">
+        ) => void;
+}) {
+        function calculateTotal(cart: Record<string, number>): number {
+                let total = 0;
+                Object.keys(cart).map((item) => {
+                        const book = catalog[item];
+                        const quantity = cart[item];
+                        total += book.price * quantity;
+                });
+
+                return total;
+        }
+
         return (
                 <Menu
                         anchorEl={anchorEl}
@@ -37,48 +58,54 @@ export default function CartMenu({
                         }}
                 >
                         <Box>
-                                {cartBooks.map((cartEntry) => (
-                                        <Box key={cartEntry.book.isbn}>
-                                                <CartMenuItem>
-                                                        <Typography
-                                                                gutterBottom
-                                                                variant="inherit"
-                                                                component="div"
-                                                                noWrap
-                                                        >
-                                                                {
-                                                                        cartEntry
-                                                                                .book
-                                                                                .name
-                                                                }{" "}
-                                                                <Box
-                                                                        component="span"
-                                                                        fontWeight="fontWeightBold"
+                                {Object.keys(cart).map((item) => {
+                                        const book = catalog[item];
+                                        const quantity = cart[item];
+
+                                        return (
+                                                <Box key={book.isbn}>
+                                                        <CartMenuItem>
+                                                                <Typography
+                                                                        gutterBottom
+                                                                        variant="inherit"
+                                                                        component="div"
+                                                                        noWrap
                                                                 >
-                                                                        x
                                                                         {
-                                                                                cartEntry.quantity
-                                                                        }
-                                                                </Box>
-                                                        </Typography>
-                                                        <Typography
-                                                                gutterBottom
-                                                                variant="inherit"
-                                                                component="div"
-                                                                noWrap
-                                                        >
-                                                                {cartEntry.total.toLocaleString(
-                                                                        "en-US",
-                                                                        {
-                                                                                style: "currency",
-                                                                                currency: "USD",
-                                                                        }
-                                                                )}
-                                                        </Typography>
-                                                </CartMenuItem>
-                                                <Divider />
-                                        </Box>
-                                ))}
+                                                                                book.name
+                                                                        }{" "}
+                                                                        <Box
+                                                                                component="span"
+                                                                                fontWeight="fontWeightBold"
+                                                                        >
+                                                                                x
+                                                                                {
+                                                                                        quantity
+                                                                                }
+                                                                        </Box>
+                                                                </Typography>
+                                                                <Typography
+                                                                        gutterBottom
+                                                                        variant="inherit"
+                                                                        component="div"
+                                                                        noWrap
+                                                                >
+                                                                        {(
+                                                                                book.price *
+                                                                                quantity
+                                                                        ).toLocaleString(
+                                                                                "en-US",
+                                                                                {
+                                                                                        style: "currency",
+                                                                                        currency: "USD",
+                                                                                }
+                                                                        )}
+                                                                </Typography>
+                                                        </CartMenuItem>
+                                                        <Divider />
+                                                </Box>
+                                        );
+                                })}
                         </Box>
 
                         <CartMenuTotal>
@@ -94,7 +121,7 @@ export default function CartMenu({
                                         variant="h6"
                                         component="div"
                                 >
-                                        {total}
+                                        {formatCurrency(calculateTotal(cart))}
                                 </Typography>
                         </CartMenuTotal>
                         <CheckoutBox>

@@ -1,72 +1,131 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import BookGrid from "./grid/Grid";
 import Header from "./header/Header";
 import Compras from "./Compras";
 import CheckoutPopup from "./CheckoutPopup";
-import { getCatalog } from "./api/catalog";
+import {
+        checkOutCart,
+        getCatalog,
+        getPurchases,
+        listCart,
+} from "./api/apiFunctions";
 import { Book, UserState } from "./types";
 import { ContentContainer } from "./styles";
-import useCart from "./hooks/useCart";
 import useSnackbar from "./hooks/useSnackbar";
-import { createCart } from "./api/cart";
+import { createCart } from "./api/apiFunctions";
 
 export default function Content() {
-        const { cartBooks, clearCart, total } = useCart();
-
         const [userState, setUserState] = useState(UserState.ValidUser);
-        const [cartID, setCartID] = useState<number>(1);
+        const [cart, setCart] = useState<Record<string, number>>({});
+        const [cartID, setCartID] = useState<number>(-1);
         const [catalog, setCatalog] = useState<Record<string, Book>>({});
         const { snackbarState, openSnackbar, closeSnackbar } = useSnackbar(
                 "top",
                 "right"
         );
         const [isComprasOpen, setIsComprasOpen] = useState(false);
+        const [transactionID, setTransactionID] = useState<number>(-1);
+        const [purchases, setPurchases] = useState<Record<string, number>>({});
 
-        const handleCheckout = useCallback(() => {
-                if (cartBooks.length === 0) return;
+        async function checkoutAndGetTransactionID() {
+                try {
+                        const newTransactionID = await checkOutCart(
+                                cartID,
+                                "1111222233334444",
+                                new Date("2025-08-26T14:00:00Z")
+                        );
+                        setTransactionID(newTransactionID);
+                } catch (error) {
+                        console.error("Failed to checkout cart: ", error);
+                }
+        }
+
+        async function getUserPurchases() {
+                try {
+                        const newPurchases = await getPurchases(
+                                "Octo",
+                                "Kerbs"
+                        );
+                        setPurchases(newPurchases);
+                } catch (error) {
+                        console.error("Failed to list purchases: ", error);
+                }
+        }
+
+        async function initCart() {
+                try {
+                        const requestCartId = await createCart();
+                        setCartID(requestCartId);
+                } catch (error) {
+                        console.error("Cart initialization failed:", error);
+                }
+        }
+
+        const handleCheckout = () => {
+                if (cart.length === 0) return;
+
+                checkoutAndGetTransactionID();
 
                 openSnackbar();
-                clearCart();
-        }, [cartBooks, openSnackbar, clearCart]);
+                setCart({});
+                initCart();
+        };
 
         useEffect(() => {
-                async function initCatalogAndCatalog() {
+                async function initCatalog() {
                         try {
                                 const fetchedBooks = await getCatalog();
                                 setCatalog(fetchedBooks);
-                                const requestCartId = await createCart();
-                                setCartID(requestCartId);
                         } catch (error) {
                                 console.error(
-                                        "Catalog or Cart initialization error:",
+                                        "Catalog initialization failed:",
                                         error
                                 );
                         }
                 }
-                initCatalogAndCatalog();
+                initCatalog();
+                initCart();
         }, []);
+
+        async function updateCart() {
+                try {
+                        const fetchCart = await listCart(cartID);
+                        setCart(fetchCart);
+                } catch (error) {
+                        console.error("Cart fetch error: ", error);
+                }
+        }
 
         return (
                 <ContentContainer>
                         <Header
-                                cartBooks={cartBooks}
-                                total={total}
-                                onOpenCompras={() => setIsComprasOpen(true)}
+                                cart={cart}
+                                catalog={catalog}
+                                onOpenCompras={() => {
+                                        setIsComprasOpen(true);
+                                        getUserPurchases();
+                                }}
                                 userState={userState}
                                 onUserStateChange={setUserState}
                                 onCheckout={handleCheckout}
                                 cartID={cartID}
                         />
                         <Compras
+                                purchases={purchases}
                                 open={isComprasOpen}
                                 onClose={() => setIsComprasOpen(false)}
                                 catalog={catalog}
                         />
-                        <BookGrid catalog={catalog} cartID={cartID} />
+                        <BookGrid
+                                catalog={catalog}
+                                cartID={cartID}
+                                updateCart={updateCart}
+                        />
                         <CheckoutPopup
                                 userState={userState}
+                                transactionID={transactionID}
                                 onClose={closeSnackbar}
                                 open={snackbarState.open}
                                 vertical={snackbarState.vertical}

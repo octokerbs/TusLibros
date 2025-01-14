@@ -8,22 +8,30 @@ import CartMenu from "./CartMenu";
 import UserMenu from "./UserMenu";
 import { useHeaderLogic } from "./hooks/useHeaderLogic";
 import { useUserIcon } from "./hooks/useUserIcon";
-import { HeaderProps } from "./types";
 import { CartButton, HeaderBox } from "./styles";
+import { Book, SnackbarState, UserState } from "../types";
 
 export default function Header({
-        cartBooks,
-        total,
+        cart,
+        catalog,
         onOpenCompras,
         userState,
         onUserStateChange,
         onCheckout,
-        cartID,
-}: HeaderProps) {
+}: {
+        cart: Record<string, number>;
+        catalog: Record<string, Book>;
+        onOpenCompras: () => void;
+        userState: UserState;
+        onUserStateChange: (newState: UserState) => void;
+        onCheckout: (
+                position: Pick<SnackbarState, "vertical" | "horizontal">
+        ) => void;
+        cartID: number;
+}) {
         const { anchorElCart, anchorElUser, handleClick, handleClose } =
                 useHeaderLogic();
         const userIcon = useUserIcon(userState);
-        console.log(cartID);
 
         return (
                 <AppBar position="fixed" sx={{ bgcolor: "#567568" }}>
@@ -45,7 +53,9 @@ export default function Header({
                                         >
                                                 <Badge
                                                         badgeContent={
-                                                                cartBooks.length
+                                                                Object.keys(
+                                                                        cart
+                                                                ).length
                                                         }
                                                         color="error"
                                                 >
@@ -75,10 +85,10 @@ export default function Header({
 
                         <CartMenu
                                 anchorEl={anchorElCart}
+                                catalog={catalog}
                                 open={Boolean(anchorElCart)}
                                 handleClose={handleClose("cart")}
-                                total={total}
-                                cartBooks={cartBooks}
+                                cart={cart}
                                 onCheckout={onCheckout}
                         />
 

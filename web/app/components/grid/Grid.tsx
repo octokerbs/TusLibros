@@ -9,9 +9,11 @@ import { GridBox } from "./styles";
 export default function BookGrid({
         catalog,
         cartID,
+        updateCart,
 }: {
         catalog: Record<string, Book>;
         cartID: number;
+        updateCart: () => void;
 }) {
         console.log(cartID);
         return (
@@ -23,6 +25,7 @@ export default function BookGrid({
                                                         key={book.isbn}
                                                         book={book}
                                                         cartID={cartID}
+                                                        updateCart={updateCart}
                                                 ></BookCard>
                                         ))}
                                 </Grid2>
