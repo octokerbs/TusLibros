@@ -10,7 +10,30 @@ import {
         NoAccounts,
 } from "@mui/icons-material";
 import { SlotPropsUser } from "./styles";
-import { UserState } from "../Types/user";
+import { User, UserState } from "../Types/user";
+
+const users: User[] = [
+        {
+                kind: "Usuario Valido",
+                logo: <AccountCircle fontSize="small" />,
+                state: UserState.ValidUser,
+        },
+        {
+                kind: "Usuario Invalido",
+                logo: <NoAccounts fontSize="small" />,
+                state: UserState.InvalidUser,
+        },
+        {
+                kind: "Usuario con tarjeta expirada",
+                logo: <EventBusy fontSize="small" />,
+                state: UserState.ExpiredCreditCardUser,
+        },
+        {
+                kind: "Usuario sin fondos",
+                logo: <CreditCardOff fontSize="small" />,
+                state: UserState.NoFundsCreditCardUser,
+        },
+];
 
 export default function UserMenu({
         anchorEl,
@@ -50,50 +73,17 @@ export default function UserMenu({
                         </MenuItem>
                         <Divider />
 
-                        <MenuItem
-                                onClick={() =>
-                                        onUserStateChange(UserState.ValidUser)
-                                }
-                        >
-                                <ListItemIcon>
-                                        <AccountCircle fontSize="small" />
-                                </ListItemIcon>
-                                Usuario Valido
-                        </MenuItem>
-                        <MenuItem
-                                onClick={() =>
-                                        onUserStateChange(UserState.InvalidUser)
-                                }
-                        >
-                                <ListItemIcon>
-                                        <NoAccounts fontSize="small" />
-                                </ListItemIcon>
-                                Usuario Invalido
-                        </MenuItem>
-                        <MenuItem
-                                onClick={() =>
-                                        onUserStateChange(
-                                                UserState.ExpiredCreditCardUser
-                                        )
-                                }
-                        >
-                                <ListItemIcon>
-                                        <EventBusy fontSize="small" />
-                                </ListItemIcon>
-                                Usuario con tarjeta expirada
-                        </MenuItem>
-                        <MenuItem
-                                onClick={() =>
-                                        onUserStateChange(
-                                                UserState.NoFundsCreditCardUser
-                                        )
-                                }
-                        >
-                                <ListItemIcon>
-                                        <CreditCardOff fontSize="small" />
-                                </ListItemIcon>
-                                Usuario sin fondos
-                        </MenuItem>
+                        {users.map((user) => (
+                                <MenuItem
+                                        onClick={() =>
+                                                onUserStateChange(user.state)
+                                        }
+                                        key={user.kind}
+                                >
+                                        <ListItemIcon>{user.logo}</ListItemIcon>
+                                        {user.kind}
+                                </MenuItem>
+                        ))}
                 </Menu>
         );
 }

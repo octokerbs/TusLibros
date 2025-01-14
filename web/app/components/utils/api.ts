@@ -1,118 +1,110 @@
 import { Book } from "../Types/cart";
 
-export async function getCatalog(): Promise<Record<string, Book>> {
-        const response = await fetch("http://localhost:8080/catalog");
-        if (!response.ok) {
-                throw new Error("Failed to fetch catalog items");
-        }
-        const data = await response.json();
-        return data.items;
-}
+const BASE_URL = "http://localhost:8080";
 
-export async function createCart(): Promise<number> {
-        const clientId = "Octo";
-        const password = "Kerbs";
+const defaultHeaders = {
+        "Content-Type": "application/json",
+};
 
-        const response = await fetch("http://localhost:8080/createCart", {
-                method: "POST",
-                headers: {
-                        "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                        clientId: clientId,
-                        password: password,
-                }),
-        });
+async function apiRequest<T>(
+        endpoint: string,
+        options: RequestInit = {}
+): Promise<T> {
+        const response = await fetch(`${BASE_URL}${endpoint}`, options);
 
         if (!response.ok) {
-                throw new Error("Failed to create cart");
+                const errorText = await response.text();
+                throw new Error(
+                        `API Error: ${response.status} ${response.statusText} - ${errorText}`
+                );
         }
 
-        const data = await response.json();
-        return data.cartId;
+        return response.json();
 }
 
-export async function addToCart(
-        cartID: number,
-        isbn: string,
-        quantity: number
-) {
-        const response = await fetch("http://localhost:8080/addToCart", {
-                method: "POST",
-                headers: {
-                        "Content-Type": "application/json",
-                },
+export const api = {
+        async catalog(): Promise<Record<string, Book>> {
+                const data = await apiRequest<{ items: Record<string, Book> }>(
+                        "/catalog"
+                );
+                return data.items;
+        },
 
-                body: JSON.stringify({
-                        cartId: cartID,
+        async createCart(clientId: string, password: string): Promise<number> {
+                const payload = { clientId, password };
+                const data = await apiRequest<{ cartId: number }>(
+                        "/createCart",
+                        {
+                                method: "POST",
+                                headers: defaultHeaders,
+                                body: JSON.stringify(payload),
+                        }
+                );
+                return data.cartId;
+        },
+
+        async addToCart(
+                cartId: number,
+                isbn: string,
+                quantity: number
+        ): Promise<void> {
+                const payload = {
+                        cartId,
                         bookISBN: isbn,
                         bookQuantity: quantity,
-                }),
-        });
+                };
+                await apiRequest<void>("/addToCart", {
+                        method: "POST",
+                        headers: defaultHeaders,
+                        body: JSON.stringify(payload),
+                });
+        },
 
-        if (!response.ok) {
-                throw new Error("Failed to add item to cart");
-        }
-}
+        async listCart(cartId: number): Promise<Record<string, number>> {
+                const payload = { cartId };
+                const data = await apiRequest<{
+                        items: Record<string, number>;
+                }>("/listCart", {
+                        method: "POST",
+                        headers: defaultHeaders,
+                        body: JSON.stringify(payload),
+                });
+                return data.items;
+        },
 
-export async function listCart(
-        cartID: number
-): Promise<Record<string, number>> {
-        const response = await fetch("http://localhost:8080/listCart", {
-                method: "POST",
-                headers: {
-                        "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ cartId: cartID }),
-        });
-
-        if (!response.ok) {
-                throw new Error("Failed to fetch cart");
-        }
-        const data = await response.json();
-        return data.items;
-}
-
-export async function checkOutCart(
-        cartID: number,
-        ccNumber: string,
-        ccExpirationDate: Date
-): Promise<number> {
-        const response = await fetch("http://localhost:8080/checkOutCart", {
-                method: "POST",
-                headers: {
-                        "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                        cartId: cartID,
+        async checkOutCart(
+                cartId: number,
+                ccNumber: string,
+                ccExpirationDate: Date
+        ): Promise<number> {
+                const payload = {
+                        cartId,
                         creditCardNumber: ccNumber,
                         creditCardExpirationDate: ccExpirationDate,
-                }),
-        });
-        if (!response.ok) {
-                throw new Error("Failed to checkout cart");
-        }
-        const data = await response.json();
-        return data.transactionId;
-}
+                };
+                const data = await apiRequest<{ transactionId: number }>(
+                        "/checkOutCart",
+                        {
+                                method: "POST",
+                                headers: defaultHeaders,
+                                body: JSON.stringify(payload),
+                        }
+                );
+                return data.transactionId;
+        },
 
-export async function getPurchases(
-        clientId: string,
-        password: string
-): Promise<Record<string, number>> {
-        const response = await fetch("http://localhost:8080/listPurchases", {
-                method: "POST",
-                headers: {
-                        "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                        clientId: clientId,
-                        password: password,
-                }),
-        });
-        if (!response.ok) {
-                throw new Error("Failed to fetch user purchases");
-        }
-        const data = await response.json();
-        return data.items;
-}
+        async listPurchases(
+                clientId: string,
+                password: string
+        ): Promise<Record<string, number>> {
+                const payload = { clientId, password };
+                const data = await apiRequest<{
+                        items: Record<string, number>;
+                }>("/listPurchases", {
+                        method: "POST",
+                        headers: defaultHeaders,
+                        body: JSON.stringify(payload),
+                });
+                return data.items;
+        },
+};

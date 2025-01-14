@@ -3,8 +3,8 @@
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Grid2";
 import BookCard from "./BookCard";
-import { GridBox } from "./styles";
 import { Book } from "../Types/cart";
+import { GridBox } from "./styles";
 
 export default function BookGrid({
         catalog,

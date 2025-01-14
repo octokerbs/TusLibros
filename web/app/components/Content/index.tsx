@@ -2,15 +2,14 @@
 
 import { useState, useEffect } from "react";
 import CheckoutPopup from "../CheckoutPopup";
-import { checkOutCart, getCatalog, getPurchases, listCart } from "../utils/api";
 import { ContentContainer } from "./styles";
 import useSnackbar from "./useSnackbar";
-import { createCart } from "../utils/api";
 import Header from "../Header/Header";
 import Compras from "../Compras";
 import BookGrid from "../BookGrid/BookGrid";
 import { UserState } from "../Types/user";
 import { Book } from "../Types/cart";
+import { api } from "../utils/api";
 
 export default function Content() {
         const [userState, setUserState] = useState(UserState.ValidUser);
@@ -25,74 +24,71 @@ export default function Content() {
         const [transactionID, setTransactionID] = useState<number>(-1);
         const [purchases, setPurchases] = useState<Record<string, number>>({});
 
-        async function checkoutAndGetTransactionID() {
+        async function requestCatalog() {
                 try {
-                        const newTransactionID = await checkOutCart(
-                                cartID,
-                                "1111222233334444",
-                                new Date("2025-08-26T14:00:00Z")
-                        );
-                        setTransactionID(newTransactionID);
+                        const items = await api.catalog();
+                        setCatalog(items);
                 } catch (error) {
-                        console.error("Failed to checkout cart: ", error);
+                        console.error("Catalog initialization failed:", error);
                 }
         }
 
-        async function getUserPurchases() {
+        async function requestCartID() {
                 try {
-                        const newPurchases = await getPurchases(
-                                "Octo",
-                                "Kerbs"
-                        );
-                        setPurchases(newPurchases);
-                } catch (error) {
-                        console.error("Failed to list purchases: ", error);
-                }
-        }
-
-        async function initCart() {
-                try {
-                        const requestCartId = await createCart();
-                        setCartID(requestCartId);
+                        const cartID = await api.createCart("Octo", "Kerbs");
+                        setCartID(cartID);
+                        setCart({});
                 } catch (error) {
                         console.error("Cart initialization failed:", error);
                 }
         }
 
-        const handleCheckout = () => {
-                if (cart.length === 0) return;
-
-                checkoutAndGetTransactionID();
-
-                openSnackbar();
-                setCart({});
-                initCart();
-        };
-
-        useEffect(() => {
-                async function initCatalog() {
-                        try {
-                                const fetchedBooks = await getCatalog();
-                                setCatalog(fetchedBooks);
-                        } catch (error) {
-                                console.error(
-                                        "Catalog initialization failed:",
-                                        error
-                                );
-                        }
-                }
-                initCatalog();
-                initCart();
-        }, []);
-
-        async function updateCart() {
+        async function requestCheckout() {
                 try {
-                        const fetchCart = await listCart(cartID);
-                        setCart(fetchCart);
+                        const transactionID = await api.checkOutCart(
+                                cartID,
+                                "1111222233334444",
+                                new Date("2025-08-26T14:00:00Z")
+                        );
+                        setTransactionID(transactionID);
+                } catch (error) {
+                        console.error("Failed to checkout cart: ", error);
+                }
+        }
+
+        async function requestUserPurchases() {
+                try {
+                        const purchases = await api.listPurchases(
+                                "Octo",
+                                "Kerbs"
+                        );
+                        setPurchases(purchases);
+                } catch (error) {
+                        console.error("Failed to list purchases: ", error);
+                }
+        }
+
+        async function requestCartItems() {
+                try {
+                        const items = await api.listCart(cartID);
+                        setCart(items);
                 } catch (error) {
                         console.error("Cart fetch error: ", error);
                 }
         }
+
+        const handleCheckout = async () => {
+                if (Object.keys(cart).length === 0) return;
+
+                await requestCheckout();
+                await requestCartID();
+                openSnackbar();
+        };
+
+        useEffect(() => {
+                requestCatalog();
+                requestCartID();
+        }, []);
 
         return (
                 <ContentContainer>
@@ -101,7 +97,7 @@ export default function Content() {
                                 catalog={catalog}
                                 onOpenCompras={() => {
                                         setIsComprasOpen(true);
-                                        getUserPurchases();
+                                        requestUserPurchases();
                                 }}
                                 userState={userState}
                                 onUserStateChange={setUserState}
@@ -117,7 +113,7 @@ export default function Content() {
                         <BookGrid
                                 catalog={catalog}
                                 cartID={cartID}
-                                updateCart={updateCart}
+                                updateCart={requestCartItems}
                         />
                         <CheckoutPopup
                                 userState={userState}

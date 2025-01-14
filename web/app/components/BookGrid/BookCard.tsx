@@ -7,11 +7,11 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { AddToCartButton } from "./styles";
 import { formatCurrency } from "../utils/price";
-import { addToCart } from "../utils/api";
 import { useCounter } from "./useCounter";
 import { Book } from "../Types/cart";
+import { AddToCartButton } from "./styles";
+import { api } from "../utils/api";
 
 export default function BookCard({
         book,
@@ -27,7 +27,7 @@ export default function BookCard({
 
         async function handleAddToCart() {
                 try {
-                        await addToCart(cartID, book.isbn, counter);
+                        await api.addToCart(cartID, book.isbn, counter);
                         await updateCart();
                         restartCounter();
                 } catch (error) {
@@ -102,7 +102,7 @@ export default function BookCard({
                                         <AddToCartButton
                                                 onClick={handleAddToCart}
                                         >
-                                                <AddShoppingCart></AddShoppingCart>
+                                                <AddShoppingCart />
                                         </AddToCartButton>
                                 </Tooltip>
                         </CardActions>
