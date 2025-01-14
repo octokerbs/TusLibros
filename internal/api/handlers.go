@@ -52,6 +52,7 @@ func (h *Handler) CreateCart(w http.ResponseWriter, r *http.Request) {
 			Message: internal.InvalidUserOrPasswordErrorMessage,
 		}
 		json.NewEncoder(w).Encode(response)
+		log.Printf("Error: %s", err)
 		return
 	}
 
@@ -87,6 +88,7 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 			Message: err.Error(),
 		}
 		json.NewEncoder(w).Encode(response)
+		log.Printf("Error: %s", err)
 		return
 	}
 
@@ -122,6 +124,7 @@ func (h *Handler) ListCart(w http.ResponseWriter, r *http.Request) {
 			Message: err.Error(),
 		}
 		json.NewEncoder(w).Encode(response)
+		log.Printf("Error: %s", err)
 		return
 	}
 
@@ -157,6 +160,7 @@ func (h *Handler) CheckOutCart(w http.ResponseWriter, r *http.Request) {
 			Message: err.Error(),
 		}
 		json.NewEncoder(w).Encode(response)
+		log.Printf("Error: %s", err)
 		return
 	}
 
@@ -193,6 +197,7 @@ func (h *Handler) ListPurchases(w http.ResponseWriter, r *http.Request) {
 			Message: err.Error(),
 		}
 		json.NewEncoder(w).Encode(response)
+		log.Printf("Error: %s", err)
 		return
 	}
 
