@@ -8,9 +8,13 @@ export enum UserState {
 }
 
 export type User = {
+        clientId: string;
+        password: string;
+        cartID: number;
+        creditCardNumber: string;
+        creditCardExpirationDate: Date;
         kind: string;
         logo: JSX.Element;
-        state: UserState;
 };
 
 export interface SnackbarState {

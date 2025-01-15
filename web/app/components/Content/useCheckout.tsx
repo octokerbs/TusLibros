@@ -1,34 +1,38 @@
-import { useState } from "react";
+import { User } from "../Types/user";
 import { api } from "../utils/api";
 
 export default function useCheckout(
-    cartID: number,
-    cart: Record<string, number>,
-    requestCartID: () => void,
-    openSnackbar: () => void
+        user: User,
+        cart: Record<string, number>,
+        requestCartID: () => void,
+        openSnackbar: () => void,
+        updateAlert: (severity: "error" | "success", message: string) => void
 ) {
-    const [transactionID, setTransactionID] = useState<number>(-1);
+        const requestCheckout = async () => {
+                try {
+                        const transactionID = await api.checkOutCart(
+                                user.cartID,
+                                user.creditCardNumber,
+                                user.creditCardExpirationDate
+                        );
+                        updateAlert(
+                                "success",
+                                "Transaction #" +
+                                        transactionID +
+                                        " completed succesfully, thank you!"
+                        );
+                } catch (error) {
+                        updateAlert("error", error as string);
+                }
+        };
 
-    const requestCheckout = async () => {
-        try {
-            const transactionID = await api.checkOutCart(
-                cartID,
-                "1111222233334444",
-                new Date("2025-08-26T14:00:00Z")
-            );
-            setTransactionID(transactionID);
-        } catch (error) {
-            console.error("Failed to checkout cart: ", error);
-        }
-    };
+        const handleCheckout = async () => {
+                if (Object.keys(cart).length === 0) return;
 
-    const handleCheckout = async () => {
-        if (Object.keys(cart).length === 0) return;
+                await requestCheckout();
+                await requestCartID();
+                openSnackbar();
+        };
 
-        await requestCheckout();
-        await requestCartID();
-        openSnackbar();
-    };
-
-    return { transactionID, handleCheckout };
+        return { handleCheckout };
 }

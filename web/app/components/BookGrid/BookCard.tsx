@@ -12,14 +12,15 @@ import { Book } from "../Types/cart";
 import { AddToCartButton } from "./styles";
 import { api } from "../utils/api";
 import { formatCurrency } from "../utils/formatters";
+import { User } from "../Types/user";
 
 export default function BookCard({
+        user,
         book,
-        cartID,
         onAddToCart,
 }: {
+        user: User;
         book: Book;
-        cartID: number;
         onAddToCart: () => Promise<void>;
 }) {
         const { counter, handleIncrement, handleDecrement, restartCounter } =
@@ -27,7 +28,7 @@ export default function BookCard({
 
         async function handleAddToCart() {
                 try {
-                        await api.addToCart(cartID, book.isbn, counter);
+                        await api.addToCart(user.cartID, book.isbn, counter);
                         await onAddToCart();
                         restartCounter();
                 } catch (error) {

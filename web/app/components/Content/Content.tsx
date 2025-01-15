@@ -8,73 +8,72 @@ import BookGrid from "../BookGrid/BookGrid";
 import useCart from "./useCart";
 import useCheckout from "./useCheckout";
 import useCatalog from "./useCatalog";
-import useUser from "./useUser";
 import { Compras } from "../Compras";
 import { CheckoutPopup } from "../CheckoutPopup";
+import useUser from "./useUser";
+import { useAlert } from "./useAlert";
 
 export default function Content() {
-    const { cart, cartID, requestCartID, requestCartItems } = useCart();
-    const { snackbarState, openSnackbar, closeSnackbar } = useSnackbar(
-        "top",
-        "right"
-    );
-    const { transactionID, handleCheckout } = useCheckout(
-        cartID,
-        cart,
-        requestCartID,
-        openSnackbar
-    );
-    const { catalog, requestCatalog } = useCatalog();
-    const { userState, purchases, requestUserPurchases, updateUserState } =
-        useUser();
-    const [isComprasOpen, setIsComprasOpen] = useState(false);
-
-    useEffect(() => {
-        const initialize = async () => {
-            try {
+        const { snackbarState, openSnackbar, closeSnackbar } = useSnackbar(
+                "top",
+                "right"
+        );
+        const { alert, updateAlert } = useAlert(closeSnackbar);
+        const [isComprasOpen, setIsComprasOpen] = useState(false);
+        const { catalog, requestCatalog } = useCatalog();
+        const {
+                user,
+                purchases,
+                requestUserPurchases,
+                updateUserState,
+                updateUserCartID,
+        } = useUser();
+        const { cart, requestCartID, requestCartItems } = useCart(
+                user,
+                updateUserCartID
+        );
+        const { handleCheckout } = useCheckout(
+                user,
+                cart,
+                requestCartID,
+                openSnackbar,
+                updateAlert
+        );
+        useEffect(() => {
                 requestCatalog();
                 requestCartID();
-            } catch (error) {
-                console.error("Initialization failed:", error);
-            }
-        };
+        }, [requestCatalog, requestCartID]);
 
-        initialize();
-    }, [requestCartID, requestCatalog]);
-
-    return (
-        <ContentContainer>
-            <Header
-                cart={cart}
-                catalog={catalog}
-                onOpenCompras={() => {
-                    setIsComprasOpen(true);
-                    requestUserPurchases();
-                }}
-                userState={userState}
-                onUserStateChange={updateUserState}
-                onCheckout={handleCheckout}
-                cartID={cartID}
-            />
-            <Compras
-                purchases={purchases}
-                open={isComprasOpen}
-                onClose={() => setIsComprasOpen(false)}
-                catalog={catalog}
-            />
-            <BookGrid
-                catalog={catalog}
-                cartID={cartID}
-                onAddToCart={requestCartItems}
-            />
-            <CheckoutPopup
-                userState={userState}
-                transactionID={transactionID}
-                onClose={closeSnackbar}
-                open={snackbarState.open}
-                vertical={snackbarState.vertical}
-                horizontal={snackbarState.horizontal}
-            />
-        </ContentContainer>
-    );
+        return (
+                <ContentContainer>
+                        <Header
+                                cart={cart}
+                                catalog={catalog}
+                                onOpenCompras={() => {
+                                        setIsComprasOpen(true);
+                                        requestUserPurchases();
+                                }}
+                                user={user}
+                                onUserStateChange={updateUserState}
+                                onCheckout={handleCheckout}
+                        />
+                        <Compras
+                                purchases={purchases}
+                                open={isComprasOpen}
+                                onClose={() => setIsComprasOpen(false)}
+                                catalog={catalog}
+                        />
+                        <BookGrid
+                                user={user}
+                                catalog={catalog}
+                                onAddToCart={requestCartItems}
+                        />
+                        <CheckoutPopup
+                                alert={alert}
+                                open={snackbarState.open}
+                                vertical={snackbarState.vertical}
+                                horizontal={snackbarState.horizontal}
+                        />
+                </ContentContainer>
+        );
 }

@@ -1,23 +1,43 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { api } from "../utils/api";
-import { UserState } from "../Types/user";
+import { User, UserState } from "../Types/user";
+import { DefaultUsers } from "../utils/localdb";
 
 export default function useUser() {
-    const [userState, setUserState] = useState(UserState.ValidUser);
-    const [purchases, setPurchases] = useState<Record<string, number>>({});
+        const [user, setUser] = useState<User>(
+                DefaultUsers[UserState.ValidUser]
+        );
 
-    const requestUserPurchases = async () => {
-        try {
-            const purchases = await api.listPurchases("Octo", "Kerbs");
-            setPurchases(purchases);
-        } catch (error) {
-            console.error("Failed to list purchases: ", error);
-        }
-    };
+        const [purchases, setPurchases] = useState<Record<string, number>>({});
 
-    const updateUserState = (state: UserState) => {
-        setUserState(state);
-    };
+        const requestUserPurchases = useCallback(async () => {
+                try {
+                        const purchases = await api.listPurchases(
+                                "Octo",
+                                "Kerbs"
+                        );
+                        setPurchases(purchases);
+                } catch (error) {
+                        throw error;
+                }
+        }, []);
 
-    return { userState, purchases, requestUserPurchases, updateUserState };
+        const updateUserCartID = useCallback((cartID: number) => {
+                setUser((prevUser) => ({
+                        ...prevUser,
+                        cartID: cartID,
+                }));
+        }, []);
+
+        const updateUserState = useCallback((state: UserState) => {
+                setUser(DefaultUsers[state]);
+        }, []);
+
+        return {
+                user,
+                purchases,
+                requestUserPurchases,
+                updateUserState,
+                updateUserCartID,
+        };
 }
