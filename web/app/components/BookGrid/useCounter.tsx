@@ -1,23 +1,23 @@
 import { useState } from "react";
 
 export const useCounter = () => {
-        const [counter, setCounter] = useState(1);
+    const [counter, setCounter] = useState(1);
 
-        const handleIncrement = () => {
-                setCounter(counter + 1);
-        };
+    const handleIncrement = () => {
+        setCounter(counter + 1);
+    };
 
-        const handleDecrement = () => {
-                if (counter == 1) {
-                        return;
-                }
+    const handleDecrement = () => {
+        if (counter == 1) {
+            return;
+        }
 
-                setCounter(counter - 1);
-        };
+        setCounter(counter - 1);
+    };
 
-        const restartCounter = () => {
-                setCounter(1);
-        };
+    const restartCounter = () => {
+        setCounter(1);
+    };
 
-        return { counter, handleIncrement, handleDecrement, restartCounter };
+    return { counter, handleIncrement, handleDecrement, restartCounter };
 };

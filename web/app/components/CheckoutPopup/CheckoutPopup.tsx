@@ -48,7 +48,7 @@ export default function CheckoutPopup({
                                         "success",
                                         "Transaction Nº" +
                                                 transactionID +
-                                                "completed succesfully!"
+                                                " completed succesfully!"
                                 );
                                 break;
                 }
