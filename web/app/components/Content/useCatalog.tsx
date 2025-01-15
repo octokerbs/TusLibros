@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { api } from "../utils/api";
 import { Book } from "../Types/cart";
 
-export default function useCatalog() {
+export default function useCatalog(handleError: (error: unknown) => void) {
         const [catalog, setCatalog] = useState<Record<string, Book>>({});
 
         const requestCatalog = useCallback(async () => {
@@ -10,9 +10,9 @@ export default function useCatalog() {
                         const items = await api.catalog();
                         setCatalog(items);
                 } catch (error) {
-                        throw error;
+                        handleError(error);
                 }
-        }, []);
+        }, [handleError]);
 
         return { catalog, requestCatalog };
 }

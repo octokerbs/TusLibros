@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ContentContainer } from "./styles";
 import useSnackbar from "./useSnackbar";
 import Header from "../Header/Header";
 import BookGrid from "../BookGrid/BookGrid";
-import useCart from "./useCart";
-import useCheckout from "./useCheckout";
 import useCatalog from "./useCatalog";
 import { Compras } from "../Compras";
 import { CheckoutPopup } from "../CheckoutPopup";
 import useUser from "./useUser";
 import { useAlert } from "./useAlert";
+import { UserState } from "../Types/user";
 
 export default function Content() {
         const { snackbarState, openSnackbar, closeSnackbar } = useSnackbar(
@@ -19,30 +18,31 @@ export default function Content() {
                 "right"
         );
         const { alert, updateAlert } = useAlert(closeSnackbar);
+
+        const handleError = useCallback(
+                (error: unknown) => {
+                        updateAlert("error", error as string);
+                        openSnackbar();
+                },
+                [openSnackbar, updateAlert]
+        );
+
         const [isComprasOpen, setIsComprasOpen] = useState(false);
-        const { catalog, requestCatalog } = useCatalog();
+        const { catalog, requestCatalog } = useCatalog(handleError);
         const {
-                user,
-                purchases,
-                requestUserPurchases,
                 updateUserState,
-                updateUserCartID,
-        } = useUser();
-        const { cart, requestCartID, requestCartItems } = useCart(
-                user,
-                updateUserCartID
-        );
-        const { handleCheckout } = useCheckout(
-                user,
                 cart,
-                requestCartID,
-                openSnackbar,
-                updateAlert
-        );
+                requestUserPurchases,
+                user,
+                handleCheckout,
+                purchases,
+                requestAddToCart,
+        } = useUser(updateAlert, openSnackbar, handleError);
+
         useEffect(() => {
                 requestCatalog();
-                requestCartID();
-        }, [requestCatalog, requestCartID]);
+                updateUserState(UserState.ValidUser);
+        }, [requestCatalog, updateUserState]);
 
         return (
                 <ContentContainer>
@@ -64,9 +64,8 @@ export default function Content() {
                                 catalog={catalog}
                         />
                         <BookGrid
-                                user={user}
                                 catalog={catalog}
-                                onAddToCart={requestCartItems}
+                                onAddToCart={requestAddToCart}
                         />
                         <CheckoutPopup
                                 alert={alert}

@@ -10,31 +10,21 @@ import Typography from "@mui/material/Typography";
 import { useCounter } from "./useCounter";
 import { Book } from "../Types/cart";
 import { AddToCartButton } from "./styles";
-import { api } from "../utils/api";
 import { formatCurrency } from "../utils/formatters";
-import { User } from "../Types/user";
 
 export default function BookCard({
-        user,
         book,
         onAddToCart,
 }: {
-        user: User;
         book: Book;
-        onAddToCart: () => Promise<void>;
+        onAddToCart: (
+                isbn: string,
+                counter: number,
+                restartCounter: () => void
+        ) => Promise<void>;
 }) {
         const { counter, handleIncrement, handleDecrement, restartCounter } =
                 useCounter();
-
-        async function handleAddToCart() {
-                try {
-                        await api.addToCart(user.cartID, book.isbn, counter);
-                        await onAddToCart();
-                        restartCounter();
-                } catch (error) {
-                        console.error("Failed to add item to cart:", error);
-                }
-        }
 
         return (
                 <Card sx={{ width: "11vw" }}>
@@ -101,7 +91,13 @@ export default function BookCard({
                                 </Box>
                                 <Tooltip title="Add to cart">
                                         <AddToCartButton
-                                                onClick={handleAddToCart}
+                                                onClick={() =>
+                                                        onAddToCart(
+                                                                book.isbn,
+                                                                counter,
+                                                                restartCounter
+                                                        )
+                                                }
                                         >
                                                 <AddShoppingCart />
                                         </AddToCartButton>

@@ -5,16 +5,17 @@ import Grid2 from "@mui/material/Grid2";
 import BookCard from "./BookCard";
 import { Book } from "../Types/cart";
 import { GridBox } from "./styles";
-import { User } from "../Types/user";
 
 export default function BookGrid({
-        user,
         catalog,
         onAddToCart,
 }: {
-        user: User;
         catalog: Record<string, Book>;
-        onAddToCart: () => Promise<void>;
+        onAddToCart: (
+                isbn: string,
+                counter: number,
+                restartCounter: () => void
+        ) => Promise<void>;
 }) {
         return (
                 <Box sx={{ width: "100vw" }}>
@@ -22,7 +23,6 @@ export default function BookGrid({
                                 <Grid2 container spacing={"1.2vw"}>
                                         {Object.values(catalog).map((book) => (
                                                 <BookCard
-                                                        user={user}
                                                         key={book.isbn}
                                                         book={book}
                                                         onAddToCart={
