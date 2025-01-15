@@ -1,7 +1,9 @@
 import Alert from "@mui/material/Alert";
+import useTheme from "@mui/material/styles/useTheme";
 import { useCallback, useState } from "react";
 
 export const useAlert = (onClose: () => void) => {
+    const theme = useTheme();
     const [alertState, setAlertState] = useState(
         <Alert
             onClose={onClose}
@@ -10,7 +12,6 @@ export const useAlert = (onClose: () => void) => {
             sx={{
                 width: "92%",
                 marginTop: "5.5vh",
-                bgcolor: "#567568",
             }}
         >
             No transaction could be done!
@@ -19,9 +20,9 @@ export const useAlert = (onClose: () => void) => {
 
     const handleState = useCallback(
         (severityCode: "error" | "success", message: string) => {
-            let color = "#567568";
+            let color = theme.palette.primary.main;
             if (severityCode == "error") {
-                color = "#C14431";
+                color = theme.palette.secondary.main;
             }
             setAlertState(
                 <Alert
