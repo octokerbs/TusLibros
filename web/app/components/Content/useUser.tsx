@@ -49,6 +49,7 @@ export default function useUser(
                         const newUser = DefaultUsers[state];
                         setUser(newUser);
                         updateCart({});
+                        setPurchases({});
                         await handleCreateCart(newUser);
                 },
                 [handleCreateCart, updateCart]

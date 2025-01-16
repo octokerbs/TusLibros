@@ -17,7 +17,7 @@ export default function CheckoutPopup({
                         <Snackbar
                                 anchorOrigin={{ vertical, horizontal }}
                                 open={open}
-                                autoHideDuration={6000}
+                                autoHideDuration={2000}
                                 key={vertical + horizontal}
                         >
                                 {alert}

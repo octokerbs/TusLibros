@@ -5,7 +5,7 @@ type LocalUserAuthentication struct {
 }
 
 func NewLocalUserAuthentication() *LocalUserAuthentication {
-	return &LocalUserAuthentication{map[string]string{"Octo": "Kerbs"}}
+	return &LocalUserAuthentication{map[string]string{"Octo": "Kerbs", "Norberto": "Lining", "Hernan": "Wilkinson"}}
 }
 
 func (l *LocalUserAuthentication) RegisteredUser(username string, password string) bool {
