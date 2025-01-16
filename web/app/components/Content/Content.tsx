@@ -17,7 +17,7 @@ export default function Content() {
                 "top",
                 "right"
         );
-        const { alert, updateAlert } = useAlert(closeSnackbar);
+        const { alert, updateAlert } = useAlert();
 
         const handleError = useCallback(
                 (error: unknown) => {
@@ -69,6 +69,7 @@ export default function Content() {
                         />
                         <CheckoutPopup
                                 alert={alert}
+                                closeSnackbar={closeSnackbar}
                                 open={snackbarState.open}
                                 vertical={snackbarState.vertical}
                                 horizontal={snackbarState.horizontal}

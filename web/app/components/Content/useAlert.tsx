@@ -2,11 +2,10 @@ import Alert from "@mui/material/Alert";
 import useTheme from "@mui/material/styles/useTheme";
 import { JSX, useCallback, useState } from "react";
 
-export const useAlert = (closeSnackbar: () => void) => {
+export const useAlert = () => {
         const theme = useTheme();
         const [alert, setAlert] = useState<JSX.Element>(
                 <Alert
-                        onClose={closeSnackbar}
                         severity="warning"
                         variant="filled"
                         sx={{
@@ -26,7 +25,6 @@ export const useAlert = (closeSnackbar: () => void) => {
                         }
                         setAlert(
                                 <Alert
-                                        onClose={closeSnackbar}
                                         severity={severity}
                                         variant="filled"
                                         sx={{
@@ -39,11 +37,7 @@ export const useAlert = (closeSnackbar: () => void) => {
                                 </Alert>
                         );
                 },
-                [
-                        closeSnackbar,
-                        theme.palette.primary.main,
-                        theme.palette.secondary.main,
-                ]
+                [theme.palette.primary.main, theme.palette.secondary.main]
         );
 
         return { alert, updateAlert };
