@@ -70,7 +70,7 @@ func (s *CashierTestSuite) Test03CantCheckoutWithAnExpiredCreditCard() {
 		s.factory.Today(),
 		salesBook.NewSalesBook())
 
-	assert.EqualError(s.T(), err, merchantProcessor.InvalidCreditCardErrorMessage)
+	assert.EqualError(s.T(), err, merchantProcessor.ExpiredCreditCardErrorMessage)
 }
 
 func (s *CashierTestSuite) Test04SalesAreRegisteredOnSalesBook() {
@@ -119,7 +119,7 @@ func (s *CashierTestSuite) Test06CanNotCheckOutIfCreditCardHasInsufficientFunds(
 	_ = validCart.AddToCart(s.factory.ItemInCatalog().ISBN(), 3)
 
 	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Unset()
-	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(merchantProcessor.InvalidCreditCardErrorMessage))
+	s.mockMerchantProcessor.On("DebitOn", mock.Anything, mock.Anything).Return(errors.New(merchantProcessor.NoFundsCreditCardErrorMessage))
 
 	cashier, _ := NewCashier(
 		validCart,
@@ -130,6 +130,6 @@ func (s *CashierTestSuite) Test06CanNotCheckOutIfCreditCardHasInsufficientFunds(
 		sales)
 
 	_, err := cashier.Checkout()
-	assert.EqualError(s.T(), err, merchantProcessor.InvalidCreditCardErrorMessage)
+	assert.EqualError(s.T(), err, merchantProcessor.NoFundsCreditCardErrorMessage)
 	assert.True(s.T(), sales.IsEmpty())
 }

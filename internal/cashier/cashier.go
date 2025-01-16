@@ -76,7 +76,7 @@ func (c *Cashier) Total() int {
 
 func assertValidCreditCard(aCreditCard *creditCard.CreditCard, aDate time.Time) error {
 	if aCreditCard.IsExpiredOn(aDate) {
-		return errors.New(merchantProcessor.InvalidCreditCardErrorMessage)
+		return errors.New(merchantProcessor.ExpiredCreditCardErrorMessage)
 	}
 	return nil
 }

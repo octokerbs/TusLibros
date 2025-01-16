@@ -1,3 +1,3 @@
 package cashier
 
-const InvalidCartErrorMessage = "cart must have at least one item"
+const InvalidCartErrorMessage = "Cart must have at least one item"
