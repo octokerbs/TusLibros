@@ -14,16 +14,12 @@ export default function useUser(
                 DefaultUsers[UserState.ValidUser]
         );
 
-        // -------------------------------------------------------
-
         const updateCart = useCallback(
                 async (items: Record<string, number>) => {
                         setCart(items);
                 },
                 []
         );
-
-        // -------------------------------------------------------
 
         const updateUserCartID = useCallback((cartID: number) => {
                 setUser((prevUser) => ({
@@ -32,9 +28,7 @@ export default function useUser(
                 }));
         }, []);
 
-        // -------------------------------------------------------
-
-        const requestCreateCart = useCallback(
+        const handleCreateCart = useCallback(
                 async (currentUser: User) => {
                         try {
                                 const cartID = await api.createCart(
@@ -50,20 +44,17 @@ export default function useUser(
                 [handleError, updateCart, updateUserCartID]
         );
 
-        // -------------------------------------------------------
-
         const updateUserState = useCallback(
                 async (state: UserState) => {
                         const newUser = DefaultUsers[state];
                         setUser(newUser);
-                        await requestCreateCart(newUser);
+                        updateCart({});
+                        await handleCreateCart(newUser);
                 },
-                [requestCreateCart]
+                [handleCreateCart, updateCart]
         );
 
-        // -------------------------------------------------------
-
-        const requestAddToCart = useCallback(
+        const handleAddToCart = useCallback(
                 async (
                         isbn: string,
                         counter: number,
@@ -81,9 +72,7 @@ export default function useUser(
                 [handleError, updateCart, user.cartID]
         );
 
-        // -------------------------------------------------------
-
-        const requestCheckout = useCallback(async () => {
+        const handleCheckoutCart = useCallback(async () => {
                 try {
                         const transactionID = await api.checkOutCart(
                                 user.cartID,
@@ -109,9 +98,7 @@ export default function useUser(
                 user.creditCardNumber,
         ]);
 
-        // -------------------------------------------------------
-
-        const requestUserPurchases = useCallback(async () => {
+        const handleListPurchases = useCallback(async () => {
                 try {
                         const purchases = await api.listPurchases(
                                 user.clientId,
@@ -123,23 +110,21 @@ export default function useUser(
                 }
         }, [handleError, user.clientId, user.password]);
 
-        // ------------------------------------------------------
-
-        const handleCheckout = useCallback(async () => {
+        const finishTransaction = useCallback(async () => {
                 if (Object.keys(cart).length === 0) return;
 
-                await requestCheckout();
+                await handleCheckoutCart();
                 openSnackbar();
-                await requestCreateCart(user);
-        }, [cart, openSnackbar, requestCheckout, requestCreateCart, user]);
+                await handleCreateCart(user);
+        }, [cart, openSnackbar, handleCheckoutCart, handleCreateCart, user]);
 
         return {
-                updateUserState,
                 cart,
-                requestUserPurchases,
                 user,
-                handleCheckout,
                 purchases,
-                requestAddToCart,
+                updateUserState,
+                handleListPurchases,
+                finishTransaction,
+                handleAddToCart,
         };
 }

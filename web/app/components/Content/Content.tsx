@@ -30,13 +30,13 @@ export default function Content() {
         const [isComprasOpen, setIsComprasOpen] = useState(false);
         const { catalog, requestCatalog } = useCatalog(handleError);
         const {
-                updateUserState,
                 cart,
-                requestUserPurchases,
                 user,
-                handleCheckout,
                 purchases,
-                requestAddToCart,
+                updateUserState,
+                handleListPurchases,
+                finishTransaction,
+                handleAddToCart,
         } = useUser(updateAlert, openSnackbar, handleError);
 
         useEffect(() => {
@@ -51,11 +51,11 @@ export default function Content() {
                                 catalog={catalog}
                                 onOpenCompras={() => {
                                         setIsComprasOpen(true);
-                                        requestUserPurchases();
+                                        handleListPurchases();
                                 }}
                                 user={user}
                                 onUserStateChange={updateUserState}
-                                onCheckout={handleCheckout}
+                                onCheckout={finishTransaction}
                         />
                         <Compras
                                 purchases={purchases}
@@ -65,7 +65,7 @@ export default function Content() {
                         />
                         <BookGrid
                                 catalog={catalog}
-                                onAddToCart={requestAddToCart}
+                                onAddToCart={handleAddToCart}
                         />
                         <CheckoutPopup
                                 alert={alert}
