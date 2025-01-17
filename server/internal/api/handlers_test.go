@@ -230,7 +230,7 @@ func (s *HandlersTestSuite) TestCantCheckOutWithExpiredCreditCard() {
 	assert.Equal(s.T(), http.StatusBadRequest, checkOutCartResponseRecorder.Code)
 	assert.Equal(s.T(), 1, checkOutCartResponse.Status)
 	assert.Empty(s.T(), checkOutCartResponse.TransactionID)
-	assert.Equal(s.T(), merchantProcessor.InvalidCreditCardErrorMessage, checkOutCartResponse.Message)
+	assert.Equal(s.T(), merchantProcessor.ExpiredCreditCardErrorMessage, checkOutCartResponse.Message)
 }
 
 func (s *HandlersTestSuite) TestCantCheckOutWithInsufficientFundsCreditCard() {
@@ -344,6 +344,31 @@ func (s *HandlersTestSuite) TestPurchasesAreListedCorrectly() {
 	assert.Equal(s.T(), 0, listPurchasesResponse.Status)
 	assert.Equal(s.T(), map[string]int{s.factory.ItemInCatalog().ISBN(): 2, s.factory.AnotherItemInCatalog().ISBN(): 5}, listPurchasesResponse.Items)
 	assert.Empty(s.T(), listPurchasesResponse.Message)
+}
+
+func (s *HandlersTestSuite) TestPurchasesAreListedCorrectlyOfTwoUsers() {
+	// Given: Two valid carts who were checked out
+	_, createCartResponse1 := s.createCartRequestSender("Octo", "Kerbs")
+	_, _ = s.addToCartRequestSender(createCartResponse1.CartID, s.factory.ItemInCatalog().ISBN(), 2)
+	_, _ = s.checkOutCartRequestSender(createCartResponse1.CartID, "1111222233334444", s.tomorrow(), "Octo")
+
+	_, createCartResponse2 := s.createCartRequestSender("Norberto", "Lining")
+	_, _ = s.addToCartRequestSender(createCartResponse2.CartID, s.factory.AnotherItemInCatalog().ISBN(), 5)
+	_, _ = s.checkOutCartRequestSender(createCartResponse2.CartID, "1111222233334444", s.tomorrow(), "Norberto")
+
+	// When: Listing the purchases of the client
+	listPurchasesResponseRecorder1, listPurchasesResponse1 := s.listPurchasesRequestSender("Octo", "Kerbs")
+	listPurchasesResponseRecorder2, listPurchasesResponse2 := s.listPurchasesRequestSender("Norberto", "Lining")
+
+	// Then: The two purchases are present in the client account
+	assert.Equal(s.T(), http.StatusOK, listPurchasesResponseRecorder1.Code)
+	assert.Equal(s.T(), 0, listPurchasesResponse1.Status)
+	assert.Equal(s.T(), map[string]int{s.factory.ItemInCatalog().ISBN(): 2}, listPurchasesResponse1.Items)
+	assert.Empty(s.T(), listPurchasesResponse1.Message)
+	assert.Equal(s.T(), http.StatusOK, listPurchasesResponseRecorder2.Code)
+	assert.Equal(s.T(), 0, listPurchasesResponse2.Status)
+	assert.Equal(s.T(), map[string]int{s.factory.AnotherItemInCatalog().ISBN(): 5}, listPurchasesResponse2.Items)
+	assert.Empty(s.T(), listPurchasesResponse2.Message)
 }
 
 // Private
