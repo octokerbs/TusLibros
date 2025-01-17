@@ -16,5 +16,5 @@ func (uc *UserCredentials) ValidCredentials(aUserAuthenticator userAuthenticatio
 }
 
 func (uc *UserCredentials) SameCredentialsAs(aUserCredentials *UserCredentials) bool {
-	return aUserCredentials.username == aUserCredentials.username && aUserCredentials.password == aUserCredentials.password
+	return uc.username == aUserCredentials.username && uc.password == aUserCredentials.password
 }
