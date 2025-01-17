@@ -2,8 +2,6 @@
 
 This is an online shopping system designed for the fictional publisher **TusLibros**. It originated as an assignment for the **Software Engineering I** course, initially implemented in Smalltalk with Test-Driven Development.
 
-![Demo](assets/Demo.png)
-
 ## Table of Contents
 
 1. [Technologies](#technologies)
