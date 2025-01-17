@@ -1,7 +1,7 @@
 import { RemoveCircleOutline } from "@mui/icons-material";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import AddShoppingCart from "@mui/icons-material/AddShoppingCart";
-import { Box, Divider, IconButton, Tooltip } from "@mui/material";
+import { Box, Divider, IconButton, Tooltip, useTheme } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -26,8 +26,16 @@ export default function BookCard({
         const { counter, handleIncrement, handleDecrement, restartCounter } =
                 useCounter();
 
+        const theme = useTheme();
+
         return (
-                <Card sx={{ width: "11vw" }}>
+                <Card
+                        sx={{
+                                width: "11vw",
+                                border: 1,
+                                borderColor: theme.palette.primary.main,
+                        }}
+                >
                         <CardMedia
                                 sx={{ height: "30vh" }}
                                 image={book.imagePath}
