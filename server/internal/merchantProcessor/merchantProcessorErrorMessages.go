@@ -1,5 +1,5 @@
 package merchantProcessor
 
-const InvalidCreditCardErrorMessage = "Credit card number is invalid"
-const ExpiredCreditCardErrorMessage = "Credit card is expired"
-const NoFundsCreditCardErrorMessage = "Credit card has no funds"
+const InvalidCreditCardErrorMessage = "credit card number is invalid"
+const ExpiredCreditCardErrorMessage = "credit card is expired"
+const NoFundsCreditCardErrorMessage = "credit card has no funds"

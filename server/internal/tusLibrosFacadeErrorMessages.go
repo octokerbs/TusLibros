@@ -1,4 +1,4 @@
 package internal
 
-const InvalidUserOrPasswordErrorMessage = "Invalid username or password"
-const InvalidCartIDErrorMessage = "Cart session is invalid"
+const InvalidUserOrPasswordErrorMessage = "invalid username or password"
+const InvalidCartIDErrorMessage = "cart session is invalid"
