@@ -13,7 +13,7 @@ export const DefaultUsers: User[] = [
                 cartID: -1,
                 creditCardNumber: "1111222233334444",
                 creditCardExpirationDate: new Date("2030-08-26T14:00:00Z"),
-                kind: "Usuario Valido",
+                kind: "Valid User",
                 logo: <AccountCircle />,
         },
         {
@@ -22,7 +22,7 @@ export const DefaultUsers: User[] = [
                 cartID: -1,
                 creditCardNumber: "1111222233334444",
                 creditCardExpirationDate: new Date("2030-08-26T14:00:00Z"),
-                kind: "Usuario Invalido",
+                kind: "Invalid User",
                 logo: <NoAccounts />,
         },
         {
@@ -31,7 +31,7 @@ export const DefaultUsers: User[] = [
                 cartID: -1,
                 creditCardNumber: "1111222233334444",
                 creditCardExpirationDate: new Date("2001-08-26T14:00:00Z"),
-                kind: "Usuario con tarjeta expirada",
+                kind: "Expired Credit Card User",
                 logo: <EventBusy />,
         },
         {
@@ -40,7 +40,7 @@ export const DefaultUsers: User[] = [
                 cartID: -1,
                 creditCardNumber: "0000000000000000",
                 creditCardExpirationDate: new Date("2030-08-26T14:00:00Z"),
-                kind: "Usuario sin fondos",
+                kind: "Broke User",
                 logo: <CreditCardOff />,
         },
 ];

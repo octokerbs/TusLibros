@@ -40,7 +40,7 @@ export default function UserMenu({
                                 <ListItemIcon>
                                         <History fontSize="small" />
                                 </ListItemIcon>
-                                Mis compras
+                                My Purchases
                         </MenuItem>
                         <Divider />
 
