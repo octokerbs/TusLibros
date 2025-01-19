@@ -46,13 +46,13 @@ git clone https://github.com/KerbsOD/TusLibros.git
 cd TusLibros
 ```
 
-**2. Build the Containers**
+**2. Build the container image**
 
 ```bash
 docker-compose build
 ```
 
-**3. Start the Containers**
+**3. Start the container**
 
 ```bash
 docker-compose up
