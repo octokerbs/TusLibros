@@ -1,4 +1,4 @@
-name: Run Go Tests
+name: Run Go Tests in Server Directory
 
 on:
   push:
@@ -21,5 +21,7 @@ jobs:
         with:
           go-version: 1.23
 
-      - name: Run tests
-        run: go test ./... -v
+      - name: Run tests in server directory
+        run: |
+          cd server
+          go test ./... -
