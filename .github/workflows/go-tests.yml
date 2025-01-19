@@ -24,4 +24,5 @@ jobs:
       - name: Run tests in server directory
         run: |
           cd server
+          go mod download
           go test ./... -
