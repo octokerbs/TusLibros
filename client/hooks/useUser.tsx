@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
-import { api } from "../../../utils/api";
-import { User, UserState } from "../../../types/user";
-import { DefaultUsers } from "../../../utils/localdb";
+import { api } from "../utils/api";
+import { User, UserState } from "../types/user";
+import { DefaultUsers } from "../utils/localdb";
 
 export default function useUser(
         updateAlert: (severity: "error" | "success", message: string) => void,

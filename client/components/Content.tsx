@@ -1,16 +1,23 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ContentContainer } from "./styles";
-import useSnackbar from "./useSnackbar";
-import Header from "../Header/Header";
-import BookGrid from "../BookGrid/BookGrid";
-import useCatalog from "./useCatalog";
-import { Compras } from "../Compras";
-import { CheckoutPopup } from "../CheckoutPopup";
-import useUser from "./useUser";
-import { useAlert } from "./useAlert";
-import { UserState } from "../../../types/user";
+import useSnackbar from "../hooks/useSnackbar";
+import Header from "./Header";
+import BookGrid from "./BookGrid";
+import useCatalog from "../hooks/useCatalog";
+import Compras from "./Compras";
+import CheckoutPopup from "./CheckoutPopup";
+import useUser from "../hooks/useUser";
+import { useAlert } from "../hooks/useAlert";
+import { UserState } from "../types/user";
+import { Box, styled } from "@mui/material";
+
+const ContentContainer = styled(Box)(({ }) => ({
+        backgroundColor: "#F3FCF0",
+        width: "100vw",
+        height: "100vh",
+        overflow: "auto",
+}));
 
 export default function Content() {
         const { snackbarState, openSnackbar, closeSnackbar } = useSnackbar(

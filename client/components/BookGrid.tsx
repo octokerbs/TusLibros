@@ -3,8 +3,15 @@
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Grid2";
 import BookCard from "./BookCard";
-import { Book } from "../../../types/cart";
-import { GridBox } from "./styles";
+import { Book } from "../types/cart";
+import { styled } from "@mui/material";
+
+const GridBox = styled(Box)(({ }) => ({
+        marginTop: "8vh",
+        marginBottom: "2vh",
+        marginLeft: "20vw",
+        marginRight: "20vw",
+}));
 
 export default function BookGrid({
         catalog,

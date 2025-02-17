@@ -1,16 +1,22 @@
 import { RemoveCircleOutline } from "@mui/icons-material";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import AddShoppingCart from "@mui/icons-material/AddShoppingCart";
-import { Box, Divider, IconButton, Tooltip, useTheme } from "@mui/material";
+import { Box, Button, Divider, IconButton, styled, Tooltip, useTheme } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { useCounter } from "./useCounter";
-import { Book } from "../../../types/cart";
-import { AddToCartButton } from "./styles";
-import { formatCurrency } from "../../../utils/formatters";
+import { useCounter } from "../hooks/useCounter";
+import { Book } from "../types/cart";
+import { formatCurrency } from "../utils/formatters";
+
+const AddToCartButton = styled(Button)(({ theme }) => ({
+        color: "white",
+        backgroundColor: theme.palette.primary.main,
+        alignItems: "center",
+        marginLeft: "auto",
+}));
 
 export default function BookCard({
         book,

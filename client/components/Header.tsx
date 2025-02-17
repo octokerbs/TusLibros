@@ -1,15 +1,28 @@
 "use client";
 
-import { AppBar, IconButton, Tooltip, Badge, useTheme } from "@mui/material";
+import { AppBar, IconButton, Tooltip, Badge, useTheme, styled, Box } from "@mui/material";
 import { ShoppingCart } from "@mui/icons-material";
 import React from "react";
 import CartMenu from "./CartMenu";
-import { Book } from "../../../types/cart";
-import { SnackbarState, User, UserState } from "../../../types/user";
-import { useHeaderLogic } from "./useHeaderLogic";
-import { CartButton, HeaderBox } from "./styles";
+import { Book } from "../types/cart";
+import { SnackbarState, User, UserState } from "../types/user";
+import { useHeaderLogic } from "../hooks/useHeaderLogic";
 import Title from "./Title";
 import UserMenu from "./UserMenu";
+
+const HeaderBox = styled(Box)(({ }) => ({
+        height: "6vh",
+        marginLeft: "20vw",
+        marginRight: "20vw",
+        display: "flex",
+        alignItems: "center",
+}));
+
+const CartButton = styled(IconButton)(({ }) => ({
+        marginLeft: "auto",
+        marginRight: "1vw",
+        color: "white",
+}));
 
 export default function Header({
         cart,
