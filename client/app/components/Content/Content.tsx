@@ -10,7 +10,7 @@ import { Compras } from "../Compras";
 import { CheckoutPopup } from "../CheckoutPopup";
 import useUser from "./useUser";
 import { useAlert } from "./useAlert";
-import { UserState } from "../Types/user";
+import { UserState } from "../../../types/user";
 
 export default function Content() {
         const { snackbarState, openSnackbar, closeSnackbar } = useSnackbar(

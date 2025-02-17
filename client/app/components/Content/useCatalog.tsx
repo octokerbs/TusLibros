@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
-import { api } from "../utils/api";
-import { Book } from "../Types/cart";
+import { api } from "../../../utils/api";
+import { Book } from "../../../types/cart";
 
 export default function useCatalog(handleError: (error: unknown) => void) {
         const [catalog, setCatalog] = useState<Record<string, Book>>({});

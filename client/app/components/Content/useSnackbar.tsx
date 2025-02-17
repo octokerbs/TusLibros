@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { SnackbarState } from "../Types/user";
+import { SnackbarState } from "../../../types/user";
 
 export default function useSnackbar(
         defaultVertical: SnackbarState["vertical"],

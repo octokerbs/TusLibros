@@ -1,4 +1,4 @@
-import { Book } from "../Types/cart";
+import { Book } from "../types/cart";
 
 export function calculateTotal(
         cart: Record<string, number>,

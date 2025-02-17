@@ -5,7 +5,7 @@ import {
         EventBusy,
         CreditCardOff,
 } from "@mui/icons-material";
-import { UserState } from "../Types/user";
+import { UserState } from "../../../types/user";
 
 const icons: JSX.Element[] = [
         <AccountCircle key="ValidUser" />,

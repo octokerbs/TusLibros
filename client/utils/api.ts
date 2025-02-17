@@ -1,4 +1,4 @@
-import { Book } from "../Types/cart";
+import { Book } from "../types/cart";
 
 const BASE_URL = "http://localhost:8080";
 

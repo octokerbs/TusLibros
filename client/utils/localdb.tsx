@@ -4,7 +4,7 @@ import {
         EventBusy,
         NoAccounts,
 } from "@mui/icons-material";
-import { User } from "../Types/user";
+import { User } from "../types/user";
 
 export const DefaultUsers: User[] = [
         {
