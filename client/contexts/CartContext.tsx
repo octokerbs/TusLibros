@@ -1,58 +1,36 @@
-import { useCallback, useState } from "react";
-import { api } from "../utils/api";
-import { User, UserState } from "../types/user";
-import { DefaultUsers } from "../utils/localdb";
+"use client";
 
-export default function useUser(
-        updateAlert: (severity: "error" | "success", message: string) => void,
-        openSnackbar: () => void,
-        handleError: (error: unknown) => void
-) {
-        const [purchases, setPurchases] = useState<Record<string, number>>({});
+import { createContext, useContext, useCallback, useState } from "react";
+import { api } from "../services/api";
+import { useUser } from "./UserContext";
+import { useUI } from "./UIContext";
+
+interface CartContextType {
+        cart: Record<string, number>;
+        purchases: Record<string, number>;
+        handleAddToCart: (
+                isbn: string,
+                counter: number,
+                restartCounter: () => void
+        ) => Promise<void>;
+        handleListPurchases: () => Promise<void>;
+        finishTransaction: () => Promise<void>;
+}
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export function CartProvider({ children }: { children: React.ReactNode }) {
+        const { handleError, updateAlert, openSnackbar } = useUI();
+        const { user } = useUser();
+
         const [cart, setCart] = useState<Record<string, number>>({});
-        const [user, setUser] = useState<User>(
-                DefaultUsers[UserState.ValidUser]
-        );
+        const [purchases, setPurchases] = useState<Record<string, number>>({});
 
         const updateCart = useCallback(
                 async (items: Record<string, number>) => {
                         setCart(items);
                 },
                 []
-        );
-
-        const updateUserCartID = useCallback((cartID: number) => {
-                setUser((prevUser) => ({
-                        ...prevUser,
-                        cartID: cartID,
-                }));
-        }, []);
-
-        const handleCreateCart = useCallback(
-                async (currentUser: User) => {
-                        try {
-                                const cartID = await api.createCart(
-                                        currentUser.clientId,
-                                        currentUser.password
-                                );
-                                updateUserCartID(cartID);
-                                updateCart({});
-                        } catch (error) {
-                                handleError(error);
-                        }
-                },
-                [handleError, updateCart, updateUserCartID]
-        );
-
-        const updateUserState = useCallback(
-                async (state: UserState) => {
-                        const newUser = DefaultUsers[state];
-                        setUser(newUser);
-                        updateCart({});
-                        setPurchases({});
-                        await handleCreateCart(newUser);
-                },
-                [handleCreateCart, updateCart]
         );
 
         const handleAddToCart = useCallback(
@@ -83,8 +61,8 @@ export default function useUser(
                         updateAlert(
                                 "success",
                                 "Transaction #" +
-                                transactionID +
-                                " completed succesfully, thank you!"
+                                        transactionID +
+                                        " completed successfully, thank you!"
                         );
                         updateCart({});
                 } catch (error) {
@@ -113,19 +91,29 @@ export default function useUser(
 
         const finishTransaction = useCallback(async () => {
                 if (Object.keys(cart).length === 0) return;
-
                 await handleCheckoutCart();
                 openSnackbar();
-                await handleCreateCart(user);
-        }, [cart, openSnackbar, handleCheckoutCart, handleCreateCart, user]);
+        }, [cart, openSnackbar, handleCheckoutCart]);
 
-        return {
-                cart,
-                user,
-                purchases,
-                updateUserState,
-                handleListPurchases,
-                finishTransaction,
-                handleAddToCart,
-        };
+        return (
+                <CartContext.Provider
+                        value={{
+                                cart,
+                                purchases,
+                                handleAddToCart,
+                                handleListPurchases,
+                                finishTransaction,
+                        }}
+                >
+                        {children}
+                </CartContext.Provider>
+        );
 }
+
+export const useCart = () => {
+        const context = useContext(CartContext);
+        if (!context) {
+                throw new Error("useCart must be used within a CartProvider");
+        }
+        return context;
+};

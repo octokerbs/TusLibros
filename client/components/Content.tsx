@@ -1,50 +1,44 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import useSnackbar from "../hooks/useSnackbar";
+import { useState, useEffect, JSX } from "react";
 import Header from "./Header";
 import BookGrid from "./BookGrid";
 import useCatalog from "../hooks/useCatalog";
 import Compras from "./Compras";
 import CheckoutPopup from "./CheckoutPopup";
-import useUser from "../hooks/useUser";
-import { useAlert } from "../hooks/useAlert";
-import { UserState } from "../types/user";
+import { SnackbarState, UserState } from "../types/user";
 import { Box, styled } from "@mui/material";
+import { useCart } from "@/contexts/CartContext";
+import { useUser } from "@/contexts/UserContext";
 
-const ContentContainer = styled(Box)(({ }) => ({
+const ContentContainer = styled(Box)(({}) => ({
         backgroundColor: "#F3FCF0",
         width: "100vw",
         height: "100vh",
         overflow: "auto",
 }));
 
-export default function Content() {
-        const { snackbarState, openSnackbar, closeSnackbar } = useSnackbar(
-                "top",
-                "right"
-        );
-        const { alert, updateAlert } = useAlert();
-
-        const handleError = useCallback(
-                (error: unknown) => {
-                        updateAlert("error", error as string);
-                        openSnackbar();
-                },
-                [openSnackbar, updateAlert]
-        );
-
-        const [isComprasOpen, setIsComprasOpen] = useState(false);
-        const { catalog, requestCatalog } = useCatalog(handleError);
+export default function Content({
+        onHandleError,
+        alert,
+        snackbarState,
+        onCloseSnackbar,
+}: {
+        onHandleError: (error: unknown) => void;
+        alert: JSX.Element;
+        snackbarState: SnackbarState;
+        onCloseSnackbar: () => void;
+}) {
+        const { user, updateUserState } = useUser();
         const {
                 cart,
-                user,
                 purchases,
-                updateUserState,
                 handleListPurchases,
                 finishTransaction,
                 handleAddToCart,
-        } = useUser(updateAlert, openSnackbar, handleError);
+        } = useCart();
+        const [isComprasOpen, setIsComprasOpen] = useState(false);
+        const { catalog, requestCatalog } = useCatalog(onHandleError);
 
         useEffect(() => {
                 requestCatalog();
@@ -76,7 +70,7 @@ export default function Content() {
                         />
                         <CheckoutPopup
                                 alert={alert}
-                                closeSnackbar={closeSnackbar}
+                                closeSnackbar={onCloseSnackbar}
                                 open={snackbarState.open}
                                 vertical={snackbarState.vertical}
                                 horizontal={snackbarState.horizontal}

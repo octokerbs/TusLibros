@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { api } from "../utils/api";
+import { api } from "../services/api";
 import { Book } from "../types/cart";
 
 export default function useCatalog(handleError: (error: unknown) => void) {

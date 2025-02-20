@@ -29,10 +29,9 @@ export default function BookCard({
                 restartCounter: () => void
         ) => Promise<void>;
 }) {
+        const theme = useTheme();
         const { counter, handleIncrement, handleDecrement, restartCounter } =
                 useCounter();
-
-        const theme = useTheme();
 
         return (
                 <Card

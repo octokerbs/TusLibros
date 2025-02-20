@@ -1,3 +1,5 @@
+"use client";
+
 import Alert from "@mui/material/Alert";
 import useTheme from "@mui/material/styles/useTheme";
 import { JSX, useCallback, useState } from "react";

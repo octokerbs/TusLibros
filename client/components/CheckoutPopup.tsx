@@ -1,23 +1,16 @@
+import { useUI } from "@/contexts/UIContext";
 import { Snackbar } from "@mui/material";
 import React, { JSX } from "react";
 
-export default function CheckoutPopup({
-        alert,
-        closeSnackbar,
-        open,
-        vertical,
-        horizontal,
-}: {
-        alert: JSX.Element;
-        closeSnackbar: () => void;
-        open: boolean;
-        vertical: "bottom" | "top";
-        horizontal: "center" | "left" | "right";
-}) {
+export default function CheckoutPopup({}: {}) {
+        const { alert, snackbarState, closeSnackbar } = useUI();
         return (
                 <div>
                         <Snackbar
-                                anchorOrigin={{ vertical, horizontal }}
+                                anchorOrigin={{
+                                        vertical: snackbarState.vertical,
+                                        horizontal: snackbarState.horizontal,
+                                }}
                                 open={open}
                                 autoHideDuration={2000}
                                 onClose={closeSnackbar}
