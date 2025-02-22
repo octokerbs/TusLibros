@@ -1,42 +1,32 @@
-import {AlertColor, AlertPropsColorOverrides, Snackbar} from "@mui/material";
+import {Snackbar} from "@mui/material";
 import React from "react";
 import Alert from "@mui/material/Alert";
-import {OverridableStringUnion} from "@mui/types";
+import {useNotification} from "@/context/NotificationContext";
 
-export default function Notification({
-                                         severity,
-                                         message,
-                                         color,
-                                         open,
-                                         onCloseSnackbar,
-                                     }: {
-    severity: OverridableStringUnion<AlertColor, AlertPropsColorOverrides> | undefined,
-    message: string,
-    color: string,
-    open: boolean,
-    onCloseSnackbar: () => void;
-}) {
+export default function Notification() {
     const vertical = "top"
     const horizontal = "right"
+
+    const notification = useNotification();
 
     return (
         <Snackbar
             anchorOrigin={{vertical, horizontal}}
-            open={open}
+            open={notification.open}
             autoHideDuration={2000}
-            onClose={onCloseSnackbar}
+            onClose={notification.handleCloseNotificationBar}
             key={vertical + horizontal}
         >
             <Alert
-                severity={severity}
+                severity={notification.severity}
                 variant="filled"
                 sx={{
                     width: "17vw",
                     marginTop: "5.5vh",
-                    bgcolor: color,
+                    bgcolor: notification.color,
                 }}
             >
-                {message}
+                {notification.message}
             </Alert>
         </Snackbar>
     );

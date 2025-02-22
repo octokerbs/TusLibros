@@ -1,13 +1,11 @@
-import { Metadata } from "next";
-import Content from "../components/Content";
+import {Metadata} from "next";
+import TusLibros from "./TusLibros";
 
 export const metadata: Metadata = {
-        title: "TusLibros",
-        description: "BookShop built in Go and Nextjs with TDD",
+    title: "TusLibros",
+    description: "BookShop built in Go and NextJS with TDD",
 };
 
-// No me juzguen, es la segunda vez en mi vida que hago frontend ^_^
-
 export default function MainPage() {
-        return <Content />;
+    return <TusLibros/>;
 }

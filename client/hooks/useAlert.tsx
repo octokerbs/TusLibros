@@ -1,11 +1,9 @@
 import useTheme from "@mui/material/styles/useTheme";
 import {useCallback, useState} from "react";
-import {OverridableStringUnion} from "@mui/types";
-import {AlertColor, AlertPropsColorOverrides} from "@mui/material";
 
 export const useAlert = () => {
     const theme = useTheme();
-    const [severity, setSeverity] = useState<OverridableStringUnion<AlertColor, AlertPropsColorOverrides> | undefined>("warning");
+    const [severity, setSeverity] = useState<"success" | "warning" | "info" | "error">("warning");
     const [message, setMessage] = useState<string>("");
     const [color, setColor] = useState<string>(theme.palette.primary.main);
 

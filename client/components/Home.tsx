@@ -1,16 +1,15 @@
 "use client";
 
-import {useState, useEffect, useCallback} from "react";
-import useSnackbar from "../hooks/useSnackbar";
+import {useState, useEffect} from "react";
 import Header from "./Header";
 import BookGrid from "./BookGrid";
 import useCatalog from "../hooks/useCatalog";
 import Compras from "./Compras";
 import Notification from "./Notification";
 import useUser from "../hooks/useUser";
-import {useAlert} from "../hooks/useAlert";
-import {UserState} from "../types/user";
+import {UserState} from "@/types/user";
 import {Box, styled} from "@mui/material";
+import {useNotification} from "@/context/NotificationContext";
 
 const ContentContainer = styled(Box)(({}) => ({
     backgroundColor: "#F3FCF0",
@@ -19,28 +18,11 @@ const ContentContainer = styled(Box)(({}) => ({
     overflow: "auto",
 }));
 
-export default function Content() {
-    const {open, handleOpenNotificationBar, handleCloseNotificationBar} = useSnackbar();
-    const {severity, message, color, handleSuccessAlert, handleErrorAlert} = useAlert();
-
-    const handleSuccess = useCallback(
-        (message: string) => {
-            handleSuccessAlert(message);
-            handleOpenNotificationBar();
-        },
-        [handleSuccessAlert, handleOpenNotificationBar]
-    )
-
-    const handleError = useCallback(
-        (error: unknown) => {
-            handleErrorAlert(error as string);
-            handleOpenNotificationBar();
-        },
-        [handleErrorAlert, handleOpenNotificationBar]
-    );
+export default function Home() {
+    const notification = useNotification();
 
     const [isComprasOpen, setIsComprasOpen] = useState(false);
-    const {catalog, requestCatalog} = useCatalog(handleError);
+    const {catalog, requestCatalog} = useCatalog(notification.handleError);
     const {
         cart,
         user,
@@ -49,7 +31,7 @@ export default function Content() {
         handleListPurchases,
         finishTransaction,
         handleAddToCart,
-    } = useUser(handleSuccess, handleError);
+    } = useUser(notification.handleSuccess, notification.handleError);
 
     useEffect(() => {
         requestCatalog();
@@ -79,13 +61,7 @@ export default function Content() {
                 catalog={catalog}
                 onAddToCart={handleAddToCart}
             />
-            <Notification
-                severity={severity}
-                message={message}
-                color={color}
-                open={open}
-                onCloseSnackbar={handleCloseNotificationBar}
-            />
+            <Notification/>
         </ContentContainer>
     );
 }
