@@ -1,44 +1,31 @@
-import Alert from "@mui/material/Alert";
 import useTheme from "@mui/material/styles/useTheme";
-import { JSX, useCallback, useState } from "react";
+import {useCallback, useState} from "react";
+import {OverridableStringUnion} from "@mui/types";
+import {AlertColor, AlertPropsColorOverrides} from "@mui/material";
 
 export const useAlert = () => {
-        const theme = useTheme();
-        const [alert, setAlert] = useState<JSX.Element>(
-                <Alert
-                        severity="warning"
-                        variant="filled"
-                        sx={{
-                                width: "17vw",
-                                marginTop: "5.5vh",
-                        }}
-                >
-                        Nothing to do!
-                </Alert>
-        );
+    const theme = useTheme();
+    const [severity, setSeverity] = useState<OverridableStringUnion<AlertColor, AlertPropsColorOverrides> | undefined>("warning");
+    const [message, setMessage] = useState<string>("");
+    const [color, setColor] = useState<string>(theme.palette.primary.main);
 
-        const updateAlert = useCallback(
-                (severity: "error" | "success", message: string) => {
-                        let color = theme.palette.primary.main;
-                        if (severity == "error") {
-                                color = theme.palette.secondary.main;
-                        }
-                        setAlert(
-                                <Alert
-                                        severity={severity}
-                                        variant="filled"
-                                        sx={{
-                                                width: "17vw",
-                                                marginTop: "5.5vh",
-                                                bgcolor: color,
-                                        }}
-                                >
-                                        {message}
-                                </Alert>
-                        );
-                },
-                [theme.palette.primary.main, theme.palette.secondary.main]
-        );
+    const handleSuccessAlert = useCallback((message: string) => {
+        setSeverity("success");
+        setMessage(message);
+        setColor(theme.palette.primary.main);
+    }, [theme.palette.primary.main])
 
-        return { alert, updateAlert };
+    const handleErrorAlert = useCallback((message: string) => {
+        setSeverity("error");
+        setMessage(message);
+        setColor(theme.palette.secondary.main);
+    }, [theme.palette.secondary.main])
+
+    return {
+        severity,
+        message,
+        color,
+        handleSuccessAlert,
+        handleErrorAlert
+    }
 };

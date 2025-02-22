@@ -1,23 +1,15 @@
-import { useState, useCallback } from "react";
-import { SnackbarState } from "../types/user";
+import {useState, useCallback} from "react";
 
-export default function useSnackbar(
-        defaultVertical: SnackbarState["vertical"],
-        defaultHorizontal: SnackbarState["horizontal"]
-) {
-        const [snackbarState, setSnackbarState] = useState<SnackbarState>({
-                open: false,
-                vertical: defaultVertical,
-                horizontal: defaultHorizontal,
-        });
+export default function useSnackbar() {
+    const [open, setOpen] = useState(false);
 
-        const openSnackbar = useCallback(() => {
-                setSnackbarState((prev) => ({ ...prev, open: true }));
-        }, []);
+    const handleOpenNotificationBar = useCallback(() => {
+        setOpen(true);
+    }, []);
 
-        const closeSnackbar = useCallback(() => {
-                setSnackbarState((prev) => ({ ...prev, open: false }));
-        }, []);
+    const handleCloseNotificationBar = useCallback(() => {
+        setOpen(false);
+    }, []);
 
-        return { snackbarState, openSnackbar, closeSnackbar };
+    return {open, handleOpenNotificationBar, handleCloseNotificationBar};
 }
