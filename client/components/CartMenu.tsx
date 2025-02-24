@@ -4,12 +4,13 @@ import Divider from "@mui/material/Divider";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
 import {Book} from "@/types/cart";
-import {SnackbarState} from "@/types/user";
 import {formatCurrency} from "@/utils/formatters";
 
 import {calculateTotal} from "@/utils/price";
 import {forEachBook} from "@/utils/book";
 import {Button, styled} from "@mui/material";
+import {useUser2} from "@/context/UserContext";
+import {useCart} from "@/context/CartContext";
 
 const CartMenuItem = styled(Box)(({}) => ({
     display: "flex",
@@ -79,18 +80,15 @@ export default function CartMenu({
                                      catalog,
                                      open,
                                      handleClose,
-                                     cart,
-                                     onCheckout,
                                  }: {
     anchorEl: HTMLElement | null;
     catalog: Record<string, Book>;
     open: boolean;
     handleClose: () => void;
-    cart: Record<string, number>;
-    onCheckout: (
-        position: Pick<SnackbarState, "vertical" | "horizontal">
-    ) => void;
 }) {
+    const user = useUser2();
+    const cart2 = useCart();
+
     return (
         <Menu
             anchorEl={anchorEl}
@@ -108,7 +106,7 @@ export default function CartMenu({
             }}
         >
             <Box>
-                {forEachBook(catalog, cart, (book: Book, quantity: number) => {
+                {forEachBook(catalog, cart2.cart, (book: Book, quantity: number) => {
                     return (
                         <Box key={book.isbn}>
                             <CartMenuItem>
@@ -140,23 +138,21 @@ export default function CartMenu({
                     );
                 })}
             </Box>
-
             <CartMenuTotal>
                 <Typography gutterBottom variant="h6" component="div">
                     Total
                 </Typography>
                 <Typography gutterBottom variant="h6" component="div">
-                    {formatCurrency(calculateTotal(cart, catalog))}
+                    {formatCurrency(calculateTotal(cart2.cart, catalog))}
                 </Typography>
             </CartMenuTotal>
             <CheckoutBox>
                 <CheckoutButton
-                    onClick={() =>
-                        onCheckout({
-                            vertical: "top",
-                            horizontal: "right",
-                        })
-                    }
+                    onClick={async () => {
+                        await cart2.handleCheckoutCart(user.user.cartID, user.user.creditCardNumber, user.user.creditCardExpirationDate)
+                        await user.handleNewCartID(user.user.clientId, user.user.password)
+                        cart2.handleEmptyCart()
+                    }}
                 >
                     <ShoppingCartCheckout></ShoppingCartCheckout>
                     <Typography sx={{color: "white"}} component="div">

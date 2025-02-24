@@ -1,6 +1,6 @@
 import {useState} from "react";
 
-export const useHeaderLogic = () => {
+export const useMenus = () => {
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [anchorElCart, setAnchorElCart] = useState<null | HTMLElement>(null);
 

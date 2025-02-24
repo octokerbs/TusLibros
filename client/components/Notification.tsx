@@ -6,7 +6,6 @@ import {useNotification} from "@/context/NotificationContext";
 export default function Notification() {
     const vertical = "top"
     const horizontal = "right"
-
     const notification = useNotification();
 
     return (

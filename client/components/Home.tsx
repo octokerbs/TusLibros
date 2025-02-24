@@ -1,17 +1,17 @@
 "use client";
 
-import {useState, useEffect} from "react";
+import {useEffect, useState} from "react";
 import Header from "./Header";
 import BookGrid from "./BookGrid";
 import useCatalog from "../hooks/useCatalog";
-import Compras from "./Compras";
+import Purchases from "./Purchases";
 import Notification from "./Notification";
-import useUser from "../hooks/useUser";
-import {UserState} from "@/types/user";
 import {Box, styled} from "@mui/material";
 import {useNotification} from "@/context/NotificationContext";
+import {useUser2} from "@/context/UserContext";
+import {UserState} from "@/types/user";
 
-const ContentContainer = styled(Box)(({}) => ({
+const HomeContainer = styled(Box)(({}) => ({
     backgroundColor: "#F3FCF0",
     width: "100vw",
     height: "100vh",
@@ -20,48 +20,35 @@ const ContentContainer = styled(Box)(({}) => ({
 
 export default function Home() {
     const notification = useNotification();
+    const user = useUser2();
 
     const [isComprasOpen, setIsComprasOpen] = useState(false);
     const {catalog, requestCatalog} = useCatalog(notification.handleError);
-    const {
-        cart,
-        user,
-        purchases,
-        updateUserState,
-        handleListPurchases,
-        finishTransaction,
-        handleAddToCart,
-    } = useUser(notification.handleSuccess, notification.handleError);
 
     useEffect(() => {
         requestCatalog();
-        updateUserState(UserState.ValidUser);
-    }, [requestCatalog, updateUserState]);
+        user.handleNewUserState(UserState.ValidUser)
+        user.handleNewCartID(user.user.clientId, user.user.password)
+    }, [requestCatalog]);
 
     return (
-        <ContentContainer>
+        <HomeContainer>
             <Header
-                cart={cart}
                 catalog={catalog}
-                onOpenCompras={() => {
+                onOpenCompras={async () => {
                     setIsComprasOpen(true);
-                    handleListPurchases();
+                    await user.handleListPurchases();
                 }}
-                user={user}
-                onUserStateChange={updateUserState}
-                onCheckout={finishTransaction}
             />
-            <Compras
-                purchases={purchases}
+            <Purchases
                 open={isComprasOpen}
                 onClose={() => setIsComprasOpen(false)}
                 catalog={catalog}
             />
             <BookGrid
                 catalog={catalog}
-                onAddToCart={handleAddToCart}
             />
             <Notification/>
-        </ContentContainer>
+        </HomeContainer>
     );
 }

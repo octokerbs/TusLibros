@@ -4,42 +4,62 @@ import {DefaultUsers} from "@/utils/localdb";
 import {api} from "@/utils/api";
 import {useNotification} from "@/context/NotificationContext";
 
-
 interface UserContextType {
     user: User;
-    handleNewUserState: (newState: UserState) => void;
-    handleNewCartID: (cartID: number) => void;
+    handleNewUserState: (newState: UserState) => Promise<void>;
+    handleNewCartID: (clientId: string, password: string) => Promise<number>;
     handleListPurchases: () => Promise<Record<string, number>>;
 }
 
 const UserContext = React.createContext<UserContextType | null>(null);
 
 export function UserProvider({children}: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User>(DefaultUsers[UserState.ValidUser]);
+    const [user, setUser] = useState<User>(
+        DefaultUsers[UserState.ValidUser]
+    );
     const notification = useNotification();
-    //const cart = useCart();
 
-    const handleNewUserState = useCallback((newState: UserState) => {
-        const newUser = DefaultUsers[newState];
-        setUser(newUser);
-    }, []);
-
-    const handleNewCartID = useCallback(async () => {
+    const handleNewCartID = useCallback(async (clientId: string, password: string): Promise<number> => {
+        let cartId: number = -1
         try {
-            const cartID = await api.createCart(user.clientId, user.password);
-            setUser({...user, cartID});
+            cartId = await api.createCart(clientId, password)
         } catch (error) {
             notification.handleError(error);
         }
-    }, [notification, user]);
+        return cartId;
+    }, [notification]);
 
-    const handleListPurchases = useCallback(async (): Promise<Record<string, number>> => {
-        return await api.listPurchases(user.clientId, user.password);
-    }, [user.clientId, user.password]);
+    const handleNewUserState = useCallback(async (newState: UserState) => {
+        try {
+            const newUser = DefaultUsers[newState];
+            const cartID = await handleNewCartID(newUser.clientId, newUser.password);
+            setUser({...newUser, cartID});
+        } catch (e) {
+            notification.handleError(e);
+        }
+    }, [handleNewCartID, notification]);
+
+    const handleListPurchases = useCallback(async (): Promise<
+        Record<string, number>
+    > => {
+        let purchases: Record<string, number> = {};
+        try {
+            purchases = await api.listPurchases(user.clientId, user.password);
+        } catch (e) {
+            notification.handleError(e);
+        }
+        return purchases;
+    }, [notification, user.clientId, user.password]);
 
     return (
         <UserContext.Provider
-            value={{user, handleNewUserState, handleNewCartID, handleListPurchases}}>
+            value={{
+                user,
+                handleNewUserState,
+                handleNewCartID,
+                handleListPurchases,
+            }}
+        >
             {children}
         </UserContext.Provider>
     );

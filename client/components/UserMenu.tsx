@@ -4,6 +4,8 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import {DefaultUsers} from "@/utils/localdb";
+import {useUser2} from "@/context/UserContext";
+import {useNotification} from "@/context/NotificationContext";
 
 const SlotPropsUser = {
     paper: {
@@ -38,15 +40,16 @@ export default function UserMenu({
                                      anchorEl,
                                      open,
                                      handleClose,
-                                     onUserStateChange,
                                      onOpenCompras,
                                  }: {
     anchorEl: HTMLElement | null;
     open: boolean;
     handleClose: () => void;
-    onUserStateChange: (newState: number) => void;
     onOpenCompras: () => void;
 }) {
+    const user = useUser2();
+    const notification = useNotification();
+
     return (
         <Menu
             anchorEl={anchorEl}
@@ -72,13 +75,19 @@ export default function UserMenu({
             </MenuItem>
             <Divider/>
 
-            {DefaultUsers.map((user, index) => (
+            {DefaultUsers.map((defaultUser, index) => (
                 <MenuItem
-                    onClick={() => onUserStateChange(index)}
-                    key={user.kind}
+                    onClick={async () => {
+                        try {
+                            await user.handleNewUserState(index)
+                        } catch (error) {
+                            notification.handleError(error)
+                        }
+                    }}
+                    key={defaultUser.kind}
                 >
-                    <ListItemIcon>{user.logo}</ListItemIcon>
-                    {user.kind}
+                    <ListItemIcon>{defaultUser.logo}</ListItemIcon>
+                    {defaultUser.kind}
                 </MenuItem>
             ))}
         </Menu>

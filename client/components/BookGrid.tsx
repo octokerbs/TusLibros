@@ -5,6 +5,8 @@ import Grid2 from "@mui/material/Grid2";
 import BookCard from "./BookCard";
 import {Book} from "@/types/cart";
 import {styled} from "@mui/material";
+import {useUser2} from "@/context/UserContext";
+import {useCart} from "@/context/CartContext";
 
 const GridBox = styled(Box)(({}) => ({
     marginTop: "8vh",
@@ -15,14 +17,8 @@ const GridBox = styled(Box)(({}) => ({
 
 export default function BookGrid({
                                      catalog,
-                                     onAddToCart,
                                  }: {
     catalog: Record<string, Book>;
-    onAddToCart: (
-        isbn: string,
-        counter: number,
-        restartCounter: () => void
-    ) => Promise<void>;
 }) {
     return (
         <Box sx={{width: "100vw"}}>
@@ -32,9 +28,6 @@ export default function BookGrid({
                         <BookCard
                             key={book.isbn}
                             book={book}
-                            onAddToCart={
-                                onAddToCart
-                            }
                         ></BookCard>
                     ))}
                 </Grid2>

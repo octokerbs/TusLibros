@@ -5,10 +5,11 @@ import {ShoppingCart} from "@mui/icons-material";
 import React from "react";
 import CartMenu from "./CartMenu";
 import {Book} from "@/types/cart";
-import {SnackbarState, User, UserState} from "@/types/user";
-import {useHeaderLogic} from "@/hooks/useHeaderLogic";
+import {useMenus} from "@/hooks/useMenus";
 import Title from "./Title";
 import UserMenu from "./UserMenu";
+import {useUser2} from "@/context/UserContext";
+import {useCart} from "@/context/CartContext";
 
 const HeaderBox = styled(Box)(({}) => ({
     height: "6vh",
@@ -24,26 +25,15 @@ const CartButton = styled(IconButton)(({}) => ({
     color: "white",
 }));
 
-export default function Header({
-                                   cart,
-                                   catalog,
-                                   onOpenCompras,
-                                   user,
-                                   onUserStateChange,
-                                   onCheckout,
-                               }: {
-    cart: Record<string, number>;
+export default function Header({catalog, onOpenCompras}: {
     catalog: Record<string, Book>;
     onOpenCompras: () => void;
-    user: User;
-    onUserStateChange: (newState: UserState) => void;
-    onCheckout: (
-        position: Pick<SnackbarState, "vertical" | "horizontal">
-    ) => void;
 }) {
     const theme = useTheme();
     const {anchorElCart, anchorElUser, handleClick, handleClose} =
-        useHeaderLogic();
+        useMenus();
+    const user2 = useUser2();
+    const cart2 = useCart();
 
     return (
         <AppBar
@@ -52,7 +42,6 @@ export default function Header({
         >
             <HeaderBox>
                 <Title/>
-
                 <Tooltip title="List cart">
                     <CartButton
                         onClick={handleClick("cart")}
@@ -69,7 +58,7 @@ export default function Header({
                         <Badge
                             badgeContent={
                                 Object.keys(
-                                    cart
+                                    cart2.cart
                                 ).length
                             }
                             color="error"
@@ -78,7 +67,6 @@ export default function Header({
                         </Badge>
                     </CartButton>
                 </Tooltip>
-
                 <Tooltip title="Account settings">
                     <IconButton
                         onClick={handleClick("user")}
@@ -93,25 +81,20 @@ export default function Header({
                         )}
                         sx={{color: "white"}}
                     >
-                        {user.logo}
+                        {user2.user.logo}
                     </IconButton>
                 </Tooltip>
             </HeaderBox>
-
             <CartMenu
                 anchorEl={anchorElCart}
                 catalog={catalog}
                 open={Boolean(anchorElCart)}
                 handleClose={handleClose("cart")}
-                cart={cart}
-                onCheckout={onCheckout}
             />
-
             <UserMenu
                 anchorEl={anchorElUser}
                 open={Boolean(anchorElUser)}
                 handleClose={handleClose("user")}
-                onUserStateChange={onUserStateChange}
                 onOpenCompras={onOpenCompras}
             />
         </AppBar>
