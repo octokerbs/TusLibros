@@ -1,15 +1,15 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import Header from "./Header";
+import {useEffect} from "react";
+import HeaderBar from "./HeaderBar";
 import BookGrid from "./BookGrid";
 import useCatalog from "../hooks/useCatalog";
-import Purchases from "./Purchases";
-import Notification from "./Notification";
+import PurchasesWindow from "./PurchasesWindow";
+import NotificationDisplay from "./NotificationDisplay";
 import {Box, styled} from "@mui/material";
-import {useNotification} from "@/context/NotificationContext";
-import {useUser2} from "@/context/UserContext";
+import {useUser} from "@/context/UserContext";
 import {UserState} from "@/types/user";
+import {usePurchases} from "@/hooks/usePurchases";
 
 const HomeContainer = styled(Box)(({}) => ({
     backgroundColor: "#F3FCF0",
@@ -19,36 +19,22 @@ const HomeContainer = styled(Box)(({}) => ({
 }));
 
 export default function Home() {
-    const notification = useNotification();
-    const user = useUser2();
+    const user = useUser();
+    const {catalog, requestCatalog} = useCatalog();
+    const {isPurchasesOpen, handleOpenPurchases, handleClosePurchases} = usePurchases();
 
-    const [isComprasOpen, setIsComprasOpen] = useState(false);
-    const {catalog, requestCatalog} = useCatalog(notification.handleError);
-
+    // We only want to fetch the catalog and set a default user state once.
     useEffect(() => {
         requestCatalog();
-        user.handleNewUserState(UserState.ValidUser)
-        user.handleNewCartID(user.user.clientId, user.user.password)
-    }, [requestCatalog]);
+        user.handleNewUserState(UserState.ValidUser);
+    }, []); // LEAVE EMPTY, DO NOT TRUST ESLINT
 
     return (
         <HomeContainer>
-            <Header
-                catalog={catalog}
-                onOpenCompras={async () => {
-                    setIsComprasOpen(true);
-                    await user.handleListPurchases();
-                }}
-            />
-            <Purchases
-                open={isComprasOpen}
-                onClose={() => setIsComprasOpen(false)}
-                catalog={catalog}
-            />
-            <BookGrid
-                catalog={catalog}
-            />
-            <Notification/>
+            <HeaderBar catalog={catalog} onOpenPurchases={handleOpenPurchases}/>
+            <PurchasesWindow catalog={catalog} open={isPurchasesOpen} onClose={handleClosePurchases}/>
+            <BookGrid catalog={catalog}/>
+            <NotificationDisplay/>
         </HomeContainer>
     );
 }

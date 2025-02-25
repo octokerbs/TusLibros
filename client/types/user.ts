@@ -15,6 +15,7 @@ export type User = {
     creditCardExpirationDate: Date;
     kind: string;
     logo: JSX.Element;
+    state: UserState;
 };
 
 export interface SnackbarState {

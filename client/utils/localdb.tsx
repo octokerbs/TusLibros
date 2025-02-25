@@ -15,6 +15,7 @@ export const DefaultUsers: User[] = [
         creditCardExpirationDate: new Date("2030-08-26T14:00:00Z"),
         kind: "Valid User",
         logo: <AccountCircle/>,
+        state: 0,
     },
     {
         clientId: "Octo",
@@ -24,6 +25,7 @@ export const DefaultUsers: User[] = [
         creditCardExpirationDate: new Date("2030-08-26T14:00:00Z"),
         kind: "Invalid User",
         logo: <NoAccounts/>,
+        state: 1,
     },
     {
         clientId: "Norberto",
@@ -33,6 +35,7 @@ export const DefaultUsers: User[] = [
         creditCardExpirationDate: new Date("2001-08-26T14:00:00Z"),
         kind: "Expired Credit Card User",
         logo: <EventBusy/>,
+        state: 2,
     },
     {
         clientId: "Hernan",
@@ -42,5 +45,6 @@ export const DefaultUsers: User[] = [
         creditCardExpirationDate: new Date("2030-08-26T14:00:00Z"),
         kind: "Broke User",
         logo: <CreditCardOff/>,
+        state: 3,
     },
 ];

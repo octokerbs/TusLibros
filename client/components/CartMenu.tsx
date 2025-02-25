@@ -9,7 +9,7 @@ import {formatCurrency} from "@/utils/formatters";
 import {calculateTotal} from "@/utils/price";
 import {forEachBook} from "@/utils/book";
 import {Button, styled} from "@mui/material";
-import {useUser2} from "@/context/UserContext";
+import {useUser} from "@/context/UserContext";
 import {useCart} from "@/context/CartContext";
 
 const CartMenuItem = styled(Box)(({}) => ({
@@ -86,8 +86,8 @@ export default function CartMenu({
     open: boolean;
     handleClose: () => void;
 }) {
-    const user = useUser2();
-    const cart2 = useCart();
+    const user = useUser();
+    const cart = useCart();
 
     return (
         <Menu
@@ -106,7 +106,7 @@ export default function CartMenu({
             }}
         >
             <Box>
-                {forEachBook(catalog, cart2.cart, (book: Book, quantity: number) => {
+                {forEachBook(catalog, cart.items, (book: Book, quantity: number) => {
                     return (
                         <Box key={book.isbn}>
                             <CartMenuItem>
@@ -143,15 +143,14 @@ export default function CartMenu({
                     Total
                 </Typography>
                 <Typography gutterBottom variant="h6" component="div">
-                    {formatCurrency(calculateTotal(cart2.cart, catalog))}
+                    {formatCurrency(calculateTotal(cart.items, catalog))}
                 </Typography>
             </CartMenuTotal>
             <CheckoutBox>
                 <CheckoutButton
                     onClick={async () => {
-                        await cart2.handleCheckoutCart(user.user.cartID, user.user.creditCardNumber, user.user.creditCardExpirationDate)
-                        await user.handleNewCartID(user.user.clientId, user.user.password)
-                        cart2.handleEmptyCart()
+                        await cart.handleCheckoutCart(user.cartID(), user.creditCardNumber(), user.creditCardExpirationDate())
+                        await user.handleNewUserState(user.state())
                     }}
                 >
                     <ShoppingCartCheckout></ShoppingCartCheckout>

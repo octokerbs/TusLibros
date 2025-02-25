@@ -6,10 +6,12 @@ import React from "react";
 import CartMenu from "./CartMenu";
 import {Book} from "@/types/cart";
 import {useMenus} from "@/hooks/useMenus";
-import Title from "./Title";
 import UserMenu from "./UserMenu";
-import {useUser2} from "@/context/UserContext";
+import {useUser} from "@/context/UserContext";
 import {useCart} from "@/context/CartContext";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
 
 const HeaderBox = styled(Box)(({}) => ({
     height: "6vh",
@@ -25,15 +27,14 @@ const CartButton = styled(IconButton)(({}) => ({
     color: "white",
 }));
 
-export default function Header({catalog, onOpenCompras}: {
+export default function HeaderBar({catalog, onOpenPurchases}: {
     catalog: Record<string, Book>;
-    onOpenCompras: () => void;
+    onOpenPurchases: () => void;
 }) {
     const theme = useTheme();
-    const {anchorElCart, anchorElUser, handleClick, handleClose} =
-        useMenus();
-    const user2 = useUser2();
-    const cart2 = useCart();
+    const user = useUser();
+    const cart = useCart();
+    const {anchorElCart, anchorElUser, handleClick, handleClose} = useMenus();
 
     return (
         <AppBar
@@ -41,7 +42,22 @@ export default function Header({catalog, onOpenCompras}: {
             sx={{bgcolor: theme.palette.primary.main}}
         >
             <HeaderBox>
-                <Title/>
+                <Link
+                    href="https://github.com/KerbsOD/TusLibros"
+                    target="_blank"
+                >
+                    <Button>
+                        <Typography
+                            variant="h5"
+                            fontFamily="Poppins, sans-serif"
+                            fontWeight="bold"
+                            color="white"
+                            component="div"
+                        >
+                            TusLibros
+                        </Typography>
+                    </Button>
+                </Link>
                 <Tooltip title="List cart">
                     <CartButton
                         onClick={handleClick("cart")}
@@ -57,9 +73,7 @@ export default function Header({catalog, onOpenCompras}: {
                     >
                         <Badge
                             badgeContent={
-                                Object.keys(
-                                    cart2.cart
-                                ).length
+                                Object.keys(cart.items).length
                             }
                             color="error"
                         >
@@ -81,7 +95,7 @@ export default function Header({catalog, onOpenCompras}: {
                         )}
                         sx={{color: "white"}}
                     >
-                        {user2.user.logo}
+                        {user.menuIcon()}
                     </IconButton>
                 </Tooltip>
             </HeaderBox>
@@ -95,7 +109,7 @@ export default function Header({catalog, onOpenCompras}: {
                 anchorEl={anchorElUser}
                 open={Boolean(anchorElUser)}
                 handleClose={handleClose("user")}
-                onOpenCompras={onOpenCompras}
+                onOpenPurchases={onOpenPurchases}
             />
         </AppBar>
     );

@@ -3,7 +3,7 @@ import React from "react";
 import Alert from "@mui/material/Alert";
 import {useNotification} from "@/context/NotificationContext";
 
-export default function Notification() {
+export default function NotificationDisplay() {
     const vertical = "top"
     const horizontal = "right"
     const notification = useNotification();

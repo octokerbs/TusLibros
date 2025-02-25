@@ -3,45 +3,37 @@ import {User, UserState} from "@/types/user";
 import {DefaultUsers} from "@/utils/localdb";
 import {api} from "@/utils/api";
 import {useNotification} from "@/context/NotificationContext";
+import {useCart} from "@/context/CartContext";
 
 interface UserContextType {
-    user: User;
+    cartID: () => number;
+    creditCardNumber: () => string;
+    creditCardExpirationDate: () => Date;
+    state: () => UserState;
+    menuIcon: () => React.JSX.Element;
     handleNewUserState: (newState: UserState) => Promise<void>;
-    handleNewCartID: (clientId: string, password: string) => Promise<number>;
     handleListPurchases: () => Promise<Record<string, number>>;
 }
 
 const UserContext = React.createContext<UserContextType | null>(null);
 
 export function UserProvider({children}: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User>(
-        DefaultUsers[UserState.ValidUser]
-    );
     const notification = useNotification();
-
-    const handleNewCartID = useCallback(async (clientId: string, password: string): Promise<number> => {
-        let cartId: number = -1
-        try {
-            cartId = await api.createCart(clientId, password)
-        } catch (error) {
-            notification.handleError(error);
-        }
-        return cartId;
-    }, [notification]);
+    const cart = useCart();
+    const [user, setUser] = useState<User>(DefaultUsers[UserState.ValidUser]);
 
     const handleNewUserState = useCallback(async (newState: UserState) => {
         try {
             const newUser = DefaultUsers[newState];
-            const cartID = await handleNewCartID(newUser.clientId, newUser.password);
-            setUser({...newUser, cartID});
+            newUser.cartID = await api.createCart(newUser.clientId, newUser.password);
+            setUser(newUser);
+            cart.emptyCart();   // Every time we change the user we want a clean cart
         } catch (e) {
             notification.handleError(e);
         }
-    }, [handleNewCartID, notification]);
+    }, [cart, notification]);
 
-    const handleListPurchases = useCallback(async (): Promise<
-        Record<string, number>
-    > => {
+    const handleListPurchases = useCallback(async (): Promise<Record<string, number>> => {
         let purchases: Record<string, number> = {};
         try {
             purchases = await api.listPurchases(user.clientId, user.password);
@@ -51,12 +43,35 @@ export function UserProvider({children}: { children: React.ReactNode }) {
         return purchases;
     }, [notification, user.clientId, user.password]);
 
+    const cartID = useCallback((): number => {
+        return user.cartID;
+    }, [user.cartID]);
+
+    const creditCardNumber = useCallback((): string => {
+        return user.creditCardNumber;
+    }, [user.creditCardNumber]);
+
+    const creditCardExpirationDate = useCallback((): Date => {
+        return user.creditCardExpirationDate;
+    }, [user.creditCardExpirationDate]);
+
+    const menuIcon = useCallback((): React.JSX.Element => {
+        return user.logo;
+    }, [user.logo]);
+
+    const state = useCallback((): UserState => {
+        return user.state;
+    }, [user.state]);
+
     return (
         <UserContext.Provider
             value={{
-                user,
+                cartID,
+                creditCardNumber,
+                creditCardExpirationDate,
+                state,
+                menuIcon,
                 handleNewUserState,
-                handleNewCartID,
                 handleListPurchases,
             }}
         >
@@ -65,7 +80,7 @@ export function UserProvider({children}: { children: React.ReactNode }) {
     );
 }
 
-export function useUser2() {
+export function useUser() {
     const context = useContext(UserContext);
     if (!context) {
         throw new Error("useUser must be used within a UserProvider");

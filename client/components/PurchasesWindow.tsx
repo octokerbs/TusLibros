@@ -1,7 +1,7 @@
 import {Box, Divider, Modal, styled, Typography} from "@mui/material";
 import {Book} from "@/types/cart";
 import {forEachBook} from "@/utils/book";
-import {useUser2} from "@/context/UserContext";
+import {useUser} from "@/context/UserContext";
 import {useEffect, useState} from "react";
 import {useNotification} from "@/context/NotificationContext";
 
@@ -35,19 +35,15 @@ const ItemComprasBox = styled(Box)(({}) => ({
     width: "55vw",
 }));
 
-export default function Purchases({
-                                      open,
-                                      onClose,
-                                      catalog,
-                                  }: {
-    open: boolean;
-    onClose: () => void;
-    catalog: Record<string, Book>;
+export default function PurchasesWindow({catalog, open, onClose}: {
+    catalog: Record<string, Book>,
+    open: boolean,
+    onClose: () => void
 }) {
-    const [purchases, setPurchases] = useState<Record<string, number>>({});
-    const user = useUser2();
+    const user = useUser();
     const notification = useNotification();
 
+    const [purchases, setPurchases] = useState<Record<string, number>>({});
 
     useEffect(() => {
         if (!open) return;
@@ -74,7 +70,7 @@ export default function Purchases({
             >
                 <OutsideComprasBox>
                     <InsideComprasBox>
-                        {forEachBook(
+                        {purchases && forEachBook(
                             catalog,
                             purchases,
                             (book: Book, quantity: number) => {
