@@ -3,6 +3,7 @@ package main
 import "github.com/KerbsOD/TusLibros/internal/book"
 
 func NewCatalog() *map[string]book.Book {
+	Book0 := book.NewBook("The You You Are", "978-1234567890", 12949, "/images/Ricken.jpg")
 	Book1 := book.NewBook("Mistborn: Secret History", "978-1473225046", 20820, "/images/SecretHistory.jpg")
 	Book2 := book.NewBook("The Well Of Ascension", "978-0765316882", 21189, "/images/TheWellOfAscension.jpg")
 	Book3 := book.NewBook("Shadows", "978-0765378569", 17584, "/images/ShadowsOfSelf.jpg")
@@ -20,20 +21,21 @@ func NewCatalog() *map[string]book.Book {
 	Book15 := book.NewBook("Learning Go", "978-1492077213", 33670, "/images/LearningGo.jpg")
 
 	return &map[string]book.Book{
+		Book0.ISBN():  Book0,
+		Book4.ISBN():  Book4,
+		Book5.ISBN():  Book5,
+		Book11.ISBN(): Book11,
+		Book15.ISBN(): Book15,
+		Book13.ISBN(): Book13,
+		Book9.ISBN():  Book9,
+		Book8.ISBN():  Book8,
+		Book6.ISBN():  Book6,
 		Book1.ISBN():  Book1,
 		Book2.ISBN():  Book2,
 		Book3.ISBN():  Book3,
-		Book4.ISBN():  Book4,
-		Book5.ISBN():  Book5,
-		Book6.ISBN():  Book6,
 		Book7.ISBN():  Book7,
-		Book8.ISBN():  Book8,
-		Book9.ISBN():  Book9,
 		Book10.ISBN(): Book10,
-		Book11.ISBN(): Book11,
 		Book12.ISBN(): Book12,
-		Book13.ISBN(): Book13,
 		Book14.ISBN(): Book14,
-		Book15.ISBN(): Book15,
 	}
 }
