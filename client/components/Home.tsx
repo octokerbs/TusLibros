@@ -8,8 +8,9 @@ import PurchasesWindow from "./PurchasesWindow";
 import NotificationDisplay from "./NotificationDisplay";
 import {Box, styled} from "@mui/material";
 import {useUser} from "@/context/UserContext";
-import {UserState} from "@/types/user";
+import {UserState} from "@/utils/user";
 import {usePurchases} from "@/hooks/usePurchases";
+import {useCart} from "@/context/CartContext";
 
 const HomeContainer = styled(Box)(({}) => ({
     backgroundColor: "#F3FCF0",
@@ -20,13 +21,15 @@ const HomeContainer = styled(Box)(({}) => ({
 
 export default function Home() {
     const user = useUser();
+    const cart = useCart();
+
     const {catalog, requestCatalog} = useCatalog();
     const {isPurchasesOpen, handleOpenPurchases, handleClosePurchases} = usePurchases();
 
     // We only want to fetch the catalog and set a default user state once.
     useEffect(() => {
         requestCatalog();
-        user.handleNewUserState(UserState.ValidUser);
+        user.handleNewUserStateWith(cart, UserState.ValidUser);
     }, []); // LEAVE EMPTY, DO NOT TRUST ESLINT
 
     return (

@@ -1,5 +1,11 @@
 import {JSX} from "react";
-import {Book} from "@/types/cart";
+
+export type Book = {
+    name: string;
+    isbn: string;
+    price: number;
+    imagePath: string;
+};
 
 export function forEachBook(
     catalog: Record<string, Book>,

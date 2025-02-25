@@ -1,9 +1,7 @@
 import {Box, Divider, Modal, styled, Typography} from "@mui/material";
-import {Book} from "@/types/cart";
-import {forEachBook} from "@/utils/book";
+import {Book, forEachBook} from "@/utils/book";
 import {useUser} from "@/context/UserContext";
-import {useEffect, useState} from "react";
-import {useNotification} from "@/context/NotificationContext";
+import {useEffect} from "react";
 
 const OutsideComprasBox = styled(Box)(({}) => ({
     position: "absolute",
@@ -41,24 +39,11 @@ export default function PurchasesWindow({catalog, open, onClose}: {
     onClose: () => void
 }) {
     const user = useUser();
-    const notification = useNotification();
-
-    const [purchases, setPurchases] = useState<Record<string, number>>({});
 
     useEffect(() => {
         if (!open) return;
-
-        const fetchPurchases = async () => {
-            try {
-                const purchases = await user.handleListPurchases();
-                setPurchases(purchases);
-            } catch (error) {
-                notification.handleError(error);
-            }
-        };
-
-        fetchPurchases();
-    }, [notification, open, user]);
+        user.handleListPurchases()
+    }, [open, user]);
 
     return (
         <Box>
@@ -70,9 +55,9 @@ export default function PurchasesWindow({catalog, open, onClose}: {
             >
                 <OutsideComprasBox>
                     <InsideComprasBox>
-                        {purchases && forEachBook(
+                        {user.purchases && forEachBook(
                             catalog,
-                            purchases,
+                            user.purchases,
                             (book: Book, quantity: number) => {
                                 return (
                                     <Box key={book.isbn}>

@@ -4,7 +4,6 @@ import {AppBar, IconButton, Tooltip, Badge, useTheme, styled, Box} from "@mui/ma
 import {ShoppingCart} from "@mui/icons-material";
 import React from "react";
 import CartMenu from "./CartMenu";
-import {Book} from "@/types/cart";
 import {useMenus} from "@/hooks/useMenus";
 import UserMenu from "./UserMenu";
 import {useUser} from "@/context/UserContext";
@@ -12,6 +11,8 @@ import {useCart} from "@/context/CartContext";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import {Book} from "@/utils/book";
+import {LocalUserStateTraits} from "@/utils/user";
 
 const HeaderBox = styled(Box)(({}) => ({
     height: "6vh",
@@ -34,6 +35,7 @@ export default function HeaderBar({catalog, onOpenPurchases}: {
     const theme = useTheme();
     const user = useUser();
     const cart = useCart();
+
     const {anchorElCart, anchorElUser, handleClick, handleClose} = useMenus();
 
     return (
@@ -95,7 +97,7 @@ export default function HeaderBar({catalog, onOpenPurchases}: {
                         )}
                         sx={{color: "white"}}
                     >
-                        {user.menuIcon()}
+                        {LocalUserStateTraits[user.state()].logo}
                     </IconButton>
                 </Tooltip>
             </HeaderBox>

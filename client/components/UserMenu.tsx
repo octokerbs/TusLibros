@@ -3,8 +3,9 @@ import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import {DefaultUsers} from "@/utils/localdb";
 import {useUser} from "@/context/UserContext";
+import {LocalUsers, LocalUserStateTraits} from "@/utils/user";
+import {useCart} from "@/context/CartContext";
 
 const SlotPropsUser = {
     paper: {
@@ -47,6 +48,7 @@ export default function UserMenu({
     onOpenPurchases: () => void;
 }) {
     const user = useUser();
+    const cart = useCart();
 
     return (
         <Menu
@@ -73,15 +75,15 @@ export default function UserMenu({
             </MenuItem>
             <Divider/>
 
-            {DefaultUsers.map((defaultUser, index) => (
+            {LocalUsers.map((localUser) => (
                 <MenuItem
                     onClick={async () => {
-                        await user.handleNewUserState(index)
+                        await user.handleNewUserStateWith(cart, localUser.state)
                     }}
-                    key={defaultUser.kind}
+                    key={localUser.state}
                 >
-                    <ListItemIcon>{defaultUser.logo}</ListItemIcon>
-                    {defaultUser.kind}
+                    <ListItemIcon>{LocalUserStateTraits[localUser.state].logo}</ListItemIcon>
+                    {LocalUserStateTraits[localUser.state].name}
                 </MenuItem>
             ))}
         </Menu>

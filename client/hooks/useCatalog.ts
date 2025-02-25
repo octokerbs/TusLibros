@@ -1,7 +1,7 @@
 import {useCallback, useState} from "react";
-import {api} from "@/utils/api";
-import {Book} from "@/types/cart";
+import {api} from "@/api/api";
 import {useNotification} from "@/context/NotificationContext";
+import {Book} from "@/utils/book";
 
 export default function useCatalog() {
     const notification = useNotification();

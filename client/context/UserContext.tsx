@@ -1,63 +1,57 @@
 import React, {useCallback, useContext, useState} from "react";
-import {User, UserState} from "@/types/user";
-import {DefaultUsers} from "@/utils/localdb";
-import {api} from "@/utils/api";
+import {LocalUsers, User, UserState} from "@/utils/user";
+import {api} from "@/api/api";
 import {useNotification} from "@/context/NotificationContext";
-import {useCart} from "@/context/CartContext";
+import {CartContextType} from "@/context/CartContext";
 
 interface UserContextType {
-    cartID: () => number;
-    creditCardNumber: () => string;
-    creditCardExpirationDate: () => Date;
     state: () => UserState;
-    menuIcon: () => React.JSX.Element;
-    handleNewUserState: (newState: UserState) => Promise<void>;
-    handleListPurchases: () => Promise<Record<string, number>>;
+    purchases: Record<string, number>;
+    handleNewUserStateWith: (cart: CartContextType, newState: UserState) => Promise<void>;
+    handleListPurchases: () => Promise<void>;
+    handleAddToCartWith: (cart: CartContextType, isbn: string, quantity: number) => void,
+    handleListCartWith: (cart: CartContextType) => void,
+    handleCheckoutCartWith: (cart: CartContextType) => void,
 }
 
 const UserContext = React.createContext<UserContextType | null>(null);
 
 export function UserProvider({children}: { children: React.ReactNode }) {
     const notification = useNotification();
-    const cart = useCart();
-    const [user, setUser] = useState<User>(DefaultUsers[UserState.ValidUser]);
+    const [user, setUser] = useState<User>(LocalUsers[UserState.ValidUser]);
+    const [purchases, setPurchases] = useState<Record<string, number>>({});
 
-    const handleNewUserState = useCallback(async (newState: UserState) => {
+    const handleNewUserStateWith = useCallback(async (cart: CartContextType, newState: UserState) => {
         try {
-            const newUser = DefaultUsers[newState];
+            const newUser = LocalUsers[newState];
             newUser.cartID = await api.createCart(newUser.clientId, newUser.password);
             setUser(newUser);
-            cart.emptyCart();   // Every time we change the user we want a clean cart
+            cart.emptyCart()
         } catch (e) {
             notification.handleError(e);
         }
-    }, [cart, notification]);
+    }, [notification]);
 
-    const handleListPurchases = useCallback(async (): Promise<Record<string, number>> => {
-        let purchases: Record<string, number> = {};
+    const handleAddToCartWith = useCallback(async (cart: CartContextType, isbn: string, quantity: number) => {
+        await cart.handleAddToCart(user.cartID, isbn, quantity);
+    }, [user.cartID])
+
+    const handleListCartWith = useCallback(async (cart: CartContextType) => {
+        await cart.handleListCart(user.cartID);
+    }, [user.cartID])
+
+    const handleCheckoutCartWith = useCallback(async (cart: CartContextType) => {
+        await cart.handleCheckoutCart(user.cartID, user.creditCardNumber, user.creditCardExpirationDate)
+    }, [user.cartID, user.creditCardExpirationDate, user.creditCardNumber])
+
+    const handleListPurchases = useCallback(async (): Promise<void> => {
         try {
-            purchases = await api.listPurchases(user.clientId, user.password);
+            const updatedPurchases = await api.listPurchases(user.clientId, user.password);
+            setPurchases(updatedPurchases);
         } catch (e) {
             notification.handleError(e);
         }
-        return purchases;
     }, [notification, user.clientId, user.password]);
-
-    const cartID = useCallback((): number => {
-        return user.cartID;
-    }, [user.cartID]);
-
-    const creditCardNumber = useCallback((): string => {
-        return user.creditCardNumber;
-    }, [user.creditCardNumber]);
-
-    const creditCardExpirationDate = useCallback((): Date => {
-        return user.creditCardExpirationDate;
-    }, [user.creditCardExpirationDate]);
-
-    const menuIcon = useCallback((): React.JSX.Element => {
-        return user.logo;
-    }, [user.logo]);
 
     const state = useCallback((): UserState => {
         return user.state;
@@ -66,13 +60,13 @@ export function UserProvider({children}: { children: React.ReactNode }) {
     return (
         <UserContext.Provider
             value={{
-                cartID,
-                creditCardNumber,
-                creditCardExpirationDate,
                 state,
-                menuIcon,
-                handleNewUserState,
+                purchases,
+                handleNewUserStateWith,
                 handleListPurchases,
+                handleAddToCartWith,
+                handleListCartWith,
+                handleCheckoutCartWith,
             }}
         >
             {children}

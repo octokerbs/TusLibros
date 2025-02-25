@@ -3,8 +3,8 @@
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Grid2";
 import BookCard from "./BookCard";
-import {Book} from "@/types/cart";
 import {styled} from "@mui/material";
+import {Book} from "@/utils/book";
 
 const GridBox = styled(Box)(({}) => ({
     marginTop: "8vh",
@@ -13,12 +13,7 @@ const GridBox = styled(Box)(({}) => ({
     marginRight: "20vw",
 }));
 
-export default function BookGrid({
-                                     catalog,
-                                 }: {
-    catalog: Record<string, Book>;
-}) {
-
+export default function BookGrid({catalog,}: { catalog: Record<string, Book>; }) {
     if (!catalog || Object.keys(catalog).length === 0) {
         return null;
     }

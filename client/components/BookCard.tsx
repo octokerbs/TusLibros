@@ -8,10 +8,10 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import {useCounter} from "@/hooks/useCounter";
-import {Book} from "@/types/cart";
 import {formatCurrency} from "@/utils/formatters";
 import {useUser} from "@/context/UserContext";
 import {useCart} from "@/context/CartContext";
+import {Book} from "@/utils/book";
 
 const AddToCartButton = styled(Button)(({theme}) => ({
     color: "white",
@@ -20,15 +20,11 @@ const AddToCartButton = styled(Button)(({theme}) => ({
     marginLeft: "auto",
 }));
 
-export default function BookCard({
-                                     book,
-                                 }: {
-    book: Book;
-}) {
-    const {counter, handleIncrement, handleDecrement, restartCounter} =
-        useCounter();
+export default function BookCard({book,}: { book: Book; }) {
     const user = useUser();
     const cart = useCart();
+
+    const {counter, handleIncrement, handleDecrement, restartCounter} = useCounter();
 
     return (
         <Card
@@ -102,8 +98,8 @@ export default function BookCard({
                 <Tooltip title="Add to cart">
                     <AddToCartButton
                         onClick={async () => {
-                            await cart.handleAddToCart(user.cartID(), book.isbn, counter)
-                            await cart.handleListCart(user.cartID())
+                            user.handleAddToCartWith(cart, book.isbn, counter)
+                            user.handleListCartWith(cart)
                             restartCounter()
                         }}
                     >

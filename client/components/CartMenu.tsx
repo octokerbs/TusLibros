@@ -3,11 +3,10 @@ import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
-import {Book} from "@/types/cart";
 import {formatCurrency} from "@/utils/formatters";
 
 import {calculateTotal} from "@/utils/price";
-import {forEachBook} from "@/utils/book";
+import {Book, forEachBook} from "@/utils/book";
 import {Button, styled} from "@mui/material";
 import {useUser} from "@/context/UserContext";
 import {useCart} from "@/context/CartContext";
@@ -149,8 +148,8 @@ export default function CartMenu({
             <CheckoutBox>
                 <CheckoutButton
                     onClick={async () => {
-                        await cart.handleCheckoutCart(user.cartID(), user.creditCardNumber(), user.creditCardExpirationDate())
-                        await user.handleNewUserState(user.state())
+                        user.handleCheckoutCartWith(cart)
+                        await user.handleNewUserStateWith(cart, user.state())
                     }}
                 >
                     <ShoppingCartCheckout></ShoppingCartCheckout>

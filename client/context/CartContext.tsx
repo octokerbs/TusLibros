@@ -1,8 +1,8 @@
 import React, {useCallback, useContext} from "react";
-import {api} from "@/utils/api";
+import {api} from "@/api/api";
 import {useNotification} from "@/context/NotificationContext";
 
-interface CartContextType {
+export interface CartContextType {
     items: Record<string, number>
     handleAddToCart: (
         cartID: number,

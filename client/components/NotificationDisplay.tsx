@@ -4,9 +4,10 @@ import Alert from "@mui/material/Alert";
 import {useNotification} from "@/context/NotificationContext";
 
 export default function NotificationDisplay() {
+    const notification = useNotification();
+
     const vertical = "top"
     const horizontal = "right"
-    const notification = useNotification();
 
     return (
         <Snackbar
